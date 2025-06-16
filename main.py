@@ -10,6 +10,7 @@ queen = 9
 
 class Board:
     pass
+
 def check_forcing_moves(board):
     pass
 def evaluate_piece(piece):
@@ -24,6 +25,8 @@ def display_board(board):
     pass
 def update_board(board, move):
     pass
-
+def output_move(move):
+    pass
 
 # TODO: make it work
+# TODO: learn basic chess heuristics
