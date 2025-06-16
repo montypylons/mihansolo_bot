@@ -1,8 +1,18 @@
-import pychess
+import chess
 
-def main():
-    # Initialize the PyChess application
-    app = pychess.PyChess()
+# variables
+king = 0
+rook = 5
+pawn = 1
+knight = 3
+bishop = 3
+queen = 9
 
-    # Start the application
-    app.run()
+def evaluate_piece(piece):
+    pass
+def evaluate_position():
+    pass
+def reject_moves():
+    pass
+
+# TODO: make it work
