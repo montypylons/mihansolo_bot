@@ -1,6 +1,7 @@
 import chess
 
-# variables
+# variables to represent piece values
+# helps to evaluate position
 king = 0
 rook = 5
 pawn = 1
