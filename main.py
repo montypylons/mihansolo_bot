@@ -15,4 +15,7 @@ def evaluate_position(board):
 def reject_moves(board):
     pass
 
+
+
+
 # TODO: make it work
