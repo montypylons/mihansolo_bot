@@ -10,9 +10,9 @@ queen = 9
 
 def evaluate_piece(piece):
     pass
-def evaluate_position():
+def evaluate_position(board):
     pass
-def reject_moves():
+def reject_moves(board):
     pass
 
 # TODO: make it work
