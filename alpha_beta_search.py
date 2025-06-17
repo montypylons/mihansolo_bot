@@ -34,7 +34,7 @@ def minimax(alpha, beta, depth, node, maximizing_player=True):
     else:
         min_eval = float('inf')
         for child in node.children:
-            eval = minimax(depth-1, child, True)
+            eval = minimax(alpha, beta, depth-1, child, True)
             min_eval = min(min_eval, eval)  
             beta = min(beta, eval)
             if beta <= alpha:
