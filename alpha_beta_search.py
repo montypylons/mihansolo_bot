@@ -3,14 +3,16 @@
 # just for learning how it works
 
 class Node:
-    def __init__(self):
-        pass
+    def __init__(self, value, children):
+        self.value = value
+        self.children = children
 
 def evaluate(node):
-    pass
+    return node.value
 
-def game_over(node):
-    pass
+def game_over(node): # TODO: implement this
+    # check for checkmate, stalemate, or insufficient material
+    return False
 
 # default is that you are the maximizing player
 def minimax(depth, node, maximizing_player=True):
@@ -32,5 +34,24 @@ def minimax(depth, node, maximizing_player=True):
 
 
 
-Node1 = Node()
-alpha_beta(3, Node1, True)
+Node1 = Node(3)
+Node2 = Node(4)
+Node3 = Node(5)
+Node4 = Node(-4)
+Node5 = Node(-5)
+Node6 = Node(6)
+Node7 = Node(0)
+Node8 = Node(-2)
+
+Node9 = Node(7, [Node1, Node2])
+Node10 = Node(-4, [Node3, Node4])
+Node11 = Node(0, [Node5, Node6])
+Node12 = Node(2, [Node7, Node8])    
+
+Node13 = Node(3, [Node9, Node10])
+Node14 = Node(-1, [Node11, Node12])
+
+Node15 = Node(5, [Node13, Node14])
+
+
+minimax(5, Node15, True)
