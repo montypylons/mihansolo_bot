@@ -6,5 +6,41 @@ class Node:
 
     def evaluate(node):
         return node.value
+    
     def is_terminal(node):
         return node.value is not None
+    
+    def get_children(node):
+        return node.children
+    
+    def alpha_beta_pruning(node, depth, alpha, beta, maximizing_player):
+        if depth == 0 or node.is_terminal():
+            return evaluate(node)
+        if maximizing_player:
+            max_eval = float('inf')
+            for child in get_children(node):
+                eval = alpha_beta_pruning(child, depth - 1, alpha, beta, False)
+                max_eval = max(max_eval, eval)
+                alpha = max(alpha, eval)
+                if beta <= alpha:
+                    break
+            return max_eval
+        else:
+            min_eval = float('inf')
+            for child in get_children(node):
+                eval = alpha_beta_pruning(child, depth - 1, alpha, beta, True)
+                min_eval = min(min_eval, eval)
+                beta = min(beta, eval)
+                if beta <= alpha:
+                    break
+                return min_eval
+            
+D= Node('D',value=3)
+E= Node('E',value=12)
+F= Node('F',value=8)
+G= Node('G',value=2)
+H= Node('H',value=6)
+I = Node('I',value=14)
+B = Node('B', [D, E,F], value=5)
+C = Node('C', [G, H, I], value=4)
+A = Node('A', children=[B,C])
