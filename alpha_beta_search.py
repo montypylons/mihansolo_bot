@@ -12,7 +12,10 @@ def evaluate(node):
 
 def game_over(node): # TODO: implement this
     # check for checkmate, stalemate, or insufficient material
-    return False
+    if not node.children:
+        return True
+    else:
+        return False
 
 # default is that you are the maximizing player
 def minimax(depth, node, maximizing_player=True):
@@ -34,14 +37,14 @@ def minimax(depth, node, maximizing_player=True):
 
 
 
-Node1 = Node(3)
-Node2 = Node(4)
-Node3 = Node(5)
-Node4 = Node(-4)
-Node5 = Node(-5)
-Node6 = Node(6)
-Node7 = Node(0)
-Node8 = Node(-2)
+Node1 = Node(3, None)
+Node2 = Node(4, None)
+Node3 = Node(5, None)
+Node4 = Node(-4, None)
+Node5 = Node(-5, None)
+Node6 = Node(6, None)
+Node7 = Node(0, None)
+Node8 = Node(-2, None)
 
 Node9 = Node(7, [Node1, Node2])
 Node10 = Node(-4, [Node3, Node4])
