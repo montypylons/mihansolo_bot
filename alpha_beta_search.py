@@ -1,3 +1,5 @@
+# example from GeeksforGeeks
+
 class Node:
     def __init__(self, name, children=None, value=None):
         self.name = name
@@ -44,3 +46,11 @@ I = Node('I',value=14)
 B = Node('B', [D, E,F], value=5)
 C = Node('C', [G, H, I], value=4)
 A = Node('A', children=[B,C])
+
+maximizing_player = True
+initial_alpha = float('-inf')
+initial_beta = float('inf')
+depth = 3  # Maximum depth of the tree
+
+optimal_value = alpha_beta_pruning(A, depth, initial_alpha, initial_beta, maximizing_player)
+print(f"The optimal value is: {optimal_value}")
