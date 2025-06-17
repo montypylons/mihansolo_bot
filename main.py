@@ -26,8 +26,8 @@ def search(fen):  # TODO: add function to get all legal moves a
 
 # minimax algos
 class Node:
-    def __init__(self, value, children):
-        self.value = value
+    def __init__(self, position_fen, children):
+        self.value = evaluate(position_fen)
         self.children = children
 
 
