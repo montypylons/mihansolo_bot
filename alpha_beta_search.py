@@ -15,10 +15,10 @@ class Node:
     
     def alpha_beta_pruning(node, depth, alpha, beta, maximizing_player):
         if depth == 0 or node.is_terminal():
-            return evaluate(node)
+            return node.evaluate()
         if maximizing_player:
             max_eval = float('inf')
-            for child in get_children(node):
+            for child in node.get_children():
                 eval = alpha_beta_pruning(child, depth - 1, alpha, beta, False)
                 max_eval = max(max_eval, eval)
                 alpha = max(alpha, eval)
@@ -27,7 +27,7 @@ class Node:
             return max_eval
         else:
             min_eval = float('inf')
-            for child in get_children(node):
+            for child in node.get_children():
                 eval = alpha_beta_pruning(child, depth - 1, alpha, beta, True)
                 min_eval = min(min_eval, eval)
                 beta = min(beta, eval)
