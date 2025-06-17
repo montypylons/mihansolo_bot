@@ -12,13 +12,20 @@ queen = 9
 # simple implementation of Alpha-Beta pruning algorithm
 # just for learning how it works
 
+# chess functions
+
+def evaluate(node):
+    return node.value
+
+def best_move(fen):
+    pass
+
+
+# minimax algos
 class Node:
     def __init__(self, value, children):
         self.value = value
         self.children = children
-
-def evaluate(node):
-    return node.value
 
 def game_over(node): # TODO: implement this
     # check for checkmate, stalemate, or insufficient material
@@ -51,52 +58,20 @@ def minimax(alpha, beta, depth, node, maximizing_player=True):
                 break
         return min_eval
 
+def main():
+    board = chess.Board()
+    white = input("enter y if you want to be white")
+    if white.lower() == 'y':
+        white = True
+        board.push_san(input('What is your move - dont include # or + symbol'))
+    else:
+        white = False
+        board.push_san(best_move(board.fen()))
+    
+    while not board.is_game_over():
+        
 
-
-
-Node1 = Node(3, None)
-Node2 = Node(4, None)
-Node3 = Node(5, None)
-Node4 = Node(-4, None)
-Node5 = Node(-5, None)
-Node6 = Node(6, None)
-Node7 = Node(0, None)
-Node8 = Node(-2, None)
-
-Node9 = Node(7, [Node1, Node2])
-Node10 = Node(-4, [Node3, Node4])
-Node11 = Node(0, [Node5, Node6])
-Node12 = Node(2, [Node7, Node8])    
-
-Node13 = Node(3, [Node9, Node10])
-Node14 = Node(-1, [Node11, Node12])
-Node15 = Node(5, [Node13, Node14])
-
-
-best_value = minimax(float('-inf'),float('+inf'),5, Node15, True)
-print("Best value:", best_value)  # Output: Best value: 3
-
-
-
-class Board:
-    pass
-
-def check_forcing_moves(board):
-    pass
-def evaluate_piece(piece):
-    pass
-def evaluate_position(board):
-    pass
-def reject_moves(board):
-    pass
-def get_best_move(board):
-    pass
-def display_board(board):
-    pass
-def update_board(board, move):
-    pass
-def output_move(move):
-    pass
+    
 
 # TODO: make it work
 # TODO: learn basic chess heuristics
