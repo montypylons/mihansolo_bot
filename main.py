@@ -29,7 +29,8 @@ def evaluate(node: chess.Board, White=True):
             value = float('-inf')
     return value
 
-def best_move(fen):
+def search(fen): # TODO: add function to get all legal moves a
+    # TODO: and search for the best one using a alpha/beta pruned minimax tree
     pass
 
 
@@ -72,16 +73,24 @@ def minimax(alpha, beta, depth, node, maximizing_player=True):
 
 def main():
     board = chess.Board()
-    white = input("enter y if you want to be white")
+    white = input("enter y if you want to be white, n if not")
     if white.lower() == 'y':
         white = True
-        board.push_san(input('What is your move - dont include # or + symbol'))
-    else:
+        while not board.is_game_over():
+            board.push_san(input('What is your move - dont include # or + symbol'))
+            board.push_san(search(board.fen()))
+        print("Game over, GG WP")
+    elif white.lower() == 'n':
         white = False
-        board.push_san(best_move(board.fen()))
-    
-    while not board.is_game_over():
-        pass
+        while not board.is_game_over():
+            board.push_san(search(board.fen()))
+            board.push_san(input('What is your move - dont include # or + symbol'))
+        print("Game over, GG WP")
+    else: 
+        print('enter a y or n')
+
+
+
         
 
     
