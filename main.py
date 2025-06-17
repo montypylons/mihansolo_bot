@@ -14,8 +14,20 @@ queen = 9
 
 # chess functions
 
-def evaluate(node):
-    return node.value
+def evaluate(node: chess.Board, White=True):
+    ''' Naive evaluation function which only takes into mind the 
+    material on the board and whether or not it is checkmate. '''
+    # TODO: add more heuristics to the evaluation
+    value = 0
+    if White == True:
+        value = value + len(node.pieces(chess.PAWN,chess.WHITE))
+        value = value + len(node.pieces(chess.KNIGHT,chess.WHITE))*3
+        value = value + len(node.pieces(chess.BISHOP,chess.WHITE))*3
+        value = value + len(node.pieces(chess.ROOK,chess.WHITE))*5
+        value = value + len(node.pieces(chess.QUEEN,chess.WHITE))*9
+        if node.is_checkmate():
+            value = float('-inf')
+    return value
 
 def best_move(fen):
     pass
@@ -69,6 +81,7 @@ def main():
         board.push_san(best_move(board.fen()))
     
     while not board.is_game_over():
+        pass
         
 
     
