@@ -18,20 +18,27 @@ def game_over(node): # TODO: implement this
         return False
 
 # default is that you are the maximizing player
-def minimax(depth, node, maximizing_player=True):
+def minimax(alpha, beta, depth, node, maximizing_player=True):
     if depth == 0 or game_over(node):
         return evaluate(node)
     if maximizing_player:
         max_eval = float('-inf')
         for child in node.children:
-            eval = minimax(depth-1,child, False)
+            eval = minimax(alpha,beta,depth-1,child, False)
             max_eval = max(max_eval, eval)
+            alpha = max(alpha, eval)
+            if beta <= alpha:
+                break
         return max_eval
+    
     else:
         min_eval = float('inf')
         for child in node.children:
             eval = minimax(depth-1, child, True)
             min_eval = min(min_eval, eval)  
+            beta = min(beta, eval)
+            if beta <= alpha:
+                break
         return min_eval
 
 
@@ -53,9 +60,8 @@ Node12 = Node(2, [Node7, Node8])
 
 Node13 = Node(3, [Node9, Node10])
 Node14 = Node(-1, [Node11, Node12])
-
 Node15 = Node(5, [Node13, Node14])
 
 
-best_value = minimax(5, Node15, True)
+best_value = minimax(float('-inf'),float('+inf'),5, Node15, True)
 print("Best value:", best_value)  # Output: Best value: 3
