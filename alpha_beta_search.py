@@ -57,4 +57,5 @@ Node14 = Node(-1, [Node11, Node12])
 Node15 = Node(5, [Node13, Node14])
 
 
-minimax(5, Node15, True)
+best_value = minimax(5, Node15, True)
+print("Best value:", best_value)  # Output: Best value: 3
