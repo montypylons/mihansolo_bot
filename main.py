@@ -20,20 +20,20 @@ def evaluate(node, White=True):
     return value
 
 
-def build_tree(fen, depth=3):
+def build_tree(last_move, fen, depth=3):
     """Builds a tree of nodes from the given FEN string."""
     board = chess.Board(fen)
     if depth == 0 or board.is_game_over():
-        return Node(fen, [])
+        return Node(fen, [], last_move)
     
     children = []
     for move in board.legal_moves:
         board.push(move)
-        child_node = build_tree(board.fen(), depth - 1)
+        child_node = build_tree(move, board.fen(), depth - 1)
         children.append(child_node)
         board.pop()
     
-    return Node(fen, children)
+    return Node(last_move, fen, children)
 
 def search(fen):  # TODO: add function to get all legal moves a
     # TODO: and search for the best one using a alpha/beta pruned minimax tree
