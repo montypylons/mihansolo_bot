@@ -41,7 +41,13 @@ def search(fen):  # TODO: add function to get all legal moves a
     legal_moves = list(board.legal_moves)
     best_move = None
     tree = build_tree(fen, 3)  # build the tree with depth 3
-    minimax(float("-inf"), float("inf"), 3, tree, True)
+    best_move = minimax(float("-inf"), float("inf"), 3, tree, True)
+    if best_move:
+        return best_move
+    else:
+        raise TypeError("Minimax returned a None value, which is not expected.")
+
+
 
 
 # minimax algos
@@ -74,7 +80,7 @@ def minimax(alpha, beta, depth, node, maximizing_player=True):
             alpha = max(alpha, eval)
             if beta <= alpha:
                 break
-        return max_eval, best_move
+        return best_move
 
     else:
         min_eval = float("inf")
@@ -85,7 +91,7 @@ def minimax(alpha, beta, depth, node, maximizing_player=True):
             best_move = child.last_move
             if beta <= alpha:
                 break
-        return min_eval, best_move
+        return best_move
 
 
 def main():
