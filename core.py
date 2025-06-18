@@ -1,5 +1,5 @@
 import chess
-
+from chess.engine import PlayResult
 # chess functions
 
 
@@ -49,7 +49,7 @@ def search(board):  # TODO: add function to get all legal moves a
                 else minimax(float("-inf"), float("inf"), 3, tree, True)[0]
             )
     if best_move:
-        return best_move
+        return PlayResult(best_move,None)
     else:
         raise TypeError("Minimax returned a None value, which is not expected.")
 
