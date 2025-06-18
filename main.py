@@ -36,10 +36,10 @@ def build_tree(last_move, fen, depth=3):
     return Node(fen, children, last_move)
 
 
-def search(fen):  # TODO: add function to get all legal moves a
+def search(board):  # TODO: add function to get all legal moves a
     # TODO: and search for the best one using a alpha/beta pruned minimax tree
-    board = chess.Board(fen)
-    legal_moves = list(board.legal_moves)
+    board1 = board.copy()
+    legal_moves = list(board1.legal_moves)
     best_move = None
     tree = build_tree(None, fen, 3)  # build the tree with depth 3
     best_move = (
@@ -114,13 +114,13 @@ def main():
             board.push(
                 board.parse_san(input("What is your move - dont include # or + symbol"))
             )
-            board.push(search(board.fen()))
+            board.push(search(board))
             print(board)
         print("Game over, GG WP")
     elif white.lower() == "n":
         white = False
         while not board.is_game_over():
-            board.push(search(board.fen()))
+            board.push(search(board))
             board.push(
                 board.parse_san(input("What is your move - dont include # or + symbol"))
             )
