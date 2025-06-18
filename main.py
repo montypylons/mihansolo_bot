@@ -62,7 +62,7 @@ def game_over(node):  # TODO: implement this
 # default is that you are the maximizing player
 def minimax(alpha, beta, depth, node, maximizing_player=True):
     if depth == 0 or game_over(node):
-        return evaluate(chess.Board(node.position_fen))
+        return evaluate(node)
     if maximizing_player:
         max_eval = float("-inf")
         for child in node.children:
