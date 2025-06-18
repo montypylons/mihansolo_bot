@@ -33,7 +33,7 @@ def build_tree(last_move, fen, depth=3):
         children.append(child_node)
         board.pop()
     
-    return Node(last_move, fen, children)
+    return Node(fen, children, last_move)
 
 def search(fen):  # TODO: add function to get all legal moves a
     # TODO: and search for the best one using a alpha/beta pruned minimax tree
