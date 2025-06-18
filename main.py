@@ -112,6 +112,7 @@ def main():
                 board.parse_san(input("What is your move - dont include # or + symbol"))
             )
             board.push(search(board.fen()))
+            print(board)
         print("Game over, GG WP")
     elif white.lower() == "n":
         white = False
