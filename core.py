@@ -51,7 +51,7 @@ def search(board):  # TODO: add function to get all legal moves
         return PlayResult(best_move, None)
         # return best_move
     else:
-        raise TypeError("Minimax returned a None value, which is not expected.")
+        raise TypeError("Minimax returned a None value, which is bad.")
 
 
 # minimax algos
@@ -99,31 +99,5 @@ def minimax(alpha, beta, last_move, depth, board, maximizing_player=True):
         return min_eval, best_move
 
 
-""" def main():
-    board = chess.Board()
-    white = input("enter y if you want to be white, n if not")
-    if white.lower() == "y":
-        white = True
-        while not board.is_game_over():
-            board.push(
-                board.parse_san(input("What is your move - dont include # or + symbol"))
-            )
-            board.push(search(board))
-            print(board)
-        print("Game over, GG WP")
-    elif white.lower() == "n":
-        white = False
-        while not board.is_game_over():
-            board.push(search(board))
-            board.push(
-                board.parse_san(input("What is your move - dont include # or + symbol"))
-            )
-        print("Game over, GG WP")
-    else:
-        print("enter a y or n") 
-
-
-if __name__ == "__main__":
-    main() """
-# TODO: make it work
 # TODO: learn basic chess heuristics
+# TODO: add NNUE eval function
