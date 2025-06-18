@@ -44,7 +44,8 @@ def evaluate(board, White=True):
 
 
 def search(board):  # TODO: add function to get all legal moves
-    _, best_move = minimax(float("-inf"), float("inf"), None, 3, board, board.turn)
+    depth = 5
+    _, best_move = minimax(float("-inf"), float("inf"), None, depth, board, board.turn)
 
     if best_move:
         return PlayResult(best_move, None)
