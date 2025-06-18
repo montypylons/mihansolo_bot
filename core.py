@@ -1,12 +1,14 @@
 import chess
 from chess.engine import PlayResult
 import chess.polyglot
+import random
 
 # chess functions
 def book_move(board: chess.Board) -> chess.Move| None:
     try:
         with chess.polyglot.open_reader("Titans.bin") as reader:
-            return reader.find_all(board)[0].move
+            if reader.find_all(board):
+                return random.choice(list(reader.find_all(board))).move
     except Exception as e:
         return None # did not work, book doesn't have move for that position
 
