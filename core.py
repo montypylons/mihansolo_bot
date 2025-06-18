@@ -12,7 +12,7 @@ def book_move(board: chess.Board) -> chess.Move| None:
     except Exception as e:
         return None # did not work, book doesn't have move for that position
 
-def evaluate(board, White=True):
+def evaluate(board, White=True): # TODO add hanging piece penalty
     """Naive evaluation function which only takes into mind the
     material on the board and whether or not it is checkmate."""
     # TODO: add more heuristics to the evaluation
@@ -51,7 +51,7 @@ def evaluate(board, White=True):
     return value
 
 
-def search(board):  # TODO: add function to get all legal moves
+def search(board):  # TODO: add quiescence search
     _book_move = book_move(board)
     if _book_move:
         return PlayResult(_book_move, None)
