@@ -34,3 +34,4 @@ class MihanSolo(ExampleEngine):
     '''The MihanSolo bot which uses a/b minimax algorithm to find the best move.'''
     def search(self, board: chess.Board, *args: HOMEMADE_ARGS_TYPE) -> PlayResult:
         return _search(board)
+
