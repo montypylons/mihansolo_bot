@@ -3,11 +3,11 @@ from chess.engine import PlayResult
 import chess.polyglot
 
 # chess functions
-def book_move(board: chess.Board, book_path: str = "Titans.bin") -> PlayResult:
+def book_move(board: chess.Board) -> chess.Move| None:
     try:
-        with chess.polyglot.open_reader(book_path) as reader:
+        with chess.polyglot.open_reader("Titans.bin") as reader:
             return reader.find_all(board)[0].move
-    except:
+    except Exception as e:
         return None # did not work, book doesn't have move for that position
 
 def evaluate(board, White=True):
