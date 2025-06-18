@@ -15,13 +15,20 @@ def evaluate(board, White=True):
         value = value + len(board.pieces(chess.BISHOP, chess.WHITE)) * 3
         value = value + len(board.pieces(chess.ROOK, chess.WHITE)) * 5
         value = value + len(board.pieces(chess.QUEEN, chess.WHITE)) * 9
+
+        value = value - len(board.pieces(chess.PAWN, chess.BLACK))
+        value = value - len(board.pieces(chess.KNIGHT, chess.BLACK)) * 3
+        value = value - len(board.pieces(chess.BISHOP, chess.BLACK)) * 3
+        value = value - len(board.pieces(chess.ROOK, chess.BLACK)) * 5
+        value = value - len(board.pieces(chess.QUEEN, chess.BLACK)) * 9
+
         if board.is_checkmate():
             value = float("-inf")
+
     return value
 
 
 def search(board):  # TODO: add function to get all legal moves
-    fen = board.fen()
     best_move = None
     best_move = (
         minimax(float("-inf"), float("inf"), None, 3, board, True)[1]
@@ -67,9 +74,8 @@ def minimax(alpha, beta, last_move, depth, board, maximizing_player=True):
         min_eval = float("inf")
         for move in board.legal_moves:
             board.push(move)
-            result = minimax(alpha, beta, move, depth - 1, board, True)
             board.pop()
-            eval = result[1] if isinstance(result[1], int) else result[0]
+            eval, _ = minimax(alpha, beta, move, depth - 1, board, True)
             if eval < min_eval:
                 best_move = move
             min_eval = min(min_eval, eval)
