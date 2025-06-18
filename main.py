@@ -19,47 +19,28 @@ def evaluate(node: chess.Board, White=True):
     return value
 
 
+def build_tree(fen, depth=3):
+    """Builds a tree of nodes from the given FEN string."""
+    board = chess.Board(fen)
+    if depth == 0 or board.is_game_over():
+        return Node(fen, [])
+    
+    children = []
+    for move in board.legal_moves:
+        board.push(move)
+        child_node = build_tree(board.fen(), depth - 1)
+        children.append(child_node)
+        board.pop()
+    
+    return Node(fen, children)
+
 def search(fen):  # TODO: add function to get all legal moves a
     # TODO: and search for the best one using a alpha/beta pruned minimax tree
     board = chess.Board(fen)
-    legalmoves = list(board.legal_moves)  # Converts the generator to a list of legal moves
-    for move in legalmoves:
-        board.push(move)
-        child_node = Node(board.copy(), [])
-        def build_tree(board, depth, computer_turn):
-            if depth == 0 or board.is_game_over():
-                return Node(board.copy(), [])
-            children = []
-            for submove in list(board.legal_moves):
-                board.push(submove)
-                children.append(build_tree(board, depth - 1, board.turn))
-                board.pop()
-            return Node(board.copy(), children)
-
-        # Replace the $SELECTION_PLACEHOLDER$ code in search() with:
-        computer_color = board.turn  # computer’s turn flag from the current board
-        # Initialize best_value according to the computer's color.
-        best_value = float("-inf") if computer_color == chess.WHITE else float("inf")
-        best_move = None
-
-        # Added parameter "search_depth" for the desired depth – adjust as needed.
-        search_depth = 3
-
-        for move in legalmoves:
-            board.push(move)
-            # Build a tree of positions from the current move to the given depth.
-            subtree = build_tree(board, search_depth - 1, board.turn)
-            # Evaluate the move using the minimax with alpha-beta pruning.
-            value = minimax(float("-inf"), float("inf"), search_depth - 1, subtree, computer_color == chess.WHITE)
-            board.pop()
-            if computer_color == chess.WHITE:
-                if value > best_value:
-                    best_value = value
-                    best_move = move
-            else:
-                if value < best_value:
-                    best_value = value
-                    best_move = move
+    legal_moves = list(board.legal_moves)
+    best_move = None
+    tree = build_tree(fen, 3)  # build the tree with depth 3
+    minimax(float("-inf"), float("inf"), 3, tree, True)
 
 
 # minimax algos
