@@ -3,11 +3,10 @@ from chess.engine import PlayResult
 # chess functions
 
 
-def evaluate(node, White=True):
+def evaluate(board, White=True):
     """Naive evaluation function which only takes into mind the
     material on the board and whether or not it is checkmate."""
     # TODO: add more heuristics to the evaluation
-    board = chess.Board(node.position_fen)
     value = 0
     if White == True:
         value = value + len(board.pieces(chess.PAWN, chess.WHITE))
@@ -20,9 +19,7 @@ def evaluate(node, White=True):
     return value
 
 
-def build_tree(last_move, fen, depth=3):
-    """Builds a tree of nodes from the given FEN string."""
-    board = chess.Board(fen)
+""" def build_tree(last_move, board, depth=3):
     if depth == 0 or board.is_game_over():
         return Node(fen, [], last_move)
 
@@ -34,19 +31,15 @@ def build_tree(last_move, fen, depth=3):
         board.pop()
 
     return Node(fen, children, last_move)
+ """
 
-
-def search(board):  # TODO: add function to get all legal moves a
-    # TODO: and search for the best one using a alpha/beta pruned minimax tree
-    board1 = board.copy()
+def search(board):  # TODO: add function to get all legal moves
     fen = board.fen()
-    legal_moves = list(board1.legal_moves)
     best_move = None
-    tree = build_tree(None, fen, 3)  # build the tree with depth 3
     best_move = (
-                minimax(float("-inf"), float("inf"), 3, tree, True)[1]
-                if isinstance(minimax(float("-inf"), float("inf"), 3, tree, True)[1], chess.Move)
-                else minimax(float("-inf"), float("inf"), 3, tree, True)[0]
+                minimax(float("-inf"), float("inf"), 3, True)[1]
+                if isinstance(minimax(float("-inf"), float("inf"), 3, True)[1], chess.Move)
+                else minimax(float("-inf"), float("inf"), 3, True)[0]
             )
     if best_move:
         return PlayResult(best_move,None)
