@@ -15,10 +15,16 @@ def is_quiescent(board: chess.Board) -> bool:
 
 
 def quinescent_search(board: chess.Board, alpha: float, beta: float, depth: int):
-    if not is_quiescent(board) or depth == 0 or board.is_game_over():
+    if (not is_quiescent(board)) or depth == 0 or board.is_game_over():
         return evaluate(board, White=board.turn)
     else:
-        pass
+        for move in board.legal_moves:
+            board.push(move)
+            score = -quinescent_search(board, -beta, -alpha, depth - 1)
+            board.pop()
+            if score >= beta:
+                return beta
+            alpha = max(alpha, score)
 
 
 # chess functions
