@@ -3,6 +3,7 @@ from chess.engine import PlayResult
 
 # chess functions
 
+
 def evaluate(board, White=True):
     """Naive evaluation function which only takes into mind the
     material on the board and whether or not it is checkmate."""
@@ -37,8 +38,8 @@ def search(board):  # TODO: add function to get all legal moves
         else minimax(float("-inf"), float("inf"), None, 3, board, True)[0]
     )
     if best_move:
-        # return PlayResult(best_move, None)
-        return best_move
+        return PlayResult(best_move, None)
+        # return best_move
     else:
         raise TypeError("Minimax returned a None value, which is not expected.")
 
@@ -74,8 +75,9 @@ def minimax(alpha, beta, last_move, depth, board, maximizing_player=True):
         min_eval = float("inf")
         for move in board.legal_moves:
             board.push(move)
-            board.pop()
+
             eval, _ = minimax(alpha, beta, move, depth - 1, board, True)
+            board.pop()
             if eval < min_eval:
                 best_move = move
             min_eval = min(min_eval, eval)
