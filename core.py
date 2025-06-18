@@ -1,5 +1,6 @@
 import chess
 from chess.engine import PlayResult
+
 # chess functions
 
 
@@ -18,16 +19,19 @@ def evaluate(board, White=True):
             value = float("-inf")
     return value
 
+
 def search(board):  # TODO: add function to get all legal moves
     fen = board.fen()
     best_move = None
     best_move = (
-                minimax(float("-inf"), float("inf"), 3, True)[1]
-                if isinstance(minimax(float("-inf"), float("inf"), 3, True)[1], chess.Move)
-                else minimax(float("-inf"), float("inf"), 3, True)[0]
-            )
+        minimax(float("-inf"), float("inf"), None, 3, board, True)[1]
+        if isinstance(
+            minimax(float("-inf"), float("inf"), None, 3, board, True)[1], chess.Move
+        )
+        else minimax(float("-inf"), float("inf"), None, 3, board, True)[0]
+    )
     if best_move:
-        return PlayResult(best_move,None)
+        return PlayResult(best_move, None)
     else:
         raise TypeError("Minimax returned a None value, which is not expected.")
 
@@ -49,7 +53,7 @@ def minimax(alpha, beta, last_move, depth, board, maximizing_player=True):
         max_eval = float("-inf")
         for move in board.legal_moves:
             board.push(move)
-            eval, _  = minimax(alpha, beta,move, depth - 1, board, False)
+            eval, _ = minimax(alpha, beta, move, depth - 1, board, False)
             board.pop()
             if eval > max_eval:
                 best_move = move
@@ -70,7 +74,7 @@ def minimax(alpha, beta, last_move, depth, board, maximizing_player=True):
                 best_move = move
             min_eval = min(min_eval, eval)
             beta = min(beta, eval)
-            
+
             if beta <= alpha:
                 break
         return min_eval, best_move
