@@ -3,7 +3,6 @@ from chess.engine import PlayResult
 
 # chess functions
 
-
 def evaluate(board, White=True):
     """Naive evaluation function which only takes into mind the
     material on the board and whether or not it is checkmate."""
@@ -86,7 +85,7 @@ def minimax(alpha, beta, last_move, depth, board, maximizing_player=True):
         return min_eval, best_move
 
 
-""" def main():
+def main():
     board = chess.Board()
     white = input("enter y if you want to be white, n if not")
     if white.lower() == "y":
@@ -107,9 +106,10 @@ def minimax(alpha, beta, last_move, depth, board, maximizing_player=True):
             )
         print("Game over, GG WP")
     else:
-        print("enter a y or n") """
+        print("enter a y or n") 
 
 
-# main()
+if  __name__ == "__main__":
+    main()
 # TODO: make it work
 # TODO: learn basic chess heuristics
