@@ -5,8 +5,8 @@ import chess.polyglot
 # chess functions
 def book_move(board: chess.Board, book_path: str = "Titans.bin") -> PlayResult:
     try:
-        with chess.polyglot.open_reader("data/polyglot/performance.bin") as reader:
-            return reader.find_all(board)[0]
+        with chess.polyglot.open_reader(book_path) as reader:
+            return reader.find_all(board)[0].move
     except:
         return None # did not work, book doesn't have move for that position
 
