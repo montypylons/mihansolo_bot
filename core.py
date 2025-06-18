@@ -6,7 +6,7 @@ import random
 # chess functions
 def book_move(board: chess.Board) -> chess.Move| None:
     try:
-        with chess.polyglot.open_reader("Titans.bin") as reader:
+        with chess.polyglot.open_reader("gm2600.bin") as reader:
             if reader.find_all(board):
                 return random.choice(list(reader.find_all(board))).move
     except Exception as e:
