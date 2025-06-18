@@ -60,10 +60,7 @@ class Node:
 
 def game_over(node):  # TODO: implement this
     # check for checkmate, stalemate, or insufficient material
-    if not node.children:
-        return True
-    else:
-        return False
+    return False  # placeholder, always returns False
 
 
 # default is that you are the maximizing player
