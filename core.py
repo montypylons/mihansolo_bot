@@ -1,8 +1,14 @@
 import chess
 from chess.engine import PlayResult
+import chess.polyglot
 
 # chess functions
-
+def book_move(board: chess.Board, book_path: str = "Titans.bin") -> PlayResult:
+    try:
+        with chess.polyglot.open_reader("data/polyglot/performance.bin") as reader:
+            reader.find_all(board)[1]
+    except:
+        return None # did not work, book doesn't have move for that position
 
 def evaluate(board, White=True):
     """Naive evaluation function which only takes into mind the
@@ -44,6 +50,8 @@ def evaluate(board, White=True):
 
 
 def search(board):  # TODO: add function to get all legal moves
+    if book_move(board):
+        return book_move(board)
     depth = 5
     _, best_move = minimax(float("-inf"), float("inf"), None, depth, board, board.turn)
 
