@@ -3,6 +3,11 @@ from chess.engine import PlayResult
 import chess.polyglot
 import random
 
+def is_quiescent(board: chess.Board, move: chess.Move):
+    if board.is_capture(move) or board.is_check(move):
+        return True
+    else:
+        return False
 # chess functions
 def book_move(board: chess.Board) -> chess.Move| None:
     try:
