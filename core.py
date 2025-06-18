@@ -51,7 +51,7 @@ def evaluate(board, White=True): # TODO add hanging piece penalty
     return value
 
 
-def search(board):  # TODO: add quiescence search
+def search(board):  # TODO: add quiescence search and iterative deepening
     _book_move = book_move(board)
     if _book_move:
         return PlayResult(_book_move, None)
