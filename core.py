@@ -86,7 +86,7 @@ def minimax(alpha, beta, last_move, depth, board, maximizing_player=True):
         return min_eval, best_move
 
 
-def main():
+""" def main():
     board = chess.Board()
     white = input("enter y if you want to be white, n if not")
     if white.lower() == "y":
@@ -110,7 +110,7 @@ def main():
         print("enter a y or n") 
 
 
-if  __name__ == "__main__":
-    main()
+if __name__ == "__main__":
+    main() """
 # TODO: make it work
 # TODO: learn basic chess heuristics
