@@ -39,6 +39,7 @@ def build_tree(last_move, fen, depth=3):
 def search(board):  # TODO: add function to get all legal moves a
     # TODO: and search for the best one using a alpha/beta pruned minimax tree
     board1 = board.copy()
+    fen = board.fen()
     legal_moves = list(board1.legal_moves)
     best_move = None
     tree = build_tree(None, fen, 3)  # build the tree with depth 3
