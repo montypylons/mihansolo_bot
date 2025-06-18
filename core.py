@@ -9,6 +9,12 @@ def evaluate(board, White=True):
     material on the board and whether or not it is checkmate."""
     # TODO: add more heuristics to the evaluation
     value = 0
+    if board.is_checkmate():
+        if board.turn:
+            return -999999
+        else:
+            return 999999
+
     if White == True:
         value = value + len(board.pieces(chess.PAWN, chess.WHITE))
         value = value + len(board.pieces(chess.KNIGHT, chess.WHITE)) * 3
@@ -21,16 +27,25 @@ def evaluate(board, White=True):
         value = value - len(board.pieces(chess.BISHOP, chess.BLACK)) * 3
         value = value - len(board.pieces(chess.ROOK, chess.BLACK)) * 5
         value = value - len(board.pieces(chess.QUEEN, chess.BLACK)) * 9
+    else:
+        value = value - len(board.pieces(chess.PAWN, chess.WHITE))
+        value = value - len(board.pieces(chess.KNIGHT, chess.WHITE)) * 3
+        value = value - len(board.pieces(chess.BISHOP, chess.WHITE)) * 3
+        value = value - len(board.pieces(chess.ROOK, chess.WHITE)) * 5
+        value = value - len(board.pieces(chess.QUEEN, chess.WHITE)) * 9
 
-        if board.is_checkmate():
-            return float('-inf') #checkmate is a loss
+        value = value + len(board.pieces(chess.PAWN, chess.BLACK))
+        value = value + len(board.pieces(chess.KNIGHT, chess.BLACK)) * 3
+        value = value + len(board.pieces(chess.BISHOP, chess.BLACK)) * 3
+        value = value + len(board.pieces(chess.ROOK, chess.BLACK)) * 5
+        value = value + len(board.pieces(chess.QUEEN, chess.BLACK)) * 9
 
     return value
 
 
 def search(board):  # TODO: add function to get all legal moves
     _, best_move = minimax(float("-inf"), float("inf"), None, 3, board, True)
-    
+
     if best_move:
         return PlayResult(best_move, None)
         # return best_move
@@ -50,7 +65,7 @@ def game_over(board):  # TODO: implement this
 def minimax(alpha, beta, last_move, depth, board, maximizing_player=True):
     best_move = None
     if depth == 0 or game_over(board):
-        return evaluate(board), last_move
+        return evaluate(board, maximizing_player), last_move
     if maximizing_player:
         max_eval = float("-inf")
         for move in board.legal_moves:
@@ -58,9 +73,9 @@ def minimax(alpha, beta, last_move, depth, board, maximizing_player=True):
             eval, _ = minimax(alpha, beta, move, depth - 1, board, False)
             board.pop()
             if eval > max_eval:
-               max_eval = eval
-               best_move = move
-    
+                max_eval = eval
+                best_move = move
+
             alpha = max(alpha, eval)
             if beta <= alpha:
                 break
