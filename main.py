@@ -75,9 +75,9 @@ def minimax(alpha, beta, depth, node, maximizing_player=True):
                 if isinstance(minimax(alpha, beta, depth - 1, child, False)[1], int)
                 else minimax(alpha, beta, depth - 1, child, False)[0]
             )
-            max_eval = max(max_eval, eval[1])
+            max_eval = max(max_eval, eval)
             best_move = child.last_move
-            alpha = max(alpha, eval[1])
+            alpha = max(alpha, eval)
             if beta <= alpha:
                 break
         return best_move, max_eval
@@ -85,9 +85,13 @@ def minimax(alpha, beta, depth, node, maximizing_player=True):
     else:
         min_eval = float("inf")
         for child in node.children:
-            eval = minimax(alpha, beta, depth - 1, child, True)
-            min_eval = min(min_eval, eval[1])
-            beta = min(beta, eval[1])
+            eval = (
+                minimax(alpha, beta, depth - 1, child, True)[1]
+                if isinstance(minimax(alpha, beta, depth - 1, child, True)[1], int)
+                else minimax(alpha, beta, depth - 1, child, True)[0]
+            )
+            min_eval = min(min_eval, eval)
+            beta = min(beta, eval)
             best_move = child.last_move
             if beta <= alpha:
                 break
