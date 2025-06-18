@@ -46,9 +46,10 @@ def search(fen):  # TODO: add function to get all legal moves a
 
 # minimax algos
 class Node:
-    def __init__(self, position_fen, children):
+    def __init__(self, position_fen, children, last_move):
         self.position_fen = position_fen
         self.children = children
+        self.last_move = last_move
 
 
 def game_over(node):  # TODO: implement this
@@ -61,17 +62,19 @@ def game_over(node):  # TODO: implement this
 
 # default is that you are the maximizing player
 def minimax(alpha, beta, depth, node, maximizing_player=True):
+    best_move = None
     if depth == 0 or game_over(node):
-        return evaluate(node)
+        return evaluate(node), node.last_move
     if maximizing_player:
         max_eval = float("-inf")
         for child in node.children:
             eval = minimax(alpha, beta, depth - 1, child, False)
             max_eval = max(max_eval, eval)
+            best_move = child.last_move
             alpha = max(alpha, eval)
             if beta <= alpha:
                 break
-        return max_eval
+        return max_eval, best_move
 
     else:
         min_eval = float("inf")
@@ -79,9 +82,10 @@ def minimax(alpha, beta, depth, node, maximizing_player=True):
             eval = minimax(alpha, beta, depth - 1, child, True)
             min_eval = min(min_eval, eval)
             beta = min(beta, eval)
+            best_move = child.last_move
             if beta <= alpha:
                 break
-        return min_eval
+        return min_eval, best_move
 
 
 def main():
