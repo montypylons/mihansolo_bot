@@ -77,7 +77,7 @@ def minimax(alpha, beta, depth, node, maximizing_player=True):
             alpha = max(alpha, eval)
             if beta <= alpha:
                 break
-        return best_move
+        return max_eval, best_move
 
     else:
         min_eval = float("inf")
@@ -88,7 +88,7 @@ def minimax(alpha, beta, depth, node, maximizing_player=True):
             best_move = child.last_move
             if beta <= alpha:
                 break
-        return best_move
+        return min_eval, best_move
 
 
 def main():
