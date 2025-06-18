@@ -44,7 +44,7 @@ def evaluate(board, White=True):
 
 
 def search(board):  # TODO: add function to get all legal moves
-    _, best_move = minimax(float("-inf"), float("inf"), None, 3, board, True)
+    _, best_move = minimax(float("-inf"), float("inf"), None, 3, board, board.turn)
 
     if best_move:
         return PlayResult(best_move, None)
@@ -65,7 +65,7 @@ def game_over(board):  # TODO: implement this
 def minimax(alpha, beta, last_move, depth, board, maximizing_player=True):
     best_move = None
     if depth == 0 or game_over(board):
-        return evaluate(board, maximizing_player), last_move
+        return evaluate(board, White=board.turn), last_move
     if maximizing_player:
         max_eval = float("-inf")
         for move in board.legal_moves:
