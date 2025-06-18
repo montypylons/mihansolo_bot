@@ -40,7 +40,7 @@ def search(fen):  # TODO: add function to get all legal moves a
     board = chess.Board(fen)
     legal_moves = list(board.legal_moves)
     best_move = None
-    tree = build_tree(fen, 3)  # build the tree with depth 3
+    tree = build_tree(None, fen, 3)  # build the tree with depth 3
     best_move = minimax(float("-inf"), float("inf"), 3, tree, True)
     if best_move:
         return best_move
