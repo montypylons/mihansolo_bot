@@ -9,7 +9,7 @@ import random
 from lib.engine_wrapper import MinimalEngine
 from lib.lichess_types import MOVE, HOMEMADE_ARGS_TYPE
 import logging
-from main import search as _search  
+from core import search as _search  
 
 # Use this logger variable to print messages to the console or log files.
 # logger.info("message") will always print "message" to the console or log file.
