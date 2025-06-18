@@ -3,11 +3,24 @@ from chess.engine import PlayResult
 import chess.polyglot
 import random
 
-def is_quiescent(board: chess.Board, move: chess.Move):
-    if board.is_capture(move) or board.is_check(move):
+def is_quiescent(board: chess.Board) -> bool:
+
+    if any(board.generate_legal_captures()):
         return True
+    if any(board.generate_legal_checks()):
+        return True
+    
+    return False
+
+def quinescent_search(board: chess.Board, alpha: float, beta: float, depth: int):
+    if not is_quiescent(board) or depth == 0 or board.is_game_over():
+        return evaluate(board, White=board.turn)
     else:
-        return False
+        pass
+
+
+
+    
 # chess functions
 def book_move(board: chess.Board) -> chess.Move| None:
     try:
