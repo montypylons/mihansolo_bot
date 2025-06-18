@@ -3,14 +3,16 @@ from chess.engine import PlayResult
 import chess.polyglot
 import random
 
+
 def is_quiescent(board: chess.Board) -> bool:
 
     if any(board.generate_legal_captures()):
         return True
     if any(board.generate_legal_checks()):
         return True
-    
+
     return False
+
 
 def quinescent_search(board: chess.Board, alpha: float, beta: float, depth: int):
     if not is_quiescent(board) or depth == 0 or board.is_game_over():
@@ -19,18 +21,17 @@ def quinescent_search(board: chess.Board, alpha: float, beta: float, depth: int)
         pass
 
 
-
-    
 # chess functions
-def book_move(board: chess.Board) -> chess.Move| None:
+def book_move(board: chess.Board) -> chess.Move | None:
     try:
         with chess.polyglot.open_reader("gm2600.bin") as reader:
             if reader.find_all(board):
                 return random.choice(list(reader.find_all(board))).move
     except Exception as e:
-        return None # did not work, book doesn't have move for that position
+        return None  # did not work, book doesn't have move for that position
 
-def evaluate(board, White=True): # TODO add hanging piece penalty
+
+def evaluate(board, White=True):  # TODO add hanging piece penalty
     """Naive evaluation function which only takes into mind the
     material on the board and whether or not it is checkmate."""
     # TODO: add more heuristics to the evaluation
