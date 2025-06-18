@@ -37,7 +37,8 @@ def search(board):  # TODO: add function to get all legal moves
         else minimax(float("-inf"), float("inf"), None, 3, board, True)[0]
     )
     if best_move:
-        return PlayResult(best_move, None)
+        # return PlayResult(best_move, None)
+        return best_move
     else:
         raise TypeError("Minimax returned a None value, which is not expected.")
 
