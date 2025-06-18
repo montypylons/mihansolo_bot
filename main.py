@@ -63,6 +63,9 @@ class Node:
 
 def game_over(node):  # TODO: implement this
     # check for checkmate, stalemate, or insufficient material
+    board = chess.Board(node.position_fen)
+    if board.is_checkmate() or board.is_stalemate() or board.is_insufficient_material():
+        return True
     return False  # placeholder, always returns False
 
 
