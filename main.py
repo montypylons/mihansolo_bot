@@ -21,7 +21,45 @@ def evaluate(node: chess.Board, White=True):
 
 def search(fen):  # TODO: add function to get all legal moves a
     # TODO: and search for the best one using a alpha/beta pruned minimax tree
-    pass
+    board = chess.Board(fen)
+    legalmoves = list(board.legal_moves)  # Converts the generator to a list of legal moves
+    for move in legalmoves:
+        board.push(move)
+        child_node = Node(board.copy(), [])
+        def build_tree(board, depth, computer_turn):
+            if depth == 0 or board.is_game_over():
+                return Node(board.copy(), [])
+            children = []
+            for submove in list(board.legal_moves):
+                board.push(submove)
+                children.append(build_tree(board, depth - 1, board.turn))
+                board.pop()
+            return Node(board.copy(), children)
+
+        # Replace the $SELECTION_PLACEHOLDER$ code in search() with:
+        computer_color = board.turn  # computer’s turn flag from the current board
+        # Initialize best_value according to the computer's color.
+        best_value = float("-inf") if computer_color == chess.WHITE else float("inf")
+        best_move = None
+
+        # Added parameter "search_depth" for the desired depth – adjust as needed.
+        search_depth = 3
+
+        for move in legalmoves:
+            board.push(move)
+            # Build a tree of positions from the current move to the given depth.
+            subtree = build_tree(board, search_depth - 1, board.turn)
+            # Evaluate the move using the minimax with alpha-beta pruning.
+            value = minimax(float("-inf"), float("inf"), search_depth - 1, subtree, computer_color == chess.WHITE)
+            board.pop()
+            if computer_color == chess.WHITE:
+                if value > best_value:
+                    best_value = value
+                    best_move = move
+            else:
+                if value < best_value:
+                    best_value = value
+                    best_move = move
 
 
 # minimax algos
@@ -70,18 +108,19 @@ def main():
     if white.lower() == "y":
         white = True
         while not board.is_game_over():
-            board.push_san(input("What is your move - dont include # or + symbol"))
-            board.push_san(search(board.fen()))
+            board.push(board.parse_san(input("What is your move - dont include # or + symbol")))
+            board.push(search(board.fen()))
         print("Game over, GG WP")
     elif white.lower() == "n":
         white = False
         while not board.is_game_over():
-            board.push_san(search(board.fen()))
-            board.push_san(input("What is your move - dont include # or + symbol"))
+            board.push(search(board.fen()))
+            board.push(board.parse_san(input("What is your move - dont include # or + symbol")))
         print("Game over, GG WP")
     else:
         print("enter a y or n")
 
 
+main()
 # TODO: make it work
 # TODO: learn basic chess heuristics
