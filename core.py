@@ -18,21 +18,6 @@ def evaluate(board, White=True):
             value = float("-inf")
     return value
 
-
-""" def build_tree(last_move, board, depth=3):
-    if depth == 0 or board.is_game_over():
-        return Node(fen, [], last_move)
-
-    children = []
-    for move in board.legal_moves:
-        board.push(move)
-        child_node = build_tree(move, board.fen(), depth - 1)
-        children.append(child_node)
-        board.pop()
-
-    return Node(fen, children, last_move)
- """
-
 def search(board):  # TODO: add function to get all legal moves
     fen = board.fen()
     best_move = None
@@ -48,49 +33,47 @@ def search(board):  # TODO: add function to get all legal moves
 
 
 # minimax algos
-class Node:
-    def __init__(self, position_fen, children, last_move):
-        self.position_fen = position_fen
-        self.children = children
-        self.last_move = last_move
-
-
-def game_over(node):  # TODO: implement this
+def game_over(board):  # TODO: implement this
     # check for checkmate, stalemate, or insufficient material
-    board = chess.Board(node.position_fen)
     if board.is_checkmate() or board.is_stalemate() or board.is_insufficient_material():
         return True
     return False  # placeholder, always returns False
 
 
 # default is that you are the maximizing player
-def minimax(alpha, beta, depth, node, maximizing_player=True):
+def minimax(alpha, beta, last_move, depth, board, maximizing_player=True):
     best_move = None
-    if depth == 0 or game_over(node):
-        return evaluate(node), node.last_move
+    if depth == 0 or game_over(board):
+        return evaluate(board), last_move
     if maximizing_player:
         max_eval = float("-inf")
-        for child in node.children:
-            result = minimax(alpha, beta, depth - 1, child, False)
-            eval = result[1] if isinstance(result[1], int) else result[0]
+        for move in board.legal_moves:
+            board.push(move)
+            eval, _  = minimax(alpha, beta,move, depth - 1, board, False)
+            board.pop()
+            if eval > max_eval:
+                best_move = move
             max_eval = max(max_eval, eval)
-            best_move = child.last_move
             alpha = max(alpha, eval)
             if beta <= alpha:
                 break
-        return best_move, max_eval
+        return max_eval, best_move
 
     else:
         min_eval = float("inf")
-        for child in node.children:
-            result = minimax(alpha, beta, depth - 1, child, True)
+        for move in board.legal_moves:
+            board.push(move)
+            result = minimax(alpha, beta, move, depth - 1, board, True)
+            board.pop()
             eval = result[1] if isinstance(result[1], int) else result[0]
+            if eval < min_eval:
+                best_move = move
             min_eval = min(min_eval, eval)
             beta = min(beta, eval)
-            best_move = child.last_move
+            
             if beta <= alpha:
                 break
-        return best_move, min_eval
+        return min_eval, best_move
 
 
 """ def main():
