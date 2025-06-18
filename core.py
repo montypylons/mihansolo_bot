@@ -50,8 +50,9 @@ def evaluate(board, White=True):
 
 
 def search(board):  # TODO: add function to get all legal moves
-    if book_move(board):
-        return book_move(board)
+    _book_move = book_move(board)
+    if _book_move:
+        return PlayResult(_book_move)
     depth = 5
     _, best_move = minimax(float("-inf"), float("inf"), None, depth, board, board.turn)
 
