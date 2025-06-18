@@ -55,7 +55,7 @@ def search(board):  # TODO: add quiescence search and iterative deepening
     _book_move = book_move(board)
     if _book_move:
         return PlayResult(_book_move, None)
-    depth = 6
+    depth = 5
     _, best_move = minimax(float("-inf"), float("inf"), None, depth, board, board.turn)
 
     if best_move:
