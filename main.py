@@ -3,18 +3,19 @@ import chess
 # chess functions
 
 
-def evaluate(node: chess.Board, White=True):
+def evaluate(node, White=True):
     """Naive evaluation function which only takes into mind the
     material on the board and whether or not it is checkmate."""
     # TODO: add more heuristics to the evaluation
+    board = chess.Board(node.position_fen)
     value = 0
     if White == True:
-        value = value + len(node.pieces(chess.PAWN, chess.WHITE))
-        value = value + len(node.pieces(chess.KNIGHT, chess.WHITE)) * 3
-        value = value + len(node.pieces(chess.BISHOP, chess.WHITE)) * 3
-        value = value + len(node.pieces(chess.ROOK, chess.WHITE)) * 5
-        value = value + len(node.pieces(chess.QUEEN, chess.WHITE)) * 9
-        if node.is_checkmate():
+        value = value + len(board.pieces(chess.PAWN, chess.WHITE))
+        value = value + len(board.pieces(chess.KNIGHT, chess.WHITE)) * 3
+        value = value + len(board.pieces(chess.BISHOP, chess.WHITE)) * 3
+        value = value + len(board.pieces(chess.ROOK, chess.WHITE)) * 5
+        value = value + len(board.pieces(chess.QUEEN, chess.WHITE)) * 9
+        if board.is_checkmate():
             value = float("-inf")
     return value
 
@@ -46,7 +47,7 @@ def search(fen):  # TODO: add function to get all legal moves a
 # minimax algos
 class Node:
     def __init__(self, position_fen, children):
-        self.value = evaluate(chess.Board(position_fen))
+        self.position_fen = position_fen
         self.children = children
 
 
@@ -61,7 +62,7 @@ def game_over(node):  # TODO: implement this
 # default is that you are the maximizing player
 def minimax(alpha, beta, depth, node, maximizing_player=True):
     if depth == 0 or game_over(node):
-        return evaluate(node)
+        return evaluate(chess.Board(node.position_fen))
     if maximizing_player:
         max_eval = float("-inf")
         for child in node.children:
