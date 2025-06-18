@@ -25,15 +25,16 @@ def build_tree(last_move, fen, depth=3):
     board = chess.Board(fen)
     if depth == 0 or board.is_game_over():
         return Node(fen, [], last_move)
-    
+
     children = []
     for move in board.legal_moves:
         board.push(move)
         child_node = build_tree(move, board.fen(), depth - 1)
         children.append(child_node)
         board.pop()
-    
+
     return Node(fen, children, last_move)
+
 
 def search(fen):  # TODO: add function to get all legal moves a
     # TODO: and search for the best one using a alpha/beta pruned minimax tree
@@ -46,8 +47,6 @@ def search(fen):  # TODO: add function to get all legal moves a
         return best_move
     else:
         raise TypeError("Minimax returned a None value, which is not expected.")
-
-
 
 
 # minimax algos
@@ -71,10 +70,14 @@ def minimax(alpha, beta, depth, node, maximizing_player=True):
     if maximizing_player:
         max_eval = float("-inf")
         for child in node.children:
-            eval = minimax(alpha, beta, depth - 1, child, False)
-            max_eval = max(max_eval, eval[0])
+            eval = (
+                minimax(alpha, beta, depth - 1, child, False)[1]
+                if isinstance(minimax(alpha, beta, depth - 1, child, False)[1], int)
+                else minimax(alpha, beta, depth - 1, child, False)[0]
+            )
+            max_eval = max(max_eval, eval[1])
             best_move = child.last_move
-            alpha = max(alpha, eval[0])
+            alpha = max(alpha, eval[1])
             if beta <= alpha:
                 break
         return best_move, max_eval
@@ -83,8 +86,8 @@ def minimax(alpha, beta, depth, node, maximizing_player=True):
         min_eval = float("inf")
         for child in node.children:
             eval = minimax(alpha, beta, depth - 1, child, True)
-            min_eval = min(min_eval, eval[0])
-            beta = min(beta, eval[0])
+            min_eval = min(min_eval, eval[1])
+            beta = min(beta, eval[1])
             best_move = child.last_move
             if beta <= alpha:
                 break
@@ -97,14 +100,18 @@ def main():
     if white.lower() == "y":
         white = True
         while not board.is_game_over():
-            board.push(board.parse_san(input("What is your move - dont include # or + symbol")))
+            board.push(
+                board.parse_san(input("What is your move - dont include # or + symbol"))
+            )
             board.push(search(board.fen()))
         print("Game over, GG WP")
     elif white.lower() == "n":
         white = False
         while not board.is_game_over():
             board.push(search(board.fen()))
-            board.push(board.parse_san(input("What is your move - dont include # or + symbol")))
+            board.push(
+                board.parse_san(input("What is your move - dont include # or + symbol"))
+            )
         print("Game over, GG WP")
     else:
         print("enter a y or n")
