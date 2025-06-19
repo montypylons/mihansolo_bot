@@ -17,7 +17,7 @@ def is_quiescent(board: chess.Board) -> bool:
 def quiescence_search(board: chess.Board, alpha: float, beta: float, depth: int):
     best_move= None
     if is_quiescent(board) or depth == 0 or board.is_game_over():
-        return evaluate(board, White=board.turn)
+        return evaluate(board)
     else:
         max_eval = float("-inf")
         for move in board.legal_moves:
@@ -44,14 +44,16 @@ def book_move(board: chess.Board) -> chess.Move | None:
         return None  # did not work, book doesn't have move for that position
 
 
-def evaluate(board, White=True):  # TODO add hanging piece penalty
+def evaluate(board):  # TODO add hanging piece penalty
     # TODO: add more heuristics to the evaluation
     value = 0
+    White = True
     if board.is_checkmate():
         if board.turn:
             return -999999
         else:
             return 999999
+        
     if board.is_stalemate() or board.is_insufficient_material() or board.is_repetition():
         return 0
 
@@ -67,7 +69,7 @@ def evaluate(board, White=True):  # TODO add hanging piece penalty
         value = value - len(board.pieces(chess.BISHOP, chess.BLACK)) * 3
         value = value - len(board.pieces(chess.ROOK, chess.BLACK)) * 5
         value = value - len(board.pieces(chess.QUEEN, chess.BLACK)) * 9
-    else:
+    '''else:
         value = value - len(board.pieces(chess.PAWN, chess.WHITE))
         value = value - len(board.pieces(chess.KNIGHT, chess.WHITE)) * 3
         value = value - len(board.pieces(chess.BISHOP, chess.WHITE)) * 3
@@ -80,7 +82,7 @@ def evaluate(board, White=True):  # TODO add hanging piece penalty
         value = value + len(board.pieces(chess.ROOK, chess.BLACK)) * 5
         value = value + len(board.pieces(chess.QUEEN, chess.BLACK)) * 9
 
-    return value
+    return value'''
 
 
 def search(board):  # TODO: add quiescence search and iterative deepening
