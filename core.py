@@ -18,8 +18,18 @@ def quinescent_search(board: chess.Board, alpha: float, beta: float, depth: int)
     if (not is_quiescent(board)) or depth == 0 or board.is_game_over():
         return evaluate(board, White=board.turn)
     else:
+        max_eval = float("-inf")
         for move in board.legal_moves:
-            pass
+            board.push(move)
+            eval, _ = -quinescent_search(board, -beta, -alpha, depth - 1)
+            board.pop()
+            if eval > max_eval:
+                max_eval = eval
+                best_move = move
+            alpha = max(alpha, eval)
+            if beta <= alpha:
+                break
+        return max_eval, best_move
 
 
 # chess functions
