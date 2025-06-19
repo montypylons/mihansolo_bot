@@ -7,21 +7,23 @@ import random
 def is_quiescent(board: chess.Board) -> bool:
 
     if any(board.generate_legal_captures()):
-        return True
+        return False
     if any(board.generate_legal_checks()):
-        return True
+        return False
 
-    return False
+    return True
 
 
-def quinescent_search(board: chess.Board, alpha: float, beta: float, depth: int):
-    if (not is_quiescent(board)) or depth == 0 or board.is_game_over():
+def quiescence_search(board: chess.Board, alpha: float, beta: float, depth: int):
+    best_move= None
+    if is_quiescent(board) or depth == 0 or board.is_game_over():
         return evaluate(board, White=board.turn)
     else:
         max_eval = float("-inf")
         for move in board.legal_moves:
             board.push(move)
-            eval, _ = -quinescent_search(board, -beta, -alpha, depth - 1)
+            eval, _ = quiescence_search(board, -beta, -alpha, depth - 1)
+            eval = -eval # Negamax algo, same as minimax just simpler to implement
             board.pop()
             if eval > max_eval:
                 max_eval = eval
@@ -50,7 +52,7 @@ def evaluate(board, White=True):  # TODO add hanging piece penalty
             return -999999
         else:
             return 999999
-    if board.is_stalemate() or board.is_insufficient_material() or board.repitition():
+    if board.is_stalemate() or board.is_insufficient_material() or board.is_repetition():
         return 0
 
     if White == True:
@@ -107,7 +109,7 @@ def game_over(board):  # TODO: implement this
 def minimax(alpha, beta, last_move, depth, board, maximizing_player=True):
     best_move = None
     if depth == 0 or game_over(board):
-        return evaluate(board, White=board.turn), last_move
+        return quiescence_search(board, alpha, beta, 5)[0], last_move
     if maximizing_player:
         max_eval = float("-inf")
         for move in board.legal_moves:
