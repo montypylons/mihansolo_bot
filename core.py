@@ -144,5 +144,9 @@ def minimax(alpha, beta, last_move, depth, board, maximizing_player=True):
         return min_eval, best_move
 
 
+def test():
+    board = chess.Board()
+    return search(board)
+test()
 # TODO: learn basic chess heuristics
 # TODO: add NNUE eval function
