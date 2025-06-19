@@ -3,6 +3,8 @@ from chess.engine import PlayResult
 import chess.polyglot
 import random
 
+def order_moves(moves: list) -> list: # makes alpha/beta search more effective
+    pass
 
 def is_quiescent(board: chess.Board) -> bool:
 
@@ -14,15 +16,15 @@ def is_quiescent(board: chess.Board) -> bool:
     return True
 
 
-def quiescence_search(board: chess.Board, alpha: float, beta: float, depth: int):
+def quiescence_search(board: chess.Board, alpha: float, beta: float):
     best_move= None
-    if is_quiescent(board) or depth == 0 or board.is_game_over():
+    if is_quiescent(board) or board.is_game_over():
         return evaluate(board), best_move
     else:
         max_eval = float("-inf")
         for move in board.legal_moves:
             board.push(move)
-            eval, _ = quiescence_search(board, -beta, -alpha, depth - 1)
+            eval, _ = quiescence_search(board, -beta, -alpha)
             eval = -eval # Negamax algo, same as minimax just simpler to implement
             board.pop()
             if eval > max_eval:
@@ -112,7 +114,7 @@ def game_over(board):  # TODO: implement this
 def minimax(alpha, beta, last_move, depth, board, maximizing_player=True):
     best_move = None
     if depth == 0 or game_over(board):
-        return quiescence_search(board, alpha, beta, 5)[0], last_move
+        return quiescence_search(board, alpha, beta)[0], last_move
     if maximizing_player:
         max_eval = float("-inf")
         for move in board.legal_moves:
