@@ -23,17 +23,18 @@ def quiescence_search(board: chess.Board, alpha: float, beta: float):
     else:
         max_eval = float("-inf")
         for move in board.legal_moves:
-            board.push(move)
-            eval, _ = quiescence_search(board, -beta, -alpha)
-            eval = -eval # Negamax algo, same as minimax just simpler to implement
-            board.pop()
-            if eval > max_eval:
-                max_eval = eval
-                best_move = move
-            alpha = max(alpha, eval)
-            if beta <= alpha:
-                break
-        return max_eval, best_move
+            if board.is_capture(move) or board.gives_check(move):
+                board.push(move)
+                eval, _ = quiescence_search(board, -beta, -alpha)
+                eval = -eval # Negamax algo, same as minimax just simpler to implement
+                board.pop()
+                if eval > max_eval:
+                    max_eval = eval
+                    best_move = move
+                alpha = max(alpha, eval)
+                if beta <= alpha:
+                    break
+            return max_eval, best_move
 
 
 # chess functions
