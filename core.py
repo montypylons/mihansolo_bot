@@ -69,6 +69,7 @@ def evaluate(board):  # TODO add hanging piece penalty
         value = value - len(board.pieces(chess.BISHOP, chess.BLACK)) * 3
         value = value - len(board.pieces(chess.ROOK, chess.BLACK)) * 5
         value = value - len(board.pieces(chess.QUEEN, chess.BLACK)) * 9
+        return value
     '''else:
         value = value - len(board.pieces(chess.PAWN, chess.WHITE))
         value = value - len(board.pieces(chess.KNIGHT, chess.WHITE)) * 3
@@ -144,14 +145,13 @@ def minimax(alpha, beta, last_move, depth, board, maximizing_player=True):
         return min_eval, best_move
 
 
-def test():
+'''def test():
     board = chess.Board()
     for i in range(15):
         result = search(board)
         if result:
             board.push(result.move)
             print(f"Best move: {result.move}")
-        print(board)
-test()
+        print(board) '''
 # TODO: learn basic chess heuristics
 # TODO: add NNUE eval function
