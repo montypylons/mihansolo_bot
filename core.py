@@ -3,33 +3,37 @@ from chess.engine import PlayResult
 import chess.polyglot
 import random
 
-def order_moves(moves: list) -> list: # makes alpha/beta search more effective
+
+def order_moves(moves: list) -> list:  # makes alpha/beta search more effective
     pass
+
 
 def is_quiescent(board: chess.Board) -> bool:
 
     if any(board.is_capture(move) for move in board.legal_moves):
         return False
     # if any(board.gives_check(move) for move in board.legal_moves):
-        # return False
+    # return False
 
     return True
 
 
-def quiescence_search(board: chess.Board, alpha: float, beta: float, qdepth=8): # TODO: need to add standing pat evaluation in order to stop the search from going on the the current 1 mil+ positions on the first move.
+def quiescence_search(
+    board: chess.Board, alpha: float, beta: float, qdepth=8
+):  # TODO: need to add standing pat evaluation in order to stop the search from going on the the current 1 mil+ positions on the first move.
     print(f"QS depth: {qdepth}, fen: {board.fen()}")
-    best_move= None
+    best_move = None
     non_quiescent = False
     if is_quiescent(board) or board.is_game_over() or qdepth == 0:
         return evaluate(board), best_move
     else:
         max_eval = float("-inf")
         for move in board.legal_moves:
-            if board.is_capture(move): # or board.gives_check(move):
+            if board.is_capture(move):  # or board.gives_check(move):
                 non_quiescent = True
                 board.push(move)
-                eval, _ = quiescence_search(board, -beta, -alpha, qdepth-1)
-                eval = -eval # Negamax algo, same as minimax just simpler to implement
+                eval, _ = quiescence_search(board, -beta, -alpha, qdepth - 1)
+                eval = -eval  # Negamax algo, same as minimax just simpler to implement
                 board.pop()
                 if eval > max_eval:
                     max_eval = eval
@@ -61,8 +65,12 @@ def evaluate(board):  # TODO add hanging piece penalty
             return -999999
         else:
             return 999999
-        
-    if board.is_stalemate() or board.is_insufficient_material() or board.is_repetition():
+
+    if (
+        board.is_stalemate()
+        or board.is_insufficient_material()
+        or board.is_repetition()
+    ):
         return 0
 
     if White == True:
@@ -78,7 +86,7 @@ def evaluate(board):  # TODO add hanging piece penalty
         value = value - len(board.pieces(chess.ROOK, chess.BLACK)) * 5
         value = value - len(board.pieces(chess.QUEEN, chess.BLACK)) * 9
         return value
-    '''else:
+    """else:
         value = value - len(board.pieces(chess.PAWN, chess.WHITE))
         value = value - len(board.pieces(chess.KNIGHT, chess.WHITE)) * 3
         value = value - len(board.pieces(chess.BISHOP, chess.WHITE)) * 3
@@ -91,7 +99,7 @@ def evaluate(board):  # TODO add hanging piece penalty
         value = value + len(board.pieces(chess.ROOK, chess.BLACK)) * 5
         value = value + len(board.pieces(chess.QUEEN, chess.BLACK)) * 9
 
-    return value'''
+    return value"""
 
 
 def search(board):  # TODO: add quiescence search and iterative deepening
@@ -160,8 +168,10 @@ def test():
         result = search(board)
         if result:
             board.push(result.move)
-            print(f"Best move: {result.move}", "move number", i+1)
-        print(board) 
+            print(f"Best move: {result.move}", "move number", i + 1)
+        print(board)
+
+
 test()
 # TODO: learn basic chess heuristics
 # TODO: add NNUE eval function
