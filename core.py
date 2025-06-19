@@ -19,7 +19,8 @@ def quinescent_search(board: chess.Board, alpha: float, beta: float, depth: int)
         return evaluate(board, White=board.turn)
     else:
         for move in board.legal_moves:
-           pass
+            pass
+
 
 # chess functions
 def book_move(board: chess.Board) -> chess.Move | None:
@@ -40,7 +41,7 @@ def evaluate(board, White=True):  # TODO add hanging piece penalty
         else:
             return 999999
     if board.is_stalemate() or board.is_insufficient_material() or board.repitition():
-        return  0
+        return 0
 
     if White == True:
         value = value + len(board.pieces(chess.PAWN, chess.WHITE))
