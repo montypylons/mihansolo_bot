@@ -17,7 +17,7 @@ def is_quiescent(board: chess.Board) -> bool:
 def quiescence_search(board: chess.Board, alpha: float, beta: float, depth: int):
     best_move= None
     if is_quiescent(board) or depth == 0 or board.is_game_over():
-        return evaluate(board)
+        return evaluate(board), best_move
     else:
         max_eval = float("-inf")
         for move in board.legal_moves:
@@ -146,7 +146,12 @@ def minimax(alpha, beta, last_move, depth, board, maximizing_player=True):
 
 def test():
     board = chess.Board()
-    return search(board)
+    for i in range(15):
+        result = search(board)
+        if result:
+            board.push(result.move)
+            print(f"Best move: {result.move}")
+        print(board)
 test()
 # TODO: learn basic chess heuristics
 # TODO: add NNUE eval function
