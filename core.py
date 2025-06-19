@@ -6,9 +6,9 @@ import random
 
 def is_quiescent(board: chess.Board) -> bool:
 
-    if any(board.generate_legal_captures()):
+    if any(board.is_capture(move) for move in board.legal_moves):
         return False
-    if any(board.generate_legal_checks()):
+    if any(board.is_check(move) for move in board.legal_moves):
         return False
 
     return True
