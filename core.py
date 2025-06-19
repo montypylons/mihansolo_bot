@@ -10,22 +10,25 @@ def is_quiescent(board: chess.Board) -> bool:
 
     if any(board.is_capture(move) for move in board.legal_moves):
         return False
-    if any(board.gives_check(move) for move in board.legal_moves):
-        return False
+    # if any(board.gives_check(move) for move in board.legal_moves):
+        # return False
 
     return True
 
 
-def quiescence_search(board: chess.Board, alpha: float, beta: float):
+def quiescence_search(board: chess.Board, alpha: float, beta: float, qdepth=8): # TODO: need to add standing pat evaluation in order to stop the search from going on the the current 1 mil+ positions on the first move.
+    print(f"QS depth: {qdepth}, fen: {board.fen()}")
     best_move= None
-    if is_quiescent(board) or board.is_game_over():
+    non_quiescent = False
+    if is_quiescent(board) or board.is_game_over() or qdepth == 0:
         return evaluate(board), best_move
     else:
         max_eval = float("-inf")
         for move in board.legal_moves:
-            if board.is_capture(move) or board.gives_check(move):
+            if board.is_capture(move): # or board.gives_check(move):
+                non_quiescent = True
                 board.push(move)
-                eval, _ = quiescence_search(board, -beta, -alpha)
+                eval, _ = quiescence_search(board, -beta, -alpha, qdepth-1)
                 eval = -eval # Negamax algo, same as minimax just simpler to implement
                 board.pop()
                 if eval > max_eval:
@@ -34,7 +37,9 @@ def quiescence_search(board: chess.Board, alpha: float, beta: float):
                 alpha = max(alpha, eval)
                 if beta <= alpha:
                     break
-            return max_eval, best_move
+        if not non_quiescent:
+            return evaluate(board), None
+        return max_eval, best_move
 
 
 # chess functions
@@ -92,6 +97,7 @@ def evaluate(board):  # TODO add hanging piece penalty
 def search(board):  # TODO: add quiescence search and iterative deepening
     _book_move = book_move(board)
     if _book_move:
+        print(f"Book move: {_book_move}")
         return PlayResult(_book_move, None)
     depth = 5
     _, best_move = minimax(float("-inf"), float("inf"), None, depth, board, board.turn)
@@ -148,13 +154,14 @@ def minimax(alpha, beta, last_move, depth, board, maximizing_player=True):
         return min_eval, best_move
 
 
-'''def test():
+def test():
     board = chess.Board()
-    for i in range(15):
+    for i in range(10):
         result = search(board)
         if result:
             board.push(result.move)
-            print(f"Best move: {result.move}")
-        print(board) '''
+            print(f"Best move: {result.move}", "move number", i+1)
+        print(board) 
+test()
 # TODO: learn basic chess heuristics
 # TODO: add NNUE eval function
