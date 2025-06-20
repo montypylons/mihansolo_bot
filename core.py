@@ -13,9 +13,14 @@ queen_value_map = {}
 # TODO: add standing pat eval
 # TODO: add logging
 # TODO: MVV_LAA ordering
-# TODO: refactor loops
 # TODO: reduce scope of variables by putting inside else clause
-# TODO: add unit tests.
+# TODO: add unit tests
+# TODO: fill in the piece value maps with {square: value} pairs
+# TODO: add penalty for undeveloping pieces, less than 1 point
+# TODO: Add iterative deepening
+
+
+
 
 
 def order_moves(moves: list) -> list:
@@ -34,7 +39,7 @@ def quiescence_search(  # not using right now, fixing core functions first
     board: chess.Board, alpha: float, beta: float, qdepth: int = 8
 ) -> (
     int
-):  # TODO: need to add standing pat evaluation in order to stop the search from going on the the current 1 mil+ positions on the first move.
+):
     print(f"QS depth: {qdepth}, fen: {board.fen()}")
     best_move = None
     non_quiescent = False
@@ -100,7 +105,6 @@ def evaluate(board: chess.Board) -> int:
     value = value - len(board.pieces(chess.ROOK, chess.BLACK)) * 5
     value = value - len(board.pieces(chess.QUEEN, chess.BLACK)) * 9
         # These show the material imbalance of how many more points of white material there is
-    # TODO: add penalty for undeveloping pieces, less than 1 point
     # since winning material is usually better than development except in the opening.
 
 
@@ -109,7 +113,7 @@ def evaluate(board: chess.Board) -> int:
     )  # should always return from the POV of side to move
 
 
-def search(board: chess.Board):  # TODO: add quiescence search and iterative deepening
+def search(board: chess.Board):  
     book_move = find_book_move(board)
     if book_move:
         print(f"Book move: {book_move}")
