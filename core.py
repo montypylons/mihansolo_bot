@@ -3,6 +3,14 @@ from chess.engine import PlayResult
 import chess.polyglot
 import random
 
+# todo list
+# TODO: add standing pat eval
+# TODO: MVV_LAA ordering
+# TODO: refactor loops
+# TODO: use quiet instead of quiescent
+# TODO: reduce scope of variables by putting inside else clause
+# TODO: add Negamax instead of minimax
+# TODO: add unit tests.
 
 def order_moves(moves: list) -> list:  # makes alpha/beta search more effective
     pass
@@ -56,8 +64,7 @@ def book_move(board: chess.Board) -> chess.Move | None:
         return None  # did not work, book doesn't have move for that position
 
 
-def evaluate(board):  # TODO add hanging piece penalty
-    # TODO: add more heuristics to the evaluation
+def evaluate(board):  
     value = 0
     White = True
     if board.is_checkmate():
