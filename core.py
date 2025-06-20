@@ -3,12 +3,6 @@ from chess.engine import PlayResult
 import chess.polyglot
 import random
 
-knight_value_map = {}
-rook_value_map = {}
-bishop_value_map = {}
-pawn_value_map = {}
-king_value_map = {}
-queen_value_map = {}
 
 # TODO: add standing pat eval
 # TODO: add logging
@@ -18,6 +12,7 @@ queen_value_map = {}
 # TODO: fill in the piece value maps with {square: value} pairs
 # TODO: add penalty for undeveloping pieces, less than 1 point
 # TODO: Add iterative deepening
+# TODO: add NNUE eval
 
 
 def order_moves(moves: list) -> list:
