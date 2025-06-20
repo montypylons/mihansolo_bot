@@ -56,10 +56,11 @@ def quiescence_search(  # not using right now, fixing core functions first
 # chess functions
 def find_book_move(board: chess.Board) -> chess.Move | None:
     try:
-        with chess.polyglot.open_reader("baron30.bin") as reader:
-            result = reader.find(board)
+        with chess.polyglot.open_reader("gm2600.bin") as reader:
+            result = random.choice(list(reader.find_all(board))).move
             if result:
-                return random.choice(list(result)).move
+                print(f"Found book move: {result}")
+                return result
     except Exception as e:
         return None  # did not work, book doesn't have move for that position
 
@@ -91,7 +92,11 @@ def evaluate(board: chess.Board) -> int:
     value = value - len(board.pieces(chess.BISHOP, chess.BLACK)) * 3
     value = value - len(board.pieces(chess.ROOK, chess.BLACK)) * 5
     value = value - len(board.pieces(chess.QUEEN, chess.BLACK)) * 9
-    # These show the material imbalance of how many more points of white material there is
+        # These show the material imbalance of how many more points of white material there is
+
+
+    if (board.ply()/2) <= 20: # opening heuristics
+        pass
     return (
         value if board.turn else -value
     )  # should always return from the POV of side to move
