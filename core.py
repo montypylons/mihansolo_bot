@@ -31,27 +31,33 @@ def quiescence_search(  # not using right now, fixing core functions first
     board: chess.Board, alpha: float, beta: float, qdepth: int = 8
 ) -> int:
     print(f"QS depth: {qdepth}, fen: {board.fen()}")
-    best_move = None
-    non_quiescent = False
+    static_eval = evaluate(board)
+    if static_eval >= beta:
+        return static_eval
+    if static_eval > alpha:
+        alpha = static_eval
     if is_quiet(board) or board.is_game_over() or qdepth == 0:
-        return evaluate(board), best_move
+        return (
+            static_eval,
+            None,
+        )  # best_move at this point is none since search hasn't started yet
+
     else:
         best_eval = float("-inf")
+        best_move = None
+
         for move in board.legal_moves:
             if board.is_capture(move):  # or board.gives_check(move):
-                non_quiescent = True
                 board.push(move)
                 eval, _ = quiescence_search(board, -beta, -alpha, qdepth - 1)
                 eval = -eval  # Negamax algo, same as negamax(impler to implement
                 board.pop()
+                if eval >= beta:
+                    return eval
                 if eval > best_eval:
                     best_eval = eval
-                    best_move = move
-                alpha = max(alpha, eval)
-                if beta <= alpha:
-                    break
-        if not non_quiescent:
-            return evaluate(board), None
+                if eval > alpha:
+                    alpha = eval
         return best_eval, best_move
 
 
