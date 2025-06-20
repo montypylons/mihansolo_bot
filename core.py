@@ -3,6 +3,13 @@ from chess.engine import PlayResult
 import chess.polyglot
 import random
 
+knight_value_map = {}
+rook_value_map = {}
+bishop_value_map = {}
+pawn_value_map = {}
+king_value_map = {}
+queen_value_map = {}
+
 # TODO: add standing pat eval
 # TODO: add logging
 # TODO: MVV_LAA ordering
@@ -93,10 +100,10 @@ def evaluate(board: chess.Board) -> int:
     value = value - len(board.pieces(chess.ROOK, chess.BLACK)) * 5
     value = value - len(board.pieces(chess.QUEEN, chess.BLACK)) * 9
         # These show the material imbalance of how many more points of white material there is
+    # TODO: add penalty for undeveloping pieces, less than 1 point
+    # since winning material is usually better than development except in the opening.
 
 
-    if (board.ply()/2) <= 20: # opening heuristics
-        pass
     return (
         value if board.turn else -value
     )  # should always return from the POV of side to move
