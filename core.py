@@ -7,9 +7,7 @@ import random
 # TODO: add logging
 # TODO: MVV_LAA ordering
 # TODO: refactor loops
-# TODO: use quiet instead of quiescent
 # TODO: reduce scope of variables by putting inside else clause
-# TODO: add Negamax instead of minimax to reduce code complexity
 # TODO: add unit tests.
 
 
