@@ -14,3 +14,6 @@ def main():
         print("Black move: ", black_move)
         board.push(black_move.move)
     print("Game result: ", board.result())
+
+if __name__ == '__main__':
+    main()
