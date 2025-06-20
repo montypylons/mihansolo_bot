@@ -106,7 +106,7 @@ def search(board: chess.Board):  # TODO: add quiescence search and iterative dee
         return PlayResult(book_move, None)
     depth = 5
 
-    _, best_move = negamax("-inf", float("inf"), None, depth, board, board.turn)
+    _, best_move = negamax(float("-inf"), float("inf"), None, depth, board)
 
     if best_move:
         return PlayResult(best_move, None)
