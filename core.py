@@ -20,9 +20,6 @@ queen_value_map = {}
 # TODO: Add iterative deepening
 
 
-
-
-
 def order_moves(moves: list) -> list:
     pass
 
@@ -37,9 +34,7 @@ def is_quiet(board: chess.Board) -> bool:
 
 def quiescence_search(  # not using right now, fixing core functions first
     board: chess.Board, alpha: float, beta: float, qdepth: int = 8
-) -> (
-    int
-):
+) -> int:
     print(f"QS depth: {qdepth}, fen: {board.fen()}")
     best_move = None
     non_quiescent = False
@@ -104,16 +99,15 @@ def evaluate(board: chess.Board) -> int:
     value = value - len(board.pieces(chess.BISHOP, chess.BLACK)) * 3
     value = value - len(board.pieces(chess.ROOK, chess.BLACK)) * 5
     value = value - len(board.pieces(chess.QUEEN, chess.BLACK)) * 9
-        # These show the material imbalance of how many more points of white material there is
+    # These show the material imbalance of how many more points of white material there is
     # since winning material is usually better than development except in the opening.
-
 
     return (
         value if board.turn else -value
     )  # should always return from the POV of side to move
 
 
-def search(board: chess.Board):  
+def search(board: chess.Board):
     book_move = find_book_move(board)
     if book_move:
         print(f"Book move: {book_move}")
