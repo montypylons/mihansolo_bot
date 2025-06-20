@@ -56,7 +56,7 @@ def quiescence_search(  # not using right now, fixing core functions first
 # chess functions
 def find_book_move(board: chess.Board) -> chess.Move | None:
     try:
-        with chess.polyglot.open_reader("gm2600.bin") as reader:
+        with chess.polyglot.open_reader("baron30.bin") as reader:
             result = reader.find(board)
             if result:
                 return random.choice(list(result)).move
