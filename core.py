@@ -32,7 +32,7 @@ def quiescence_search(  # not using right now, fixing core functions first
 ) -> int:
     print(f"QS depth: {qdepth}, fen: {board.fen()}")
     static_eval = evaluate(board)
-    if static_eval >= beta:
+    if static_eval >= beta: # standing pat evaluation, new feature
         return static_eval
     if static_eval > alpha:
         alpha = static_eval
@@ -50,7 +50,7 @@ def quiescence_search(  # not using right now, fixing core functions first
             if board.is_capture(move):  # or board.gives_check(move):
                 board.push(move)
                 eval, _ = quiescence_search(board, -beta, -alpha, qdepth - 1)
-                eval = -eval  # Negamax algo, same as negamax(impler to implement
+                eval = -eval  # Negamax algo, same as minimax (impler to implement
                 board.pop()
                 if eval >= beta:
                     return eval
@@ -134,11 +134,12 @@ def negamax(
 ) -> tuple[float, chess.Move | None]:
 
     if depth == 0 or game_over(board):
-        # return quiescence_search(board, alpha, beta)[0], last_move
-        return evaluate(board), last_move
+        return quiescence_search(board, alpha, beta)[0], last_move
+        # return evaluate(board), last_move
 
     best_move = None
     best_eval = float("-inf")
+    
 
     for move in board.legal_moves:
         board.push(move)
