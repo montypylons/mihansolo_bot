@@ -50,10 +50,10 @@ class UCIEngine:
             result = self.search(self.board)
 
         if result.move:
-            print(f"bestmove {result.move.uci()}")
+            print(f"bestmove {result.move.uci()}", flush=True)
         else:
             print(
-                "bestmove 0000"
+                "bestmove 0000", flush=True
             )  # Indicates no legal moves (e.g., checkmate or stalemate)
 
     def handle_command(self, line: str):
@@ -63,11 +63,11 @@ class UCIEngine:
         command = tokens[0]
 
         if command == "uci":
-            print("id name MyEngine")
-            print("id author YourName")
-            print("uciok")
+            print("id name MyEngine",flush=True)
+            print("id author YourName", flush=True)
+            print("uciok", flush=True)
         elif command == "isready":
-            print("readyok")
+            print("readyok", flush=True)
         elif command == "ucinewgame":
             self.board.reset()
         elif command == "position":
