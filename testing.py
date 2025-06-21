@@ -8,10 +8,10 @@ def main():
     print("initializing match of engine vs engine, thanks for watching!")
     while not board.is_game_over():
         print("Current state of board: ", board)
-        white_move = search(board)
+        white_move = core2.search(board)
         print("White move: ", white_move.move)
         board.push(white_move.move)
-        black_move = search(board)
+        black_move = core2.search(board)
         print("Black move: ", black_move.move)
         board.push(black_move.move)
     print("Game result: ", board.result())

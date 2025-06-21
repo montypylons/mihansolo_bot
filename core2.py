@@ -130,10 +130,14 @@ def evaluate(board: chess.Board) -> int:
         return 0  # draw
     
     for square in chess.SQUARES:
+    
         piece = board.piece_at(square)
-        if (not piece == chess.Piece.from_symbol('K')) and piece:
+        if (not piece == chess.Piece.from_symbol('K')) and (not piece == chess.Piece.from_symbol('k')) and piece:
             if piece.color:
                 value += piece_map[piece][square]
+            else:
+                flipped_piece = chess.Piece(piece.piece_type, not piece.color)
+                value -= piece_map[flipped_piece][square]
     
 
     value = value + len(board.pieces(chess.PAWN, chess.WHITE))
