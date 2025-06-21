@@ -153,7 +153,7 @@ def search(board: chess.Board) -> PlayResult:
     if book_move:
         print(f"Book move: {book_move}")
         return PlayResult(book_move, None)
-    depth = 5
+    depth = 6
 
     _, best_move = negamax(float("-inf"), float("inf"), None, depth, board)
 
