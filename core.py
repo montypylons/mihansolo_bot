@@ -3,6 +3,8 @@ from chess.engine import PlayResult
 import chess.polyglot
 import random
 
+global counter 
+counter = 1
 
 # TODO: add standing pat eval
 # TODO: add logging
@@ -29,13 +31,18 @@ def is_quiet(board: chess.Board) -> bool:
 
 def quiescence_search(  # not using right now, fixing core functions first
     board: chess.Board, alpha: float, beta: float, qdepth: int = 8
-) -> int:
-    print(f"QS depth: {qdepth}, fen: {board.fen()}")
+) -> tuple[int, chess.Move]:
+    global counter
+    counter = counter + 1
+    print(f"QS depth: {qdepth}, fen: {board.fen()}","Search number: ", counter)
     static_eval = evaluate(board)
+
     if static_eval >= beta: # standing pat evaluation, new feature
-        return static_eval
+        return static_eval, None
+    
     if static_eval > alpha:
         alpha = static_eval
+        
     if is_quiet(board) or board.is_game_over() or qdepth == 0:
         return (
             static_eval,
@@ -53,9 +60,10 @@ def quiescence_search(  # not using right now, fixing core functions first
                 eval = -eval  # Negamax algo, same as minimax (impler to implement
                 board.pop()
                 if eval >= beta:
-                    return eval
+                    return eval, best_move
                 if eval > best_eval:
                     best_eval = eval
+                    best_move = move
                 if eval > alpha:
                     alpha = eval
         return best_eval, best_move
