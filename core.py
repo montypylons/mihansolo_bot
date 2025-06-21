@@ -195,6 +195,3 @@ def negamax(
         if beta <= alpha:
             break
     return best_eval, best_move
-
-
-
