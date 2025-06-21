@@ -1,4 +1,5 @@
 from core import search
+import core2
 import chess
 
 

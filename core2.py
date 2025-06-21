@@ -131,8 +131,9 @@ def evaluate(board: chess.Board) -> int:
     
     for square in chess.SQUARES:
         piece = board.piece_at(square)
-        if piece.color:
-            value += piece_map[piece][square]
+        if (not piece == chess.Piece.from_symbol('K')) and piece:
+            if piece.color:
+                value += piece_map[piece][square]
     
 
     value = value + len(board.pieces(chess.PAWN, chess.WHITE))
@@ -159,7 +160,7 @@ def search(board: chess.Board) -> PlayResult:
     if book_move:
         print(f"Book move: {book_move}")
         return PlayResult(book_move, None)
-    depth = 6
+    depth = 5
 
     _, best_move = negamax(float("-inf"), float("inf"), None, depth, board)
 
