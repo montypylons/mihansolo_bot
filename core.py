@@ -3,8 +3,17 @@ from chess.engine import PlayResult
 import chess.polyglot
 import random
 
-global counter 
+global counter
 counter = 1
+
+PIECE_VALUES = {
+    chess.PAWN: 1,
+    chess.KNIGHT: 3,
+    chess.BISHOP: 3,
+    chess.ROOK: 5,
+    chess.QUEEN: 9,
+    chess.KING: 0,
+}
 
 # TODO: add standing pat eval
 # TODO: add logging
@@ -17,8 +26,16 @@ counter = 1
 # TODO: add NNUE eval
 
 
-def order_moves(moves: list) -> list:
-    pass
+def mvv_laa(board: chess.Board, move: chess.Move) -> tuple[int, int, int]:
+
+    if board.is_capture(move):
+        if board.is_en_passant(move):
+            return (1, 1, -1)
+        victim_value = PIECE_VALUES[board.piece_type_at(move.to_square)]
+        attacker_value = PIECE_VALUES[board.piece_type_at(move.from_square)]
+        return (1, victim_value, -attacker_value)
+
+    return (0, 0, 0)
 
 
 def is_quiet(board: chess.Board) -> bool:
@@ -29,20 +46,28 @@ def is_quiet(board: chess.Board) -> bool:
     return True
 
 
-def quiescence_search(  # not using right now, fixing core functions first
-    board: chess.Board, alpha: float, beta: float, qdepth: int = 8
+def quiescence_search(
+    board: chess.Board, alpha: float, beta: float, qdepth: int = 4
 ) -> tuple[int, chess.Move]:
     global counter
     counter = counter + 1
-    print(f"QS depth: {qdepth}, fen: {board.fen()}","Search number: ", counter)
+    print(
+        f"QS depth: {qdepth}, fen: {board.fen()}",
+        "Search number: ",
+        counter,
+        "alpha: ",
+        alpha,
+        "beta: ",
+        beta,
+    )
     static_eval = evaluate(board)
 
-    if static_eval >= beta: # standing pat evaluation, new feature
+    if static_eval >= beta:  # standing pat evaluation, new feature
         return static_eval, None
-    
+
     if static_eval > alpha:
         alpha = static_eval
-        
+
     if is_quiet(board) or board.is_game_over() or qdepth == 0:
         return (
             static_eval,
@@ -54,19 +79,26 @@ def quiescence_search(  # not using right now, fixing core functions first
         best_move = None
 
         for move in board.legal_moves:
-            if board.is_capture(move):  # or board.gives_check(move):
+            if not board.is_capture(move):
+                continue
+            captured_piece_type = board.piece_type_at(move.to_square)
+            attacker_piece_type = board.piece_type_at(move.from_square)
+            if (
+                PIECE_VALUES[captured_piece_type] >= PIECE_VALUES[attacker_piece_type]
+            ):  # or board.gives_check(move):
                 board.push(move)
-                eval, _ = quiescence_search(board, -beta, -alpha, qdepth - 1)
-                eval = -eval  # Negamax algo, same as minimax (impler to implement
+                print("searching move: ", move, "in position: ", board)
+                score, _ = quiescence_search(board, -beta, -alpha, qdepth - 1)
+                score = -score  # Negamax algo, same as minimax (impler to implement
                 board.pop()
-                if eval >= beta:
-                    return eval, best_move
-                if eval > best_eval:
-                    best_eval = eval
+                if score >= beta:
+                    return score, move
+                if score > best_eval:
+                    best_eval = score
+                if score > alpha:
+                    alpha = score
                     best_move = move
-                if eval > alpha:
-                    alpha = eval
-        return best_eval, best_move
+    return best_eval, best_move
 
 
 # chess functions
@@ -86,9 +118,9 @@ def evaluate(board: chess.Board) -> int:
 
     if board.is_checkmate():
         if board.turn:
-            return -999999  # white gets mated
+            return -(10**3)  # white gets mated
         else:
-            return 999999  # black gets mated
+            return 10**3  # black gets mated
 
     if (
         board.is_stalemate()
@@ -116,7 +148,7 @@ def evaluate(board: chess.Board) -> int:
     )  # should always return from the POV of side to move
 
 
-def search(board: chess.Board):
+def search(board: chess.Board) -> PlayResult:
     book_move = find_book_move(board)
     if book_move:
         print(f"Book move: {book_move}")
@@ -147,9 +179,11 @@ def negamax(
 
     best_move = None
     best_eval = float("-inf")
-    
+    legal_moves = sorted(
+        list(board.legal_moves), key=lambda move: mvv_laa(board, move), reverse=True
+    )
 
-    for move in board.legal_moves:
+    for move in legal_moves:
         board.push(move)
         score, _ = negamax(-beta, -alpha, move, depth - 1, board)
         score = -score
@@ -163,5 +197,4 @@ def negamax(
     return best_eval, best_move
 
 
-def parse_uci():
-    pass  # add UCI support for SPRT testing later
+
