@@ -2,6 +2,7 @@ import chess
 from chess.engine import PlayResult
 import chess.polyglot
 import random
+from scratch import piece_map
 
 global counter
 counter = 1
@@ -15,7 +16,6 @@ PIECE_VALUES = {
     chess.KING: 0,
 }
 
-# TODO: add standing pat eval
 # TODO: add logging
 # TODO: MVV_LAA ordering
 # TODO: reduce scope of variables by putting inside else clause
@@ -128,6 +128,12 @@ def evaluate(board: chess.Board) -> int:
         or board.is_repetition()
     ):
         return 0  # draw
+    
+    for square in chess.SQUARES:
+        piece = board.piece_at(square)
+        if piece.color:
+            value += piece_map[piece][square]
+    
 
     value = value + len(board.pieces(chess.PAWN, chess.WHITE))
     value = value + len(board.pieces(chess.KNIGHT, chess.WHITE)) * 3
