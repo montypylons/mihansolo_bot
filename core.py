@@ -174,8 +174,8 @@ def negamax(
 ) -> tuple[float, chess.Move | None]:
 
     if depth == 0 or game_over(board):
-        return quiescence_search(board, alpha, beta)[0], last_move
-        # return evaluate(board), last_move
+        # return quiescence_search(board, alpha, beta)[0], last_move
+        return evaluate(board), last_move
 
     best_move = None
     best_eval = float("-inf")
