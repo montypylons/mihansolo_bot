@@ -172,17 +172,6 @@ def search(board: chess.Board) -> PlayResult:
         return PlayResult(book_move, None)
     depth = 5
 
-    # Debug: Print negamax score for each root move
-    print("Root move negamax search results:")
-    move_scores = []
-    for move in board.legal_moves:
-        board.push(move)
-        score, _ = negamax(float("-inf"), float("inf"), move, depth - 1, board)
-        score = -score  # Negamax: negate the score when returning up the tree
-        print(f"Move: {move}, Negamax Score: {score}")
-        move_scores.append((move, score))
-        board.pop()
-
     _, best_move = negamax(float("-inf"), float("inf"), None, depth, board)
 
     if best_move:
