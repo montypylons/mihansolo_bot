@@ -118,9 +118,9 @@ def evaluate(board: chess.Board) -> int:
 
     if board.is_checkmate():
         if board.turn:
-            return -(10000)  # white gets mated
+            return 10000  # white gets mated
         else:
-            return 10000  # black gets mated
+            return -10000  # black gets mated
 
     if (
         board.is_stalemate()

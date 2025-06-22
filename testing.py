@@ -17,7 +17,7 @@ def main():
     print("Game result: ", board.result())
 
 def test():
-    board = chess.Board("r7/8/1k6/8/8/8/6q1/1K5R b - - 0 1")
+    board = chess.Board("3R4/8/8/8/7q/1K6/8/1k6 w - - 0 1")
     return core2.search(board)
 
 if __name__ == "__main__":
