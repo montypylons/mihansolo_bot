@@ -1,4 +1,5 @@
 """Test lichess-bot."""
+
 import pytest
 import zipfile
 import requests
@@ -21,6 +22,7 @@ from lib.timer import Timer, to_seconds, seconds
 from typing import Optional
 from lib.engine_wrapper import test_suffix
 from lib.lichess_types import CONFIG_DICT_TYPE
+
 if "pytest" not in sys.modules:
     sys.exit(f"The script {os.path.basename(__file__)} should only be run by pytest.")
 from lib import lichess_bot
@@ -36,7 +38,11 @@ def download_sf() -> None:
     if os.path.exists(stockfish_path):
         return
 
-    windows_linux_mac = "windows" if platform == "win32" else ("macos" if platform == "darwin" else "ubuntu")
+    windows_linux_mac = (
+        "windows"
+        if platform == "win32"
+        else ("macos" if platform == "darwin" else "ubuntu")
+    )
     sf_base = f"stockfish-{windows_linux_mac}-x86-64-modern"
     archive_link = f"https://github.com/official-stockfish/Stockfish/releases/download/sf_16/{sf_base}.{archive_ext}"
 
@@ -66,8 +72,10 @@ def download_lc0() -> None:
     if os.path.exists("./TEMP/lc0.exe"):
         return
 
-    response = requests.get("https://github.com/LeelaChessZero/lc0/releases/download/v0.29.0/lc0-v0.29.0-windows-cpu-dnnl.zip",
-                            allow_redirects=True)
+    response = requests.get(
+        "https://github.com/LeelaChessZero/lc0/releases/download/v0.29.0/lc0-v0.29.0-windows-cpu-dnnl.zip",
+        allow_redirects=True,
+    )
     response.raise_for_status()
     with open("./TEMP/lc0_zip.zip", "wb") as file:
         file.write(response.content)
@@ -80,9 +88,14 @@ def download_arasan() -> None:
     if os.path.exists(f"./TEMP/arasan{file_extension}"):
         return
     if platform == "win32":
-        response = requests.get("https://arasanchess.org/arasan24.1.zip", allow_redirects=True)
+        response = requests.get(
+            "https://arasanchess.org/arasan24.1.zip", allow_redirects=True
+        )
     else:
-        response = requests.get("https://arasanchess.org/arasan-linux-binaries-24.2.2.tar.gz", allow_redirects=True)
+        response = requests.get(
+            "https://arasanchess.org/arasan-linux-binaries-24.2.2.tar.gz",
+            allow_redirects=True,
+        )
     response.raise_for_status()
     with open(f"./TEMP/arasan.{archive_ext}", "wb") as file:
         file.write(response.content)
@@ -92,7 +105,9 @@ def download_arasan() -> None:
     else:
         with tarfile.TarFile(f"./TEMP/arasan.{archive_ext}", "r") as archive_ref:
             archive_ref.extractall("./TEMP/", filter="data")
-    shutil.copyfile(f"./TEMP/arasanx-64{file_extension}", f"./TEMP/arasan{file_extension}")
+    shutil.copyfile(
+        f"./TEMP/arasanx-64{file_extension}", f"./TEMP/arasan{file_extension}"
+    )
     if platform != "win32":
         st = os.stat(f"./TEMP/arasan{file_extension}")
         os.chmod(f"./TEMP/arasan{file_extension}", st.st_mode | stat.S_IEXEC)
@@ -116,11 +131,15 @@ class TrivialEngine:
         """Do nothing."""
 
 
-def lichess_org_simulator(opponent_path: Optional[str],
-                          move_queue: Queue[Optional[chess.Move]],
-                          board_queue: Queue[chess.Board],
-                          clock_queue: Queue[tuple[datetime.timedelta, datetime.timedelta, datetime.timedelta]],
-                          results: Queue[bool]) -> None:
+def lichess_org_simulator(
+    opponent_path: Optional[str],
+    move_queue: Queue[Optional[chess.Move]],
+    board_queue: Queue[chess.Board],
+    clock_queue: Queue[
+        tuple[datetime.timedelta, datetime.timedelta, datetime.timedelta]
+    ],
+    results: Queue[bool],
+) -> None:
     """
     Run a mocked version of the lichess.org server to provide an opponent for a test. This opponent always plays white.
 
@@ -137,7 +156,11 @@ def lichess_org_simulator(opponent_path: Optional[str],
     wtime = start_time
     btime = start_time
 
-    engine = chess.engine.SimpleEngine.popen_uci(opponent_path) if opponent_path else TrivialEngine()
+    engine = (
+        chess.engine.SimpleEngine.popen_uci(opponent_path)
+        if opponent_path
+        else TrivialEngine()
+    )
 
     while not board.is_game_over():
         if board.turn == chess.WHITE:
@@ -145,11 +168,15 @@ def lichess_org_simulator(opponent_path: Optional[str],
                 move = engine.play(board, chess.engine.Limit(time=1))
             else:
                 move_timer = Timer()
-                move = engine.play(board,
-                                   chess.engine.Limit(white_clock=to_seconds(wtime - seconds(2.0)),
-                                                      white_inc=to_seconds(increment),
-                                                      black_clock=to_seconds(btime),
-                                                      black_inc=to_seconds(increment)))
+                move = engine.play(
+                    board,
+                    chess.engine.Limit(
+                        white_clock=to_seconds(wtime - seconds(2.0)),
+                        white_inc=to_seconds(increment),
+                        black_clock=to_seconds(btime),
+                        black_inc=to_seconds(increment),
+                    ),
+                )
                 wtime -= move_timer.time_since_reset()
                 wtime += increment
             engine_move = move.move
@@ -177,7 +204,11 @@ def lichess_org_simulator(opponent_path: Optional[str],
     results.put(outcome is not None and outcome.winner == chess.BLACK)
 
 
-def run_bot(raw_config: CONFIG_DICT_TYPE, logging_level: int, opponent_path: Optional[str] = None) -> bool:
+def run_bot(
+    raw_config: CONFIG_DICT_TYPE,
+    logging_level: int,
+    opponent_path: Optional[str] = None,
+) -> bool:
     """
     Start lichess-bot test with a mocked version of the lichess.org site.
 
@@ -190,7 +221,9 @@ def run_bot(raw_config: CONFIG_DICT_TYPE, logging_level: int, opponent_path: Opt
     logger.info(lichess_bot.intro())
     manager = Manager()
     board_queue: Queue[chess.Board] = manager.Queue()
-    clock_queue: Queue[tuple[datetime.timedelta, datetime.timedelta, datetime.timedelta]] = manager.Queue()
+    clock_queue: Queue[
+        tuple[datetime.timedelta, datetime.timedelta, datetime.timedelta]
+    ] = manager.Queue()
     move_queue: Queue[Optional[chess.Move]] = manager.Queue()
     li = test_bot.lichess.Lichess(move_queue, board_queue, clock_queue)
 
@@ -202,9 +235,20 @@ def run_bot(raw_config: CONFIG_DICT_TYPE, logging_level: int, opponent_path: Opt
     lichess_bot.disable_restart()
 
     results: Queue[bool] = manager.Queue()
-    thr = threading.Thread(target=lichess_org_simulator, args=[opponent_path, move_queue, board_queue, clock_queue, results])
+    thr = threading.Thread(
+        target=lichess_org_simulator,
+        args=[opponent_path, move_queue, board_queue, clock_queue, results],
+    )
     thr.start()
-    lichess_bot.start(li, user_profile, CONFIG, logging_level, testing_log_file_name, True, one_game=True)
+    lichess_bot.start(
+        li,
+        user_profile,
+        CONFIG,
+        logging_level,
+        testing_log_file_name,
+        True,
+        one_game=True,
+    )
 
     result = results.get()
     results.task_done()
@@ -238,8 +282,9 @@ def test_sf() -> None:
     win = run_bot(CONFIG, logging_level)
     logger.info("Finished Testing SF")
     assert win
-    assert os.path.isfile(os.path.join(CONFIG["pgn_directory"],
-                                       "bo vs b - zzzzzzzz.pgn"))
+    assert os.path.isfile(
+        os.path.join(CONFIG["pgn_directory"], "bo vs b - zzzzzzzz.pgn")
+    )
 
 
 @pytest.mark.timeout(180, method="thread")
@@ -266,8 +311,9 @@ def test_lc0() -> None:
     win = run_bot(CONFIG, logging_level)
     logger.info("Finished Testing LC0")
     assert win
-    assert os.path.isfile(os.path.join(CONFIG["pgn_directory"],
-                                       "bo vs b - zzzzzzzz.pgn"))
+    assert os.path.isfile(
+        os.path.join(CONFIG["pgn_directory"], "bo vs b - zzzzzzzz.pgn")
+    )
 
 
 @pytest.mark.timeout(150, method="thread")
@@ -293,8 +339,9 @@ def test_arasan() -> None:
     win = run_bot(CONFIG, logging_level)
     logger.info("Finished Testing Arasan")
     assert win
-    assert os.path.isfile(os.path.join(CONFIG["pgn_directory"],
-                                       "bo vs b - zzzzzzzz.pgn"))
+    assert os.path.isfile(
+        os.path.join(CONFIG["pgn_directory"], "bo vs b - zzzzzzzz.pgn")
+    )
 
 
 @pytest.mark.timeout(180, method="thread")
@@ -315,8 +362,9 @@ def test_homemade() -> None:
     win = run_bot(CONFIG, logging_level)
     logger.info("Finished Testing Homemade")
     assert win
-    assert os.path.isfile(os.path.join(CONFIG["pgn_directory"],
-                                       "bo vs b - zzzzzzzz.pgn"))
+    assert os.path.isfile(
+        os.path.join(CONFIG["pgn_directory"], "bo vs b - zzzzzzzz.pgn")
+    )
 
 
 @pytest.mark.timeout(60, method="thread")
@@ -348,5 +396,6 @@ def test_buggy_engine() -> None:
     win = run_bot(CONFIG, logging_level, engine_path(CONFIG))
     logger.info("Finished Testing buggy engine")
     assert win
-    assert os.path.isfile(os.path.join(CONFIG["pgn_directory"],
-                                       "bo vs b - zzzzzzzz.pgn"))
+    assert os.path.isfile(
+        os.path.join(CONFIG["pgn_directory"], "bo vs b - zzzzzzzz.pgn")
+    )

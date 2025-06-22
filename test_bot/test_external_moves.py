@@ -1,4 +1,5 @@
 """Test the functions that get the external moves."""
+
 import backoff
 import requests
 import yaml
@@ -8,7 +9,12 @@ import logging
 import chess.engine
 from datetime import timedelta
 from copy import deepcopy
-from requests.exceptions import ConnectionError as RequestsConnectionError, HTTPError, ReadTimeout, RequestException
+from requests.exceptions import (
+    ConnectionError as RequestsConnectionError,
+    HTTPError,
+    ReadTimeout,
+    RequestException,
+)
 from http.client import RemoteDisconnected
 from lib.lichess_types import OnlineType, GameEventType
 from typing import Optional, Union, cast
@@ -26,21 +32,29 @@ class MockLichess(Lichess):
         self.max_retries = 3
         self.other_session = requests.Session()
 
-    def online_book_get(self, path: str, params: Optional[dict[str, Union[str, int]]] = None,
-                        stream: bool = False) -> OnlineType:
+    def online_book_get(
+        self,
+        path: str,
+        params: Optional[dict[str, Union[str, int]]] = None,
+        stream: bool = False,
+    ) -> OnlineType:
         """Get an external move from online sources (chessdb or lichess.org)."""
 
-        @backoff.on_exception(backoff.constant,
-                              (RemoteDisconnected, RequestsConnectionError, HTTPError, ReadTimeout),
-                              max_time=60,
-                              max_tries=self.max_retries,
-                              interval=0.1,
-                              giveup=is_final,
-                              on_backoff=backoff_handler,
-                              backoff_log_level=logging.DEBUG,
-                              giveup_log_level=logging.DEBUG)
+        @backoff.on_exception(
+            backoff.constant,
+            (RemoteDisconnected, RequestsConnectionError, HTTPError, ReadTimeout),
+            max_time=60,
+            max_tries=self.max_retries,
+            interval=0.1,
+            giveup=is_final,
+            on_backoff=backoff_handler,
+            backoff_log_level=logging.DEBUG,
+            giveup_log_level=logging.DEBUG,
+        )
         def online_book_get() -> OnlineType:
-            json_response: OnlineType = self.other_session.get(path, timeout=2, params=params, stream=stream).json()
+            json_response: OnlineType = self.other_session.get(
+                path, timeout=2, params=params, stream=stream
+            ).json()
             return json_response
 
         return online_book_get()
@@ -69,39 +83,44 @@ def get_configs() -> tuple[Configuration, Configuration, Configuration, Configur
     CONFIG_2["engine"]["online_moves"]["chessdb_book"]["enabled"] = True
     CONFIG_2["engine"]["online_moves"]["online_egtb"]["source"] = "chessdb"
     engine_cfg_2 = Configuration(CONFIG_2).engine
-    return engine_cfg.online_moves, engine_cfg_2.online_moves, engine_cfg.draw_or_resign, engine_cfg.polyglot
+    return (
+        engine_cfg.online_moves,
+        engine_cfg_2.online_moves,
+        engine_cfg.draw_or_resign,
+        engine_cfg.polyglot,
+    )
 
 
 def get_game() -> Game:
     """Create a model.Game to be used in the tests."""
-    game_event: GameEventType = {"id": "zzzzzzzz",
-                                 "variant": {"key": "standard",
-                                             "name": "Standard",
-                                             "short": "Std"},
-                                 "clock": {"initial": 60000,
-                                           "increment": 2000},
-                                 "speed": "bullet",
-                                 "perf": {"name": "Bullet"},
-                                 "rated": True,
-                                 "createdAt": 1600000000000,
-                                 "white": {"id": "bo",
-                                           "name": "bo",
-                                           "title": "BOT",
-                                           "rating": 3000},
-                                 "black": {"id": "b",
-                                           "name": "b",
-                                           "title": "BOT",
-                                           "rating": 3000,
-                                           "provisional": True},
-                                 "initialFen": "startpos",
-                                 "type": "gameFull",
-                                 "state": {"type": "gameState",
-                                           "moves": "",
-                                           "wtime": 1000000,
-                                           "btime": 1000000,
-                                           "winc": 2000,
-                                           "binc": 2000,
-                                           "status": "started"}}
+    game_event: GameEventType = {
+        "id": "zzzzzzzz",
+        "variant": {"key": "standard", "name": "Standard", "short": "Std"},
+        "clock": {"initial": 60000, "increment": 2000},
+        "speed": "bullet",
+        "perf": {"name": "Bullet"},
+        "rated": True,
+        "createdAt": 1600000000000,
+        "white": {"id": "bo", "name": "bo", "title": "BOT", "rating": 3000},
+        "black": {
+            "id": "b",
+            "name": "b",
+            "title": "BOT",
+            "rating": 3000,
+            "provisional": True,
+        },
+        "initialFen": "startpos",
+        "type": "gameFull",
+        "state": {
+            "type": "gameState",
+            "moves": "",
+            "wtime": 1000000,
+            "btime": 1000000,
+            "winc": 2000,
+            "binc": 2000,
+            "status": "started",
+        },
+    }
     return Game(game_event, "b", "https://lichess.org", timedelta(seconds=60))
 
 
@@ -109,8 +128,10 @@ def download_opening_book() -> None:
     """Download gm2001.bin."""
     if os.path.exists("./TEMP/gm2001.bin"):
         return
-    response = requests.get("https://github.com/gmcheems-org/free-opening-books/raw/main/books/bin/gm2001.bin",
-                            allow_redirects=True)
+    response = requests.get(
+        "https://github.com/gmcheems-org/free-opening-books/raw/main/books/bin/gm2001.bin",
+        allow_redirects=True,
+    )
     with open("./TEMP/gm2001.bin", "wb") as file:
         file.write(response.content)
 
@@ -118,10 +139,18 @@ def download_opening_book() -> None:
 os.makedirs("TEMP", exist_ok=True)
 
 
-def get_online_move_wrapper(li: Lichess, board: chess.Board, game: Game, online_moves_cfg: Configuration,
-                            draw_or_resign_cfg: Configuration) -> chess.engine.PlayResult:
+def get_online_move_wrapper(
+    li: Lichess,
+    board: chess.Board,
+    game: Game,
+    online_moves_cfg: Configuration,
+    draw_or_resign_cfg: Configuration,
+) -> chess.engine.PlayResult:
     """Wrap `lib.engine_wrapper.get_online_move` so that it only returns a PlayResult type."""
-    return cast(chess.engine.PlayResult, get_online_move(li, board, game, online_moves_cfg, draw_or_resign_cfg))
+    return cast(
+        chess.engine.PlayResult,
+        get_online_move(li, board, game, online_moves_cfg, draw_or_resign_cfg),
+    )
 
 
 def test_external_moves() -> None:
@@ -144,43 +173,119 @@ def test_external_moves() -> None:
 
     # Test lichess_cloud_analysis.
     if is_lichess_org_up:
-        assert get_online_move_wrapper(li, chess.Board(starting_fen), game, online_cfg, draw_or_resign_cfg).move is not None
-        assert get_online_move_wrapper(li, chess.Board(opening_fen), game, online_cfg, draw_or_resign_cfg).move is not None
-        assert get_online_move_wrapper(li, chess.Board(middlegame_fen), game, online_cfg, draw_or_resign_cfg).move is None
+        assert (
+            get_online_move_wrapper(
+                li, chess.Board(starting_fen), game, online_cfg, draw_or_resign_cfg
+            ).move
+            is not None
+        )
+        assert (
+            get_online_move_wrapper(
+                li, chess.Board(opening_fen), game, online_cfg, draw_or_resign_cfg
+            ).move
+            is not None
+        )
+        assert (
+            get_online_move_wrapper(
+                li, chess.Board(middlegame_fen), game, online_cfg, draw_or_resign_cfg
+            ).move
+            is None
+        )
 
     # Test chessdb_book.
     if is_chessdb_cn_up:
-        assert get_online_move_wrapper(li, chess.Board(starting_fen), game, online_cfg_2, draw_or_resign_cfg).move is not None
-        assert get_online_move_wrapper(li, chess.Board(opening_fen), game, online_cfg_2, draw_or_resign_cfg).move is not None
-        assert get_online_move_wrapper(li, chess.Board(middlegame_fen), game, online_cfg_2, draw_or_resign_cfg).move is None
+        assert (
+            get_online_move_wrapper(
+                li, chess.Board(starting_fen), game, online_cfg_2, draw_or_resign_cfg
+            ).move
+            is not None
+        )
+        assert (
+            get_online_move_wrapper(
+                li, chess.Board(opening_fen), game, online_cfg_2, draw_or_resign_cfg
+            ).move
+            is not None
+        )
+        assert (
+            get_online_move_wrapper(
+                li, chess.Board(middlegame_fen), game, online_cfg_2, draw_or_resign_cfg
+            ).move
+            is None
+        )
 
     # Test online_egtb with lichess.
     if is_lichess_ovh_up:
-        assert get_online_move_wrapper(li, chess.Board(endgame_wdl2_fen), game, online_cfg, draw_or_resign_cfg).resigned
-        assert get_online_move_wrapper(li, chess.Board(endgame_wdl0_fen), game, online_cfg, draw_or_resign_cfg).draw_offered
-        wdl1_move = get_online_move_wrapper(li, chess.Board(endgame_wdl1_fen), game, online_cfg, draw_or_resign_cfg)
+        assert get_online_move_wrapper(
+            li, chess.Board(endgame_wdl2_fen), game, online_cfg, draw_or_resign_cfg
+        ).resigned
+        assert get_online_move_wrapper(
+            li, chess.Board(endgame_wdl0_fen), game, online_cfg, draw_or_resign_cfg
+        ).draw_offered
+        wdl1_move = get_online_move_wrapper(
+            li, chess.Board(endgame_wdl1_fen), game, online_cfg, draw_or_resign_cfg
+        )
         assert not wdl1_move.resigned and not wdl1_move.draw_offered
         # Test with reversed colors.
-        assert get_online_move_wrapper(li, chess.Board(endgame_wdl2_fen).mirror(), game, online_cfg,
-                                       draw_or_resign_cfg).resigned
-        assert get_online_move_wrapper(li, chess.Board(endgame_wdl0_fen).mirror(), game, online_cfg,
-                                       draw_or_resign_cfg).draw_offered
-        wdl1_move = get_online_move_wrapper(li, chess.Board(endgame_wdl1_fen).mirror(), game, online_cfg, draw_or_resign_cfg)
+        assert get_online_move_wrapper(
+            li,
+            chess.Board(endgame_wdl2_fen).mirror(),
+            game,
+            online_cfg,
+            draw_or_resign_cfg,
+        ).resigned
+        assert get_online_move_wrapper(
+            li,
+            chess.Board(endgame_wdl0_fen).mirror(),
+            game,
+            online_cfg,
+            draw_or_resign_cfg,
+        ).draw_offered
+        wdl1_move = get_online_move_wrapper(
+            li,
+            chess.Board(endgame_wdl1_fen).mirror(),
+            game,
+            online_cfg,
+            draw_or_resign_cfg,
+        )
         assert not wdl1_move.resigned and not wdl1_move.draw_offered
 
     # Test online_egtb with chessdb.
     if is_chessdb_cn_up:
-        assert get_online_move_wrapper(li, chess.Board(endgame_wdl2_fen), game, online_cfg_2, draw_or_resign_cfg).resigned
-        assert get_online_move_wrapper(li, chess.Board(endgame_wdl0_fen), game, online_cfg_2, draw_or_resign_cfg).draw_offered
-        wdl1_move = get_online_move_wrapper(li, chess.Board(endgame_wdl1_fen), game, online_cfg_2, draw_or_resign_cfg)
+        assert get_online_move_wrapper(
+            li, chess.Board(endgame_wdl2_fen), game, online_cfg_2, draw_or_resign_cfg
+        ).resigned
+        assert get_online_move_wrapper(
+            li, chess.Board(endgame_wdl0_fen), game, online_cfg_2, draw_or_resign_cfg
+        ).draw_offered
+        wdl1_move = get_online_move_wrapper(
+            li, chess.Board(endgame_wdl1_fen), game, online_cfg_2, draw_or_resign_cfg
+        )
         assert not wdl1_move.resigned and not wdl1_move.draw_offered
         # Test with reversed colors.
-        assert get_online_move_wrapper(li, chess.Board(endgame_wdl2_fen).mirror(), game, online_cfg_2,
-                                       draw_or_resign_cfg).resigned
-        assert get_online_move_wrapper(li, chess.Board(endgame_wdl0_fen).mirror(), game, online_cfg_2,
-                                       draw_or_resign_cfg).draw_offered
-        wdl1_move = get_online_move_wrapper(li, chess.Board(endgame_wdl1_fen).mirror(), game, online_cfg_2, draw_or_resign_cfg)
+        assert get_online_move_wrapper(
+            li,
+            chess.Board(endgame_wdl2_fen).mirror(),
+            game,
+            online_cfg_2,
+            draw_or_resign_cfg,
+        ).resigned
+        assert get_online_move_wrapper(
+            li,
+            chess.Board(endgame_wdl0_fen).mirror(),
+            game,
+            online_cfg_2,
+            draw_or_resign_cfg,
+        ).draw_offered
+        wdl1_move = get_online_move_wrapper(
+            li,
+            chess.Board(endgame_wdl1_fen).mirror(),
+            game,
+            online_cfg_2,
+            draw_or_resign_cfg,
+        )
         assert not wdl1_move.resigned and not wdl1_move.draw_offered
 
     # Test opening book.
-    assert get_book_move(chess.Board(opening_fen), game, polyglot_cfg).move == chess.Move.from_uci("h4f6")
+    assert get_book_move(
+        chess.Board(opening_fen), game, polyglot_cfg
+    ).move == chess.Move.from_uci("h4f6")

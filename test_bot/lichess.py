@@ -1,4 +1,5 @@
 """Imitate `lichess.py`. Used in tests."""
+
 import time
 import chess.engine
 import json
@@ -10,8 +11,15 @@ from requests.models import Response
 from typing import Union, Optional, Generator
 from lib.lichess import Lichess as OriginalLichess
 from lib.timer import to_msec
-from lib.lichess_types import (UserProfileType, ChallengeType, REQUESTS_PAYLOAD_TYPE, GameType, OnlineType, PublicDataType,
-                       BackoffDetails)
+from lib.lichess_types import (
+    UserProfileType,
+    ChallengeType,
+    REQUESTS_PAYLOAD_TYPE,
+    GameType,
+    OnlineType,
+    PublicDataType,
+    BackoffDetails,
+)
 
 # ruff: noqa: ARG002
 
@@ -20,8 +28,12 @@ logger = logging.getLogger(__name__)
 
 def backoff_handler(details: BackoffDetails) -> None:
     """Log exceptions inside functions with the backoff decorator."""
-    logger.debug("Backing off {wait:0.1f} seconds after {tries} tries "
-                 "calling function {target} with args {args} and kwargs {kwargs}".format(**details))
+    logger.debug(
+        "Backing off {wait:0.1f} seconds after {tries} tries "
+        "calling function {target} with args {args} and kwargs {kwargs}".format(
+            **details
+        )
+    )
     logger.debug(f"Exception: {traceback.format_exc()}")
 
 
@@ -34,9 +46,13 @@ def is_final(error: Exception) -> bool:
 class GameStream(Response):
     """Imitate lichess.org's GameStream. Used in tests."""
 
-    def __init__(self,
-                 board_queue: Queue[chess.Board],
-                 clock_queue: Queue[tuple[datetime.timedelta, datetime.timedelta, datetime.timedelta]]) -> None:
+    def __init__(
+        self,
+        board_queue: Queue[chess.Board],
+        clock_queue: Queue[
+            tuple[datetime.timedelta, datetime.timedelta, datetime.timedelta]
+        ],
+    ) -> None:
         """
         Capture the interprocess queues that will feed the gameStream with game information.
 
@@ -47,38 +63,43 @@ class GameStream(Response):
         self.board_queue = board_queue
         self.clock_queue = clock_queue
 
-    def iter_lines(self, chunk_size: Optional[int] = 512, decode_unicode: bool = False,
-                   delimiter: Union[str, bytes, None] = None) -> Generator[bytes, None, None]:
+    def iter_lines(
+        self,
+        chunk_size: Optional[int] = 512,
+        decode_unicode: bool = False,
+        delimiter: Union[str, bytes, None] = None,
+    ) -> Generator[bytes, None, None]:
         """Send the game events to lichess-bot."""
         yield json.dumps(
-            {"id": "zzzzzzzz",
-             "variant": {"key": "standard",
-                         "name": "Standard",
-                         "short": "Std"},
-             "clock": {"initial": 60000,
-                       "increment": 2000},
-             "speed": "bullet",
-             "perf": {"name": "Bullet"},
-             "rated": True,
-             "createdAt": 1600000000000,
-             "white": {"id": "bo",
-                       "name": "bo",
-                       "title": "BOT",
-                       "rating": 3000},
-             "black": {"id": "b",
-                       "name": "b",
-                       "title": "BOT",
-                       "rating": 3000,
-                       "provisional": True},
-             "initialFen": "startpos",
-             "type": "gameFull",
-             "state": {"type": "gameState",
-                       "moves": "",
-                       "wtime": 10000,
-                       "btime": 10000,
-                       "winc": 100,
-                       "binc": 100,
-                       "status": "started"}}).encode("utf-8")
+            {
+                "id": "zzzzzzzz",
+                "variant": {"key": "standard", "name": "Standard", "short": "Std"},
+                "clock": {"initial": 60000, "increment": 2000},
+                "speed": "bullet",
+                "perf": {"name": "Bullet"},
+                "rated": True,
+                "createdAt": 1600000000000,
+                "white": {"id": "bo", "name": "bo", "title": "BOT", "rating": 3000},
+                "black": {
+                    "id": "b",
+                    "name": "b",
+                    "title": "BOT",
+                    "rating": 3000,
+                    "provisional": True,
+                },
+                "initialFen": "startpos",
+                "type": "gameFull",
+                "state": {
+                    "type": "gameState",
+                    "moves": "",
+                    "wtime": 10000,
+                    "btime": 10000,
+                    "winc": 100,
+                    "binc": 100,
+                    "status": "started",
+                },
+            }
+        ).encode("utf-8")
         while True:
             board = self.board_queue.get()
             self.board_queue.task_done()
@@ -86,12 +107,14 @@ class GameStream(Response):
             wtime, btime, increment = self.clock_queue.get()
             self.clock_queue.task_done()
 
-            new_game_state = {"type": "gameState",
-                              "moves": " ".join(move.uci() for move in board.move_stack),
-                              "wtime": int(to_msec(wtime)),
-                              "btime": int(to_msec(btime)),
-                              "winc": int(to_msec(increment)),
-                              "binc": int(to_msec(increment))}
+            new_game_state = {
+                "type": "gameState",
+                "moves": " ".join(move.uci() for move in board.move_stack),
+                "wtime": int(to_msec(wtime)),
+                "btime": int(to_msec(btime)),
+                "winc": int(to_msec(increment)),
+                "binc": int(to_msec(increment)),
+            }
 
             if board.is_game_over():
                 new_game_state["status"] = "outoftime"
@@ -115,29 +138,41 @@ class EventStream(Response):
         """
         self.sent_game = sent_game
 
-    def iter_lines(self, chunk_size: Optional[int] = 512, decode_unicode: bool = False,
-                   delimiter: Union[str, bytes, None] = None) -> Generator[bytes, None, None]:
+    def iter_lines(
+        self,
+        chunk_size: Optional[int] = 512,
+        decode_unicode: bool = False,
+        delimiter: Union[str, bytes, None] = None,
+    ) -> Generator[bytes, None, None]:
         """Send the events to lichess-bot."""
         if self.sent_game:
             yield b""
             time.sleep(1)
         else:
             yield json.dumps(
-                {"type": "gameStart",
-                 "game": {"id": "zzzzzzzz",
-                          "source": "friend",
-                          "compat": {"bot": True,
-                                     "board": True}}}).encode("utf-8")
+                {
+                    "type": "gameStart",
+                    "game": {
+                        "id": "zzzzzzzz",
+                        "source": "friend",
+                        "compat": {"bot": True, "board": True},
+                    },
+                }
+            ).encode("utf-8")
 
 
 # Docs: https://lichess.org/api.
 class Lichess(OriginalLichess):
     """Imitate communication with lichess.org."""
 
-    def __init__(self,
-                 move_queue: Queue[Optional[chess.Move]],
-                 board_queue: Queue[chess.Board],
-                 clock_queue: Queue[tuple[datetime.timedelta, datetime.timedelta, datetime.timedelta]]) -> None:
+    def __init__(
+        self,
+        move_queue: Queue[Optional[chess.Move]],
+        board_queue: Queue[chess.Board],
+        clock_queue: Queue[
+            tuple[datetime.timedelta, datetime.timedelta, datetime.timedelta]
+        ],
+    ) -> None:
         """
         Capture the interprocess queues to distribute them to the eventStream and gameStream instances.
 
@@ -190,16 +225,18 @@ class Lichess(OriginalLichess):
 
     def get_profile(self) -> UserProfileType:
         """Return a simple profile for the bot that lichess-bot uses when testing."""
-        return {"id": "b",
-                "username": "b",
-                "online": True,
-                "title": "BOT",
-                "url": "https://lichess.org/@/b",
-                "followable": True,
-                "following": False,
-                "blocking": False,
-                "followsYou": False,
-                "perfs": {}}
+        return {
+            "id": "b",
+            "username": "b",
+            "online": True,
+            "title": "BOT",
+            "url": "https://lichess.org/@/b",
+            "followable": True,
+            "following": False,
+            "blocking": False,
+            "followsYou": False,
+            "perfs": {},
+        }
 
     def get_ongoing_games(self) -> list[GameType]:
         """Return that the bot isn't playing a game."""
@@ -233,8 +270,12 @@ class Lichess(OriginalLichess):
     def cancel(self, challenge_id: str) -> None:
         """Isn't used in tests."""
 
-    def online_book_get(self, path: str, params: Optional[dict[str, Union[str, int]]] = None,
-                        stream: bool = False) -> OnlineType:
+    def online_book_get(
+        self,
+        path: str,
+        params: Optional[dict[str, Union[str, int]]] = None,
+        stream: bool = False,
+    ) -> OnlineType:
         """Isn't used in tests."""
         return {}
 

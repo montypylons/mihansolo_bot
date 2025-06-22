@@ -33,7 +33,10 @@ def mvv_laa(board: chess.Board, move: chess.Move) -> tuple[int, int, int]:
             return (1, 1, -1)
         victim_value = PIECE_VALUES[board.piece_type_at(move.to_square)]
         attacker_value = PIECE_VALUES[board.piece_type_at(move.from_square)]
-        return (1, victim_value, -attacker_value)
+        return (2, victim_value, -attacker_value)
+    if board.gives_check(move):
+        return (1,0,0)
+
 
     return (0, 0, 0)
 
@@ -115,12 +118,16 @@ def find_book_move(board: chess.Board) -> chess.Move | None:
 
 def evaluate(board: chess.Board) -> int:
     value = 0
-
     if board.is_checkmate():
         if board.turn:
-            return 10000  # white gets mated
-        else:
-            return -10000  # black gets mated
+            value = -10000
+        elif not board.turn:
+            value = 10000 
+        return value if board.turn else -value
+    # black gets mated
+    
+
+
 
     if (
         board.is_stalemate()
@@ -128,7 +135,6 @@ def evaluate(board: chess.Board) -> int:
         or board.is_repetition()
     ):
         return 0  # draw
-    
     for square in chess.SQUARES:
     
         piece = board.piece_at(square)
@@ -153,6 +159,12 @@ def evaluate(board: chess.Board) -> int:
     value = value - len(board.pieces(chess.QUEEN, chess.BLACK)) * 9
     # These show the material imbalance of how many more points of white material there is
     # since winning material is usually better than development except in the opening.
+    if board.is_checkmate():
+        if board.turn:
+            value = -10000
+        elif not board.turn:
+            value = 10000  # black gets mated
+
 
     return (
         value if board.turn else -value
@@ -165,6 +177,17 @@ def search(board: chess.Board) -> PlayResult:
         print(f"Book move: {book_move}")
         return PlayResult(book_move, None)
     depth = 5
+
+    # Debug: Print negamax score for each root move
+    print("Root move negamax search results:")
+    move_scores = []
+    for move in board.legal_moves:
+        board.push(move)
+        score, _ = negamax(float("-inf"), float("inf"), move, depth - 1, board)
+        score = -score  # Negamax: negate the score when returning up the tree
+        print(f"Move: {move}, Negamax Score: {score}")
+        move_scores.append((move, score))
+        board.pop()
 
     _, best_move = negamax(float("-inf"), float("inf"), None, depth, board)
 
@@ -197,7 +220,7 @@ def negamax(
     for move in legal_moves:
         board.push(move)
         score, _ = negamax(-beta, -alpha, move, depth - 1, board)
-        score = -score # TODO: see whether this should be negative or not
+        score = -score  # Negamax: negate the score when returning up the tree
         board.pop()
         if score > best_eval:
             best_eval = score
