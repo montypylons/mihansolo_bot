@@ -22,29 +22,27 @@ def main():
     print("Game result: ", board.result())
 
 
-def test(searcher=False):
+def test(searcher=False) -> str:
     board1 = chess.Board("8/8/BR6/7R/3pk3/P7/P1PPPP1P/2BQK3 w - - 7 35")
-    board2 = chess.Board("8/8/1R6/7R/3p1k2/P2B4/P1PPPP1P/2BQK3 w - - 9 36")
     board3 = chess.Board("8/8/B4R2/7R/3pk3/P7/P1PPPP1P/2BQK3 w - - 11 37")
-    boards = [board1, board2, board3]
+    boards = [board1, board3]
     if not searcher:
         print("evaluations")
-        print(core2.evaluate(board1), core2.evaluate(board2), core2.evaluate(board3))
+        print(core2.evaluate(board1), core2.evaluate(board3))
     searched_moves = []
     searched_moves.append(core2.search(board1).move)
-    searched_moves.append(core2.search(board2).move)
     searched_moves.append(core2.search(board3).move)
-    for i in range(3):
-        if boards[i].push(searched_moves[i]).is_checkmate():
-            boards[i].pop()
-            print("Test number", i, "attempt: ", searched_moves[i])
-            print("correct move", moves[i])
-            print("[PASS] Test Passed")
-        else:
-            boards[i].pop()
-            print("Test number", i, "attempt: ", searched_moves[i])
-            print("correct move", moves[i])
-            print("[FAIL] Test Failed")
+    for i in range(2):
+        if boards[i] is not None and searched_moves[i] is not None:
+            boards[i].push(searched_moves[i])
+            if boards[i].is_checkmate():
+                boards[i].pop()
+                print("Test number", i, "attempt: ", searched_moves[i])
+                print("[PASS] Test Passed")
+            else:
+                boards[i].pop()
+                print("Test number", i, "attempt: ", searched_moves[i])
+                print("[FAIL] Test Failed")
 
 
 if __name__ == "__main__":

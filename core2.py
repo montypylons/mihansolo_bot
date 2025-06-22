@@ -116,13 +116,13 @@ def find_book_move(board: chess.Board) -> chess.Move | None:
         return None  # did not work, book doesn't have move for that position
 
 
-def evaluate(board: chess.Board) -> int:
+def evaluate(board: chess.Board, ply: int = 0) -> int:
     value = 0
     if board.is_checkmate():
         if board.turn:
-            value = -10000
+            value = -10000 + ply
         elif not board.turn:
-            value = 10000 
+            value = 10000 - ply
         return value if board.turn else -value
     # black gets mated
     
@@ -159,12 +159,6 @@ def evaluate(board: chess.Board) -> int:
     value = value - len(board.pieces(chess.QUEEN, chess.BLACK)) * 9
     # These show the material imbalance of how many more points of white material there is
     # since winning material is usually better than development except in the opening.
-    if board.is_checkmate():
-        if board.turn:
-            value = -10000
-        elif not board.turn:
-            value = 10000  # black gets mated
-
 
     return (
         value if board.turn else -value
@@ -204,12 +198,12 @@ def game_over(board: chess.Board) -> bool:
 
 
 def negamax(
-    alpha: float, beta: float, last_move: chess.Move, depth: int, board: chess.Board
+    alpha: float, beta: float, last_move: chess.Move, depth: int, board: chess.Board, ply: int=0
 ) -> tuple[float, chess.Move | None]:
 
     if depth == 0 or game_over(board):
         # return quiescence_search(board, alpha, beta)[0], last_move
-        return evaluate(board), last_move
+        return evaluate(board, ply), last_move
 
     best_move = None
     best_eval = float("-inf")
@@ -219,7 +213,7 @@ def negamax(
 
     for move in legal_moves:
         board.push(move)
-        score, _ = negamax(-beta, -alpha, move, depth - 1, board)
+        score, _ = negamax(-beta, -alpha, move, depth - 1, board, ply + 1)
         score = -score  # Negamax: negate the score when returning up the tree
         board.pop()
         if score > best_eval:
