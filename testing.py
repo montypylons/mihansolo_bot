@@ -38,7 +38,7 @@ def test(searcher=False) -> str:
         print("test [PASS]")
     else:
         print("---------------------------TEST FAILED--------------------------")
-        print(f"attempt:{searched_moves[2]}. correct move: h1a1 ")
+        print(f"attempt:{searched_moves[2].move}. correct move: h1a1 ")
 
     for i in range(2):
         if boards[i] is not None and searched_moves[i] is not None:
@@ -46,11 +46,11 @@ def test(searcher=False) -> str:
             if boards[i].is_checkmate():
                 boards[i].pop()
                 print("Test number", i, "attempt: ", searched_moves[i])
-                print("[PASS] Test Passed")
+                print("-------------------------TEST PASSED---------------------------")
             else:
                 boards[i].pop()
                 print("Test number", i, "attempt: ", searched_moves[i])
-                print("[FAIL] Test Failed")
+                print("-------------------------TEST FAILED---------------------------")
 
 
 if __name__ == "__main__":
