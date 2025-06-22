@@ -118,9 +118,9 @@ def evaluate(board: chess.Board) -> int:
 
     if board.is_checkmate():
         if board.turn:
-            return -(10**3)  # white gets mated
+            return -(10000)  # white gets mated
         else:
-            return 10**3  # black gets mated
+            return 10000  # black gets mated
 
     if (
         board.is_stalemate()
@@ -197,7 +197,7 @@ def negamax(
     for move in legal_moves:
         board.push(move)
         score, _ = negamax(-beta, -alpha, move, depth - 1, board)
-        score = -score
+        score = -score # TODO: see whether this should be negative or not
         board.pop()
         if score > best_eval:
             best_eval = score

@@ -16,6 +16,10 @@ def main():
         board.push(black_move.move)
     print("Game result: ", board.result())
 
+def test():
+    board = chess.Board("r7/8/1k6/8/8/8/6q1/1K5R b - - 0 1")
+    return core2.search(board)
 
 if __name__ == "__main__":
-    main()
+    # main()
+    test()

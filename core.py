@@ -186,7 +186,7 @@ def negamax(
     for move in legal_moves:
         board.push(move)
         score, _ = negamax(-beta, -alpha, move, depth - 1, board)
-        score = -score
+        # score = -score cauused fails in severall m1 positions, eval already returns score from the POV of side to move
         board.pop()
         if score > best_eval:
             best_eval = score
