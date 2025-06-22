@@ -2,6 +2,7 @@ import chess
 from chess.engine import PlayResult
 import chess.polyglot
 import random
+from scratch import piece_map
 
 global counter
 counter = 1
@@ -15,7 +16,6 @@ PIECE_VALUES = {
     chess.KING: 0,
 }
 
-# TODO: add standing pat eval
 # TODO: add logging
 # TODO: MVV_LAA ordering
 # TODO: reduce scope of variables by putting inside else clause
@@ -33,7 +33,10 @@ def mvv_laa(board: chess.Board, move: chess.Move) -> tuple[int, int, int]:
             return (1, 1, -1)
         victim_value = PIECE_VALUES[board.piece_type_at(move.to_square)]
         attacker_value = PIECE_VALUES[board.piece_type_at(move.from_square)]
-        return (1, victim_value, -attacker_value)
+        return (2, victim_value, -attacker_value)
+    if board.gives_check(move):
+        return (1,0,0)
+
 
     return (0, 0, 0)
 
@@ -113,14 +116,18 @@ def find_book_move(board: chess.Board) -> chess.Move | None:
         return None  # did not work, book doesn't have move for that position
 
 
-def evaluate(board: chess.Board) -> int:
+def evaluate(board: chess.Board, ply: int = 0) -> int:
     value = 0
-
     if board.is_checkmate():
         if board.turn:
-            return 10000  # white gets mated
-        else:
-            return -10000  # black gets mated
+            value = -10000 + ply
+        elif not board.turn:
+            value = 10000 - ply
+        return value if board.turn else -value
+    # black gets mated
+    
+
+
 
     if (
         board.is_stalemate()
@@ -128,6 +135,16 @@ def evaluate(board: chess.Board) -> int:
         or board.is_repetition()
     ):
         return 0  # draw
+    for square in chess.SQUARES:
+    
+        piece = board.piece_at(square)
+        if (not piece == chess.Piece.from_symbol('K')) and (not piece == chess.Piece.from_symbol('k')) and piece:
+            if piece.color:
+                value += piece_map[piece][square]
+            else:
+                flipped_piece = chess.Piece(piece.piece_type, not piece.color)
+                value -= piece_map[flipped_piece][square]
+    
 
     value = value + len(board.pieces(chess.PAWN, chess.WHITE))
     value = value + len(board.pieces(chess.KNIGHT, chess.WHITE)) * 3
@@ -155,6 +172,17 @@ def search(board: chess.Board) -> PlayResult:
         return PlayResult(book_move, None)
     depth = 5
 
+    # Debug: Print negamax score for each root move
+    print("Root move negamax search results:")
+    move_scores = []
+    for move in board.legal_moves:
+        board.push(move)
+        score, _ = negamax(float("-inf"), float("inf"), move, depth - 1, board)
+        score = -score  # Negamax: negate the score when returning up the tree
+        print(f"Move: {move}, Negamax Score: {score}")
+        move_scores.append((move, score))
+        board.pop()
+
     _, best_move = negamax(float("-inf"), float("inf"), None, depth, board)
 
     if best_move:
@@ -170,12 +198,12 @@ def game_over(board: chess.Board) -> bool:
 
 
 def negamax(
-    alpha: float, beta: float, last_move: chess.Move, depth: int, board: chess.Board
+    alpha: float, beta: float, last_move: chess.Move, depth: int, board: chess.Board, ply: int=0
 ) -> tuple[float, chess.Move | None]:
 
     if depth == 0 or game_over(board):
         # return quiescence_search(board, alpha, beta)[0], last_move
-        return evaluate(board), last_move
+        return evaluate(board, ply), last_move
 
     best_move = None
     best_eval = float("-inf")
@@ -185,8 +213,8 @@ def negamax(
 
     for move in legal_moves:
         board.push(move)
-        score, _ = negamax(-beta, -alpha, move, depth - 1, board)
-        score = -score 
+        score, _ = negamax(-beta, -alpha, move, depth - 1, board, ply + 1)
+        score = -score  # Negamax: negate the score when returning up the tree
         board.pop()
         if score > best_eval:
             best_eval = score
