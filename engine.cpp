@@ -46,8 +46,7 @@ int evaluate(chess::Board board) {
         score = -10000;
     }
     if (turn == Color::BLACK){
-
-
+        score = -score;
     }
 
     return score;
