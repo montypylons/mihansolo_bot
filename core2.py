@@ -122,7 +122,7 @@ def find_book_move(board: chess.Board) -> chess.Move | None:
 def evaluate(board: chess.Board, ply: int = 0) -> int:
     value = 0
     value = engine.evaluate(board.fen(), ply)
-    print("value: ", value)
+    # print("value: ", value)
 
     '''for square in chess.SQUARES:
         piece = board.piece_at(square)
@@ -136,7 +136,7 @@ def evaluate(board: chess.Board, ply: int = 0) -> int:
     # These show the material imbalance of how many more points of white material there is
     # since winning material is usually better than development except in the opening.
 
-    return value  # C++ engine already returns from POV of side to move
+    return value if board.turn else -value # C++ engine already returns from POV of side to move
 
 
 def search(board: chess.Board) -> PlayResult:

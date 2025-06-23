@@ -55,10 +55,13 @@ def test(searcher=False) -> str:
                 print("-------------------------TEST FAILED---------------------------")
 
 def test_eval():
-    fen_string = "8/8/8/8/8/1K6/1Q6/1k6 b - - 0 1"
-    print(core2.evaluate(chess.Board(fen_string)))
-    print("="*100)
-    print(engine.evaluate(fen_string,0))
+    fen_strings = ['1k6/ppp5/8/8/8/2Q5/1QQQQQ2/1QQQ2K1 b - - 0 1', '8/8/8/8/8/1k6/1q6/1K6 w - - 0 1', '2kqqq2/3qqq2/3qqq2/8/8/PPPP4/1KP5/8 w - - 0 1', '1k6/ppp5/8/8/8/2Q5/1QQQQQ2/1QQQ2K1 w - - 0 1']
+    for fen_string in fen_strings:
+        print("="*100)
+        print(core2.evaluate(chess.Board(fen_string)))
+        print(engine.evaluate(fen_string,0))
+        print("="*100)
+
 
 if __name__ == "__main__":
     # main()
