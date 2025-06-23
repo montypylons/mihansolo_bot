@@ -6,7 +6,8 @@
 namespace py = pybind11;
 using namespace chess;
 
-int evaluate(chess::Board board) {
+int evaluate(std::string fen) {
+    Board board = Board(fen);
 
     Bitboard pawns = board.pieces(PieceType::PAWN, Color::WHITE);
     Bitboard knights = board.pieces(PieceType::KNIGHT, Color::WHITE);
@@ -54,3 +55,8 @@ int evaluate(chess::Board board) {
     return score;
 }
 
+PYBIND11_MODULE(engine, m) {
+    m.doc() = "engine cpp"; // optional module docstring
+
+    m.def("evaluate", &evaluate, "evaluate the position");
+}
