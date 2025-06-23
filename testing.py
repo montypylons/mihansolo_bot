@@ -1,7 +1,7 @@
 from core import search
 import core2
 import chess
-
+# TODO: add unit testing, not this stuff
 
 def test_eval():
     board3 = chess.Board("8/8/B4R2/7R/3pk3/P7/P1PPPP1P/2BQK3 w - - 11 37")
