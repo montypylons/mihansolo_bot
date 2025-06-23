@@ -3,6 +3,9 @@ from chess.engine import PlayResult
 import chess.polyglot
 import random
 from scratch import piece_map
+import sys
+sys.path.append(r"C:\Users\DELL\Documents\mihansolo_bot\build\Release")
+import engine
 
 global counter
 counter = 1
@@ -118,17 +121,8 @@ def find_book_move(board: chess.Board) -> chess.Move | None:
 
 def evaluate(board: chess.Board, ply: int = 0) -> int:
     value = 0
-    if board.is_checkmate():
-        if board.turn:
-            value = -10000 + ply
-        elif not board.turn:
-            value = 10000 - ply
-        return value if board.turn else -value
+    value = engine.evaluate(board.board_fen(), ply)
     # black gets mated
-    
-
-
-
     if (
         board.is_stalemate()
         or board.is_insufficient_material()
@@ -136,7 +130,6 @@ def evaluate(board: chess.Board, ply: int = 0) -> int:
     ):
         return 0  # draw
     for square in chess.SQUARES:
-    
         piece = board.piece_at(square)
         if (not piece == chess.Piece.from_symbol('K')) and (not piece == chess.Piece.from_symbol('k')) and piece:
             if piece.color:
@@ -145,18 +138,6 @@ def evaluate(board: chess.Board, ply: int = 0) -> int:
                 flipped_piece = chess.Piece(piece.piece_type, not piece.color)
                 value -= piece_map[flipped_piece][square]
     
-
-    value = value + len(board.pieces(chess.PAWN, chess.WHITE))
-    value = value + len(board.pieces(chess.KNIGHT, chess.WHITE)) * 3
-    value = value + len(board.pieces(chess.BISHOP, chess.WHITE)) * 3
-    value = value + len(board.pieces(chess.ROOK, chess.WHITE)) * 5
-    value = value + len(board.pieces(chess.QUEEN, chess.WHITE)) * 9
-
-    value = value - len(board.pieces(chess.PAWN, chess.BLACK))
-    value = value - len(board.pieces(chess.KNIGHT, chess.BLACK)) * 3
-    value = value - len(board.pieces(chess.BISHOP, chess.BLACK)) * 3
-    value = value - len(board.pieces(chess.ROOK, chess.BLACK)) * 5
-    value = value - len(board.pieces(chess.QUEEN, chess.BLACK)) * 9
     # These show the material imbalance of how many more points of white material there is
     # since winning material is usually better than development except in the opening.
 

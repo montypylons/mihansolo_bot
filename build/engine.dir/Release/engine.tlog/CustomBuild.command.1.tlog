@@ -1,0 +1,10 @@
+^C:\USERS\DELL\DOCUMENTS\MIHANSOLO_BOT\CMAKELISTS.TXT
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/DELL/Documents/mihansolo_bot -BC:/Users/DELL/Documents/mihansolo_bot/build --check-stamp-file C:/Users/DELL/Documents/mihansolo_bot/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

@@ -7,7 +7,7 @@
 namespace py = pybind11;
 using namespace chess;
 
-int evaluate(std::string fen) {
+int evaluate(std::string fen, int ply=0) {
     Board board = Board(fen);
 
     Bitboard pawns = board.pieces(PieceType::PAWN, Color::WHITE);
@@ -47,7 +47,7 @@ int evaluate(std::string fen) {
         score = 0;
     };
     if (check && no_moves && turn == Color::WHITE){
-        score = -10000;
+        score = -10000 + ply;
     }
     if (turn == Color::BLACK){
         score = -score;
