@@ -1,6 +1,7 @@
 from core import search
 import core2
 import chess
+import engine
 # TODO: add unit testing, not this stuff
 
 def test_eval():
@@ -25,7 +26,7 @@ def main():
 def test(searcher=False) -> str:
     board1 = chess.Board("8/8/BR6/7R/3pk3/P7/P1PPPP1P/2BQK3 w - - 7 35")
     board3 = chess.Board("8/8/B4R2/7R/3pk3/P7/P1PPPP1P/2BQK3 w - - 11 37")
-    win_queen_puzzle = chess.Board("r5kr/p4ppp/5n2/3p4/8/1NQ3PP/qP3P1K/7R w - - 0 37")
+    # win_queen_puzzle = chess.Board("r5kr/p4ppp/5n2/3p4/8/1NQ3PP/qP3P1K/7R w - - 0 37")
     boards = [board1, board3]
     if not searcher:
         print("evaluations")
@@ -33,7 +34,8 @@ def test(searcher=False) -> str:
     searched_moves = []
     searched_moves.append(core2.search(board1).move)
     searched_moves.append(core2.search(board3).move)
-    searched_moves.append(core2.search(win_queen_puzzle))
+    print(searched_moves)
+    # searched_moves.append(core2.search(win_queen_puzzle))
     '''if searched_moves[2] == chess.Move.from_uci("h1a1"):
         print("test [PASS]")
     else:
@@ -42,7 +44,7 @@ def test(searcher=False) -> str:
 
     for i in range(2):
         if boards[i] is not None and searched_moves[i] is not None:
-            boards[i].push(searched_moves[i])
+            boards[i].push(searched_moves[i][0])
             if boards[i].is_checkmate():
                 boards[i].pop()
                 print("Test number", i, "attempt: ", searched_moves[i])
@@ -52,7 +54,12 @@ def test(searcher=False) -> str:
                 print("Test number", i, "attempt: ", searched_moves[i])
                 print("-------------------------TEST FAILED---------------------------")
 
+def test_eval():
+    fen_string = "8/8/8/8/8/1K6/1Q6/1k6 b - - 0 1"
+    print(core2.evaluate(chess.Board(fen_string)))
+    print("="*100)
+    print(engine.evaluate(fen_string,0))
 
 if __name__ == "__main__":
     # main()
-    print(test())
+    print(test_eval())

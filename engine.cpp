@@ -1,6 +1,7 @@
 #include "chess.hpp"
 #include <tuple>
 #include <string>
+#include <iostream>
 #include <pybind11/pybind11.h>
 #include <Windows.h>
 
@@ -8,8 +9,27 @@ namespace py = pybind11;
 using namespace chess;
 
 int evaluate(std::string fen, int ply=0) {
-    Board board = Board(fen);
+    Board board = Board(fen); // from white's POV
 
+    std::cout << "FEN: " << fen << std::endl;
+    std::cout << "Side to move: " << (board.sideToMove()) << std::endl;
+    
+    // Check for checkmate: in check and no legal moves
+    bool check = board.inCheck();
+    Movelist moves;
+    movegen::legalmoves(moves, board);
+    bool no_moves = moves.empty();
+    
+    std::cout << "Is check: " << (check ? "YES" : "NO") << std::endl;
+    std::cout << "No legal moves: " << (no_moves ? "YES" : "NO") << std::endl;
+    
+    // Check for checkmate first - this should override all other evaluation
+    if (check && no_moves) {
+        std::cout << "Checkmate detected! Returning -10000 + " << ply << " = " << (-10000 + ply) << std::endl;
+        // In negamax, always return -10000 + ply when the side to move is checkmated
+        return -10000 + ply;
+    }
+    
     Bitboard pawns = board.pieces(PieceType::PAWN, Color::WHITE);
     Bitboard knights = board.pieces(PieceType::KNIGHT, Color::WHITE);
     Bitboard bishops = board.pieces(PieceType::BISHOP, Color::WHITE);
@@ -24,10 +44,7 @@ int evaluate(std::string fen, int ply=0) {
 
     Color turn = board.sideToMove();
     int score = 0;
-    Movelist moves;
-    movegen::legalmoves(moves, board);
-    bool check = board.inCheck();
-    bool no_moves = moves.empty();
+    
     // material eval
     score += pawns.count();
     score += knights.count()*3;
@@ -40,19 +57,16 @@ int evaluate(std::string fen, int ply=0) {
     score -= black_bishops.count()*3;
     score -= black_rooks.count()*5;
     score -= black_queens.count()*9;
-    // mobility bonus
-    // TODO: add this
+    
+    std::cout << "Material score: " << score << std::endl;
+    
     // checkmate/draw checking
-    if (board.isInsufficientMaterial() || board.isRepetition() || !check && no_moves){
+    if (board.isInsufficientMaterial() || board.isRepetition()){
         score = 0;
-    };
-    if (check && no_moves && turn == Color::WHITE){
-        score = -10000 + ply;
-    }
-    if (turn == Color::BLACK){
-        score = -score;
+        std::cout << "Draw detected, setting score to 0" << std::endl;
     }
 
+    std::cout << "Final score: " << score << std::endl;
     return score;
 }
 

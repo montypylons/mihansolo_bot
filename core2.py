@@ -4,7 +4,7 @@ import chess.polyglot
 import random
 from scratch import piece_map
 import sys
-sys.path.append(r"C:\Users\DELL\Documents\mihansolo_bot\build\Release")
+sys.path.append(r"C:\Users\DELL\Documents\mihansolo_bot\build\Debug")
 import engine
 
 global counter
@@ -121,29 +121,22 @@ def find_book_move(board: chess.Board) -> chess.Move | None:
 
 def evaluate(board: chess.Board, ply: int = 0) -> int:
     value = 0
-    value = engine.evaluate(board.board_fen(), ply)
-    # black gets mated
-    if (
-        board.is_stalemate()
-        or board.is_insufficient_material()
-        or board.is_repetition()
-    ):
-        return 0  # draw
-    for square in chess.SQUARES:
+    value = engine.evaluate(board.fen(), ply)
+    print("value: ", value)
+
+    '''for square in chess.SQUARES:
         piece = board.piece_at(square)
         if (not piece == chess.Piece.from_symbol('K')) and (not piece == chess.Piece.from_symbol('k')) and piece:
             if piece.color:
                 value += piece_map[piece][square]
             else:
                 flipped_piece = chess.Piece(piece.piece_type, not piece.color)
-                value -= piece_map[flipped_piece][square]
+                value -= piece_map[flipped_piece][square]'''
     
     # These show the material imbalance of how many more points of white material there is
     # since winning material is usually better than development except in the opening.
 
-    return (
-        value if board.turn else -value
-    )  # should always return from the POV of side to move
+    return value  # C++ engine already returns from POV of side to move
 
 
 def search(board: chess.Board) -> PlayResult:
@@ -152,9 +145,13 @@ def search(board: chess.Board) -> PlayResult:
         print(f"Book move: {book_move}")
         return PlayResult(book_move, None)
     depth = 5
+    '''for move in board.legal_moves:
+        board.push(move)
+        eval_score, _ = negamax(float("-inf"), float("inf"), move, depth, board)
+        board.pop()
+        print(f"Negamax eval: {eval_score} for move: {move}, side to move: {board.turn}")'''
 
-    _, best_move = negamax(float("-inf"), float("inf"), None, depth, board)
-
+    best_move = negamax(float("-inf"), float("inf"), None, depth, board)
     if best_move:
         return PlayResult(best_move, None)
     else:

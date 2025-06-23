@@ -1,0 +1,10 @@
+^C:\USERS\DELL\DOCUMENTS\MIHANSOLO_BOT\BUILD\CMAKEFILES\A226FCB9C78D491A177906E98ED5FAF7\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/DELL/Documents/mihansolo_bot -BC:/Users/DELL/Documents/mihansolo_bot/build --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file C:/Users/DELL/Documents/mihansolo_bot/build/mihansolo_bot.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
