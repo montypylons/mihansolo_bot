@@ -2,6 +2,7 @@
 #include <tuple>
 #include <string>
 #include <pybind11/pybind11.h>
+#include <Windows.h>
 
 namespace py = pybind11;
 using namespace chess;
