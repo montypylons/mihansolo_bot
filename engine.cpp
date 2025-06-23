@@ -1,7 +1,9 @@
 #include "chess.hpp"
 #include <tuple>
 #include <string>
+#include <pybind11.h>
 
+namespace py = pybind11;
 using namespace chess;
 
 int evaluate(chess::Board board) {
