@@ -6,9 +6,8 @@
 #include <Windows.h>
 
 
-int negamax(int alpha, int beta, int depth, Board board){
-    // TODO: either here or in cython, I do not care
-    // must optimize since second greatest bottleneck after evaluations
+std::tuple<int, Move> negamax(int alpha, int beta, Move last_move, int depth, std::string fen, Board board, int ply=0){
+    
 }
 
 
