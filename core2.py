@@ -5,7 +5,7 @@ import random
 from scratch import piece_map
 import sys
 sys.path.append(r"C:\Users\DELL\Documents\mihansolo_bot\build\Debug")
-import engine
+import engine # type: ignore
 
 global counter
 counter = 1
