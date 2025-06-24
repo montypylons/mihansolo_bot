@@ -5,6 +5,13 @@
 #include <pybind11/pybind11.h>
 #include <Windows.h>
 
+
+int negamax(int alpha, int beta, int depth, Board board){
+    // TODO: either here or in cython, I do not care
+    // must optimize since second greatest bottleneck after evaluations
+}
+
+
 namespace py = pybind11;
 using namespace chess;
 
