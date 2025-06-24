@@ -4,7 +4,7 @@ import chess
 import engine
 # TODO: add unit testing, not this stuff
 
-def test_eval():
+def test_eval_lite():
     board3 = chess.Board("8/8/B4R2/7R/3pk3/P7/P1PPPP1P/2BQK3 w - - 11 37")
     print(core2.search(board3).move)
 
@@ -25,15 +25,15 @@ def main():
 
 def test(searcher=False) -> str:
     board1 = chess.Board("8/8/BR6/7R/3pk3/P7/P1PPPP1P/2BQK3 w - - 7 35")
-    board3 = chess.Board("8/8/B4R2/7R/3pk3/P7/P1PPPP1P/2BQK3 w - - 11 37")
+    # board3 = chess.Board("8/8/B4R2/7R/3pk3/P7/P1PPPP1P/2BQK3 w - - 11 37")
     # win_queen_puzzle = chess.Board("r5kr/p4ppp/5n2/3p4/8/1NQ3PP/qP3P1K/7R w - - 0 37")
-    boards = [board1, board3]
+    boards = [board1]# , board3]
     if not searcher:
         print("evaluations")
-        print(core2.evaluate(board1), core2.evaluate(board3))
+        print(core2.evaluate(board1))# , core2.evaluate(board3))
     searched_moves = []
     searched_moves.append(core2.search(board1).move)
-    searched_moves.append(core2.search(board3).move)
+    # searched_moves.append(core2.search(board3).move)
     print(searched_moves)
     # searched_moves.append(core2.search(win_queen_puzzle))
     '''if searched_moves[2] == chess.Move.from_uci("h1a1"):
@@ -42,9 +42,9 @@ def test(searcher=False) -> str:
         print("---------------------------TEST FAILED--------------------------")
         print(f"attempt:{searched_moves[2].move}. correct move: h1a1 ")'''
 
-    for i in range(2):
+    for i in range(1):
         if boards[i] is not None and searched_moves[i] is not None:
-            boards[i].push(searched_moves[i][0])
+            boards[i].push(searched_moves[i])
             if boards[i].is_checkmate():
                 boards[i].pop()
                 print("Test number", i, "attempt: ", searched_moves[i])
@@ -62,7 +62,24 @@ def test_eval():
         print(engine.evaluate(fen_string,0))
         print("="*100)
 
+# Test position where there is a mate-in-1
+fen = "8/8/BR6/7R/3pk3/P7/P1PPPP1P/2BQK3 w - - 7 35"
+board = chess.Board(fen)
+
+print(f"Testing all legal moves from FEN: {fen}")
+for move in board.legal_moves:
+    board.push(move)
+    print(f"Move: {move}, FEN: {board.fen()}")
+    print(f"  Evaluation: {core2.evaluate(board)}")
+    print(f"  Is checkmate: {board.is_checkmate()}")
+    print(f"  Is check: {board.is_check()}")
+    board.pop()
+
+# Now test the search function
+board = chess.Board(fen)
+result = core2.search(board)
+print(f"Search result: {result.move}")
 
 if __name__ == "__main__":
     # main()
-    print(test_eval())
+    print(test())

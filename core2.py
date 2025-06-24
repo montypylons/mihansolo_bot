@@ -145,13 +145,12 @@ def search(board: chess.Board) -> PlayResult:
         print(f"Book move: {book_move}")
         return PlayResult(book_move, None)
     depth = 5
-    '''for move in board.legal_moves:
-        board.push(move)
-        eval_score, _ = negamax(float("-inf"), float("inf"), move, depth, board)
-        board.pop()
-        print(f"Negamax eval: {eval_score} for move: {move}, side to move: {board.turn}")'''
+    
+    # Find the best move using negamax
+    best_eval, best_move = negamax(float("-inf"), float("inf"), None, depth, board)
+    
+    print(f"Best move found: {best_move} with eval: {best_eval}")
 
-    best_move = negamax(float("-inf"), float("inf"), None, depth, board)
     if best_move:
         return PlayResult(best_move, None)
     else:
@@ -178,15 +177,22 @@ def negamax(
         list(board.legal_moves), key=lambda move: mvv_laa(board, move), reverse=True
     )
 
+    print(f"At depth {depth}, searching moves: {[str(m) for m in legal_moves[:5]]}...")  # Debug
+
     for move in legal_moves:
+        print(f"Searching move {move} at depth {depth}")  # Debug
         board.push(move)
         score, _ = negamax(-beta, -alpha, move, depth - 1, board, ply + 1)
         score = -score  # Negamax: negate the score when returning up the tree
         board.pop()
+        print(f"Move {move} at depth {depth} got score {score}")  # Debug
         if score > best_eval:
             best_eval = score
             best_move = move
+            print(f"New best move at depth {depth}: {move} with score {score}")  # Debug
         alpha = max(alpha, score)
         if beta <= alpha:
+            print(f"Beta cutoff at depth {depth} for move {move}")  # Debug
             break
+    print(f"Returning eval {best_eval} for move {best_move} at depth {depth}")
     return best_eval, best_move
