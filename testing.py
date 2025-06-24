@@ -1,7 +1,7 @@
 from core import search
 import core2
 import chess
-import engine
+import engine # type: ignore
 # TODO: add unit testing, not this stuff
 
 def test_eval_lite():
@@ -63,4 +63,4 @@ def test_eval():
         print("="*100)
 
 if __name__ == "__main__":
-    print(test())
+    print(test_eval_lite())
