@@ -3,6 +3,9 @@ from chess.engine import PlayResult
 import chess.polyglot
 import random
 from scratch import piece_map
+import sys
+sys.path.append(r"C:\Users\DELL\Documents\mihansolo_bot\build\Debug")
+import engine # type: ignore
 
 global counter
 counter = 1
@@ -27,7 +30,6 @@ PIECE_VALUES = {
 
 
 def mvv_laa(board: chess.Board, move: chess.Move) -> tuple[int, int, int]:
-
     if board.is_capture(move):
         if board.is_en_passant(move):
             return (1, 1, -1)
@@ -36,16 +38,12 @@ def mvv_laa(board: chess.Board, move: chess.Move) -> tuple[int, int, int]:
         return (2, victim_value, -attacker_value)
     if board.gives_check(move):
         return (1,0,0)
-
-
     return (0, 0, 0)
 
 
 def is_quiet(board: chess.Board) -> bool:
-
     if any(board.is_capture(move) for move in board.legal_moves):
         return False
-
     return True
 
 
@@ -101,52 +99,7 @@ def find_book_move(board: chess.Board) -> chess.Move | None:
 
 
 def evaluate(board: chess.Board, ply: int = 0) -> int:
-    value = 0
-    if board.is_checkmate():
-        if board.turn:
-            value = -10000 + ply
-        elif not board.turn:
-            value = 10000 - ply
-        return value if board.turn else -value
-    # black gets mated
-    
-
-
-
-    if (
-        board.is_stalemate()
-        or board.is_insufficient_material()
-        or board.is_repetition()
-    ):
-        return 0  # draw
-    for square in chess.SQUARES:
-    
-        piece = board.piece_at(square)
-        if (not piece == chess.Piece.from_symbol('K')) and (not piece == chess.Piece.from_symbol('k')) and piece:
-            if piece.color:
-                value += piece_map[piece][square]
-            else:
-                flipped_piece = chess.Piece(piece.piece_type, not piece.color)
-                value -= piece_map[flipped_piece][square]
-    
-
-    value = value + len(board.pieces(chess.PAWN, chess.WHITE))
-    value = value + len(board.pieces(chess.KNIGHT, chess.WHITE)) * 3
-    value = value + len(board.pieces(chess.BISHOP, chess.WHITE)) * 3
-    value = value + len(board.pieces(chess.ROOK, chess.WHITE)) * 5
-    value = value + len(board.pieces(chess.QUEEN, chess.WHITE)) * 9
-
-    value = value - len(board.pieces(chess.PAWN, chess.BLACK))
-    value = value - len(board.pieces(chess.KNIGHT, chess.BLACK)) * 3
-    value = value - len(board.pieces(chess.BISHOP, chess.BLACK)) * 3
-    value = value - len(board.pieces(chess.ROOK, chess.BLACK)) * 5
-    value = value - len(board.pieces(chess.QUEEN, chess.BLACK)) * 9
-    # These show the material imbalance of how many more points of white material there is
-    # since winning material is usually better than development except in the opening.
-
-    return (
-        value if board.turn else -value
-    )  # should always return from the POV of side to move
+    return engine.evaluate(board.fen(), ply)  
 
 
 def search(board: chess.Board) -> PlayResult:
@@ -154,7 +107,7 @@ def search(board: chess.Board) -> PlayResult:
     if book_move:
         return PlayResult(book_move, None)
     depth = 5
-    _, best_move = negamax(float("-inf"), float("inf"), None, depth, board)
+    best_eval, best_move = negamax(float("-inf"), float("inf"), None, depth, board)
     if best_move:
         return PlayResult(best_move, None)
     else:
@@ -170,17 +123,13 @@ def game_over(board: chess.Board) -> bool:
 def negamax(
     alpha: float, beta: float, last_move: chess.Move, depth: int, board: chess.Board, ply: int=0
 ) -> tuple[float, chess.Move | None]:
-
     if depth == 0 or game_over(board):
-        # return quiescence_search(board, alpha, beta)[0], last_move
         return evaluate(board, ply), last_move
-
     best_move = None
     best_eval = float("-inf")
     legal_moves = sorted(
         list(board.legal_moves), key=lambda move: mvv_laa(board, move), reverse=True
     )
-
     for move in legal_moves:
         board.push(move)
         score, _ = negamax(-beta, -alpha, move, depth - 1, board, ply + 1)
