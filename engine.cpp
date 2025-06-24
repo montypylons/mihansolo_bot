@@ -9,40 +9,33 @@ namespace py = pybind11;
 using namespace chess;
 
 int evaluate(std::string fen, int ply=0) {
-    Board board = Board(fen); // from white's POV
-
-    // std::cout << "FEN: " << fen << std::endl;
-    // std::cout << "Side to move: " << (board.sideToMove()) << std::endl;
-    
-    // Check for checkmate: in check and no legal moves
+    Board board = Board(fen); 
     bool check = board.inCheck();
     Movelist moves;
-    movegen::legalmoves(moves, board);
     bool no_moves = moves.empty();
+    chess::Color side_to_move = board.sideToMove();
     
-    // std::cout << "Is check: " << (check ? "YES" : "NO") << std::endl;
-    // std::cout << "No legal moves: " << (no_moves ? "YES" : "NO") << std::endl;
-    
-    // Check for checkmate first - this should override all other evaluation
+    movegen::legalmoves(moves, board);
+
     if (check && no_moves) {
-        // std::cout << "Checkmate detected! Returning -10000 + " << ply << " = " << (-10000 + ply) << std::endl;
-        // In negamax, always return -10000 + ply when the side to move is checkmated
         return -10000 + ply;
     }
+    if (board.isInsufficientMaterial() || board.isRepetition() || (!check && no_moves)){
+        return 0;
+    }
+    // TODO: MAKE THIS RETURN FROM THE SIDE TO MOVE'S PERSPECTIVE
+    Bitboard pawns = board.pieces(PieceType::PAWN, side_to_move);
+    Bitboard knights = board.pieces(PieceType::KNIGHT, side_to_move);
+    Bitboard bishops = board.pieces(PieceType::BISHOP, side_to_move);
+    Bitboard rooks = board.pieces(PieceType::ROOK, side_to_move);
+    Bitboard queens = board.pieces(PieceType::QUEEN, side_to_move);
     
-    Bitboard pawns = board.pieces(PieceType::PAWN, Color::WHITE);
-    Bitboard knights = board.pieces(PieceType::KNIGHT, Color::WHITE);
-    Bitboard bishops = board.pieces(PieceType::BISHOP, Color::WHITE);
-    Bitboard rooks = board.pieces(PieceType::ROOK, Color::WHITE);
-    Bitboard queens = board.pieces(PieceType::QUEEN, Color::WHITE);
-    // black piece bitboards
-    Bitboard black_pawns = board.pieces(PieceType::PAWN, Color::BLACK);
-    Bitboard black_knights = board.pieces(PieceType::KNIGHT, Color::BLACK);
-    Bitboard black_bishops = board.pieces(PieceType::BISHOP, Color::BLACK);
-    Bitboard black_rooks = board.pieces(PieceType::ROOK, Color::BLACK);
-    Bitboard black_queens = board.pieces(PieceType::QUEEN, Color::BLACK);
+    Bitboard black_pawns = board.pieces(PieceType::PAWN, !side_to_move);
+    Bitboard black_knights = board.pieces(PieceType::KNIGHT, !side_to_move);
+    Bitboard black_bishops = board.pieces(PieceType::BISHOP, !side_to_move);
+    Bitboard black_rooks = board.pieces(PieceType::ROOK, !side_to_move);
+    Bitboard black_queens = board.pieces(PieceType::QUEEN, !side_to_move);
 
-    Color turn = board.sideToMove();
     int score = 0;
     
     // material eval
@@ -57,16 +50,8 @@ int evaluate(std::string fen, int ply=0) {
     score -= black_bishops.count()*3;
     score -= black_rooks.count()*5;
     score -= black_queens.count()*9;
-    
-    // std::cout << "Material score: " << score << std::endl;
-    
-    // checkmate/draw checking
-    if (board.isInsufficientMaterial() || board.isRepetition()){
-        score = 0;
-        // std::cout << "Draw detected, setting score to 0" << std::endl;
-    }
+        
 
-    // std::cout << "Final score: " << score << std::endl;
     return score;
 }
 

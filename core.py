@@ -54,33 +54,19 @@ def quiescence_search(
 ) -> tuple[int, chess.Move]:
     global counter
     counter = counter + 1
-    print(
-        f"QS depth: {qdepth}, fen: {board.fen()}",
-        "Search number: ",
-        counter,
-        "alpha: ",
-        alpha,
-        "beta: ",
-        beta,
-    )
     static_eval = evaluate(board)
-
     if static_eval >= beta:  # standing pat evaluation, new feature
         return static_eval, None
-
     if static_eval > alpha:
         alpha = static_eval
-
     if is_quiet(board) or board.is_game_over() or qdepth == 0:
         return (
             static_eval,
             None,
         )  # best_move at this point is none since search hasn't started yet
-
     else:
         best_eval = float("-inf")
         best_move = None
-
         for move in board.legal_moves:
             if not board.is_capture(move):
                 continue
@@ -88,11 +74,10 @@ def quiescence_search(
             attacker_piece_type = board.piece_type_at(move.from_square)
             if (
                 PIECE_VALUES[captured_piece_type] >= PIECE_VALUES[attacker_piece_type]
-            ):  # or board.gives_check(move):
+            ):
                 board.push(move)
-                print("searching move: ", move, "in position: ", board)
                 score, _ = quiescence_search(board, -beta, -alpha, qdepth - 1)
-                score = -score  # Negamax algo, same as minimax (impler to implement
+                score = -score  # Negamax algo, same as minimax (impler to implement)
                 board.pop()
                 if score >= beta:
                     return score, move
@@ -110,7 +95,6 @@ def find_book_move(board: chess.Board) -> chess.Move | None:
         with chess.polyglot.open_reader("gm2600.bin") as reader:
             result = random.choice(list(reader.find_all(board))).move
             if result:
-                print(f"Found book move: {result}")
                 return result
     except Exception as e:
         return None  # did not work, book doesn't have move for that position
@@ -168,12 +152,9 @@ def evaluate(board: chess.Board, ply: int = 0) -> int:
 def search(board: chess.Board) -> PlayResult:
     book_move = find_book_move(board)
     if book_move:
-        print(f"Book move: {book_move}")
         return PlayResult(book_move, None)
     depth = 5
-
     _, best_move = negamax(float("-inf"), float("inf"), None, depth, board)
-
     if best_move:
         return PlayResult(best_move, None)
     else:

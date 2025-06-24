@@ -62,24 +62,5 @@ def test_eval():
         print(engine.evaluate(fen_string,0))
         print("="*100)
 
-# Test position where there is a mate-in-1
-fen = "8/8/BR6/7R/3pk3/P7/P1PPPP1P/2BQK3 w - - 7 35"
-board = chess.Board(fen)
-
-print(f"Testing all legal moves from FEN: {fen}")
-for move in board.legal_moves:
-    board.push(move)
-    print(f"Move: {move}, FEN: {board.fen()}")
-    print(f"  Evaluation: {core2.evaluate(board)}")
-    print(f"  Is checkmate: {board.is_checkmate()}")
-    print(f"  Is check: {board.is_check()}")
-    board.pop()
-
-# Now test the search function
-board = chess.Board(fen)
-result = core2.search(board)
-print(f"Search result: {result.move}")
-
 if __name__ == "__main__":
-    # main()
     print(test())
