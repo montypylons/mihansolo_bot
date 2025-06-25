@@ -87,6 +87,12 @@ using namespace chess;
 
 Board board = Board();
 
+// Move get_book_move
+// Movelist mvv_laa
+// bool game_over
+// ^ implement these functions soon
+
+
 void make_move(std::string move) {
     board.makeMove(uci::uciToMove(board, move));
 }
