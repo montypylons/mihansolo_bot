@@ -29,7 +29,7 @@ PIECE_VALUES = {
 # TODO: add NNUE eval
 
 
-def mvv_laa(board: chess.Board, move: chess.Move) -> tuple[int, int, int]:
+def mvv_laa(board: chess.Board, move: chess.Move) -> tuple[int, int, int]: # TODO: Move to C++
     if board.is_capture(move):
         if board.is_en_passant(move):
             return (1, 1, -1)
@@ -41,18 +41,18 @@ def mvv_laa(board: chess.Board, move: chess.Move) -> tuple[int, int, int]:
     return (0, 0, 0)
 
 
-def is_quiet(board: chess.Board) -> bool:
+def is_quiet(board: chess.Board) -> bool: # TODO: Move to C++
     if any(board.is_capture(move) for move in board.legal_moves):
         return False
     return True
 
 
-def quiescence_search(
-    board: chess.Board, alpha: float, beta: float, qdepth: int = 4
+def quiescence_search( # Deal with this later
+    board: chess.Board, alpha: float, beta: float, qdepth: int = 4, ply = 0
 ) -> tuple[int, chess.Move]:
     global counter
     counter = counter + 1
-    static_eval = evaluate(board)
+    static_eval = engine.evaluate(board, ply)
     if static_eval >= beta:  # standing pat evaluation, new feature
         return static_eval, None
     if static_eval > alpha:
@@ -88,7 +88,7 @@ def quiescence_search(
 
 
 # chess functions
-def find_book_move(board: chess.Board) -> chess.Move | None:
+def find_book_move(board: chess.Board) -> chess.Move | None: # Move to C++
     try:
         with chess.polyglot.open_reader("gm2600.bin") as reader:
             result = random.choice(list(reader.find_all(board))).move
@@ -97,44 +97,39 @@ def find_book_move(board: chess.Board) -> chess.Move | None:
     except Exception as e:
         return None  # did not work, book doesn't have move for that position
 
-
-def evaluate(board: chess.Board, ply: int = 0) -> int:
-    return engine.evaluate(board.fen(), ply)  
-
-
-def search(board: chess.Board) -> PlayResult:
+def search() -> PlayResult:
     book_move = find_book_move(board)
     if book_move:
         return PlayResult(book_move, None)
     depth = 5
-    best_eval, best_move = negamax(float("-inf"), float("inf"), None, depth, board)
+    best_eval, best_move = negamax(float("-inf"), float("inf"), None, depth)
     if best_move:
         return PlayResult(best_move, None)
     else:
         raise TypeError("negamax returned a None value, something went wrong")
 
 
-def game_over(board: chess.Board) -> bool:
+def game_over(board: chess.Board) -> bool: # Move to C++
     if board.is_checkmate() or board.is_stalemate() or board.is_insufficient_material():
         return True
     return False
 
 
 def negamax(
-    alpha: float, beta: float, last_move: chess.Move, depth: int, board: chess.Board, ply: int=0
+    alpha: float, beta: float, last_move: chess.Move, depth: int, ply: int=0
 ) -> tuple[float, chess.Move | None]:
     if depth == 0 or game_over(board):
-        return engine.evaluate(board.fen(), ply), last_move
+        return engine.evaluate(ply), last_move
     best_move = None
     best_eval = float("-inf")
     legal_moves = sorted(
         list(board.legal_moves), key=lambda move: mvv_laa(board, move), reverse=True
-    )
+    ) # Move movegen to C++
     for move in legal_moves:
-        board.push(move)
+        engine.make_move(move)
         score, _ = negamax(-beta, -alpha, move, depth - 1, board, ply + 1)
-        score = -score  # Negamax: negate the score when returning up the tree
-        board.pop()
+        score = -score  
+        engine.unmake_move(move)
         if score > best_eval:
             best_eval = score
             best_move = move
