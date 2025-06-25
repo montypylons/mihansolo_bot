@@ -5,8 +5,11 @@ import engine # type: ignore
 # TODO: add unit testing, not this stuff
 
 def test_eval_lite():
-    board3 = chess.Board("8/8/B4R2/7R/3pk3/P7/P1PPPP1P/2BQK3 w - - 11 37")
-    print(core2.search(board3).move)
+    board3 = "8/8/B4R2/7R/3pk3/P7/P1PPPP1P/2BQK3 w - - 11 37"
+    result = search(board3)
+    print("Result:", result)
+    print("Move:", getattr(result, "move", None))
+    return search(board3).move
 
 
 def main():

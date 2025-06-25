@@ -1,14 +1,10 @@
 import chess
-from chess.engine import PlayResult
-import chess.polyglot
-import random
+import chess.engine
 from scratch import piece_map
 import sys
 sys.path.append(r"C:\Users\DELL\Documents\mihansolo_bot\build\Debug")
-import engine # type: ignore
-
-global counter
-counter = 1
+import engine # type: ignore 
+# pylint doesnt like C++ extensions
 
 PIECE_VALUES = {
     chess.PAWN: 1,
@@ -88,29 +84,30 @@ def quiescence_search( # Deal with this later
 
 
 # chess functions
-def find_book_move(board: chess.Board) -> chess.Move | None: # Move to C++
+def find_book_move() -> chess.Move | None: # Move to C++
     try:
-        with chess.polyglot.open_reader("gm2600.bin") as reader:
-            result = random.choice(list(reader.find_all(board))).move
-            if result:
-                return result
-    except Exception as e:
-        return None  # did not work, book doesn't have move for that position
+        move = engine.book_move()
+        if move:
+            return move
+    except:
+        return None
 
-def search() -> PlayResult:
-    book_move = find_book_move(board)
+def search(fen: str=None) -> chess.engine.PlayResult:
+    if fen:
+        engine.position_set(fen)
+    book_move = find_book_move()
     if book_move:
-        return PlayResult(book_move, None)
-    depth = 5
-    best_eval, best_move = negamax(float("-inf"), float("inf"), None, depth)
+        return chess.engine.PlayResult(book_move, None)
+    depth = 2
+    _, best_move = negamax(float("-inf"), float("inf"), None, depth)
     if best_move:
-        return PlayResult(best_move, None)
+        return chess.engine.PlayResult(best_move, None)
     else:
         raise TypeError("negamax returned a None value, something went wrong")
 
 
 def game_over(board: chess.Board) -> bool: # Move to C++
-    if board.is_checkmate() or board.is_stalemate() or board.is_insufficient_material():
+    if engine.game_over():
         return True
     return False
 
@@ -118,16 +115,17 @@ def game_over(board: chess.Board) -> bool: # Move to C++
 def negamax(
     alpha: float, beta: float, last_move: chess.Move, depth: int, ply: int=0
 ) -> tuple[float, chess.Move | None]:
-    if depth == 0 or game_over(board):
+    if depth == 0 or engine.game_over():
         return engine.evaluate(ply), last_move
     best_move = None
     best_eval = float("-inf")
-    legal_moves = sorted(
-        list(board.legal_moves), key=lambda move: mvv_laa(board, move), reverse=True
-    ) # Move movegen to C++
+    # legal_moves = sorted(
+      #   engine.get_legal_moves(), key=lambda move: mvv_laa(move), reverse=True
+    # ) # Move movegen to C++
+    legal_moves = engine.get_legal_moves()
     for move in legal_moves:
         engine.make_move(move)
-        score, _ = negamax(-beta, -alpha, move, depth - 1, board, ply + 1)
+        score, _ = negamax(-beta, -alpha, move, depth - 1, ply + 1)
         score = -score  
         engine.unmake_move(move)
         if score > best_eval:
