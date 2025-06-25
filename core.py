@@ -124,7 +124,7 @@ def negamax(
     alpha: float, beta: float, last_move: chess.Move, depth: int, board: chess.Board, ply: int=0
 ) -> tuple[float, chess.Move | None]:
     if depth == 0 or game_over(board):
-        return evaluate(board, ply), last_move
+        return engine.evaluate(board.fen(), ply), last_move
     best_move = None
     best_eval = float("-inf")
     legal_moves = sorted(
