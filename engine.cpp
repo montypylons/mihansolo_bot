@@ -84,18 +84,25 @@ int piece_square[7][64] = {
 namespace py = pybind11;
 using namespace chess;
 
+board board = Board();
 
-uint64_t flipVertical(uint64_t x) {
-    return _byteswap_uint64(x);
+void make_move(std::string move) {
+    board.makeMove(move);
 }
 
-int evaluate(std::string fen, int ply=0) {
+void unmake_move(std::string move) {
+    board.unmakeMove(move);
+}
+
+Move book_move () {
+    return Move("e2e4"); // TODO: implement later
+}
+
+int evaluate(int ply=0) {
     int score = 0;
-    bool is_endgame;
-    Board board = Board(fen); 
+    bool is_endgame; 
     bool check = board.inCheck();
     Movelist moves;
-    
     chess::Color side_to_move = board.sideToMove();
     int turn = board.sideToMove() == chess::Color::WHITE ? 1 : -1;
 
