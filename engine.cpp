@@ -84,18 +84,19 @@ int piece_square[7][64] = {
 namespace py = pybind11;
 using namespace chess;
 
-board board = Board();
+
+Board board = Board();
 
 void make_move(std::string move) {
-    board.makeMove(move);
+    board.makeMove(uci::uciToMove(board, move));
 }
 
 void unmake_move(std::string move) {
-    board.unmakeMove(move);
+    board.unmakeMove(uci::uciToMove(board, move));
 }
 
-Move book_move () {
-    return Move("e2e4"); // TODO: implement later
+Move book_move (std::string move) {
+    return uci::uciToMove(board, move);
 }
 
 int evaluate(int ply=0) {
