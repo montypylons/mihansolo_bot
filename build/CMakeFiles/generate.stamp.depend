@@ -1,7 +1,6 @@
 # CMake generation dependency list for this directory.
 C:/Program Files/CMake/share/cmake-4.0/Modules/CMakeCInformation.cmake
 C:/Program Files/CMake/share/cmake-4.0/Modules/CMakeCXXInformation.cmake
-C:/Program Files/CMake/share/cmake-4.0/Modules/CMakeCheckCompilerFlagCommonPatterns.cmake
 C:/Program Files/CMake/share/cmake-4.0/Modules/CMakeCommonLanguageInclude.cmake
 C:/Program Files/CMake/share/cmake-4.0/Modules/CMakeGenericSystem.cmake
 C:/Program Files/CMake/share/cmake-4.0/Modules/CMakeInitializeConfigs.cmake
@@ -9,22 +8,13 @@ C:/Program Files/CMake/share/cmake-4.0/Modules/CMakeLanguageInformation.cmake
 C:/Program Files/CMake/share/cmake-4.0/Modules/CMakeRCInformation.cmake
 C:/Program Files/CMake/share/cmake-4.0/Modules/CMakeSystemSpecificInformation.cmake
 C:/Program Files/CMake/share/cmake-4.0/Modules/CMakeSystemSpecificInitialize.cmake
-C:/Program Files/CMake/share/cmake-4.0/Modules/CheckCXXCompilerFlag.cmake
-C:/Program Files/CMake/share/cmake-4.0/Modules/CheckCXXSourceCompiles.cmake
 C:/Program Files/CMake/share/cmake-4.0/Modules/Compiler/CMakeCommonCompilerMacros.cmake
 C:/Program Files/CMake/share/cmake-4.0/Modules/Compiler/MSVC-C.cmake
 C:/Program Files/CMake/share/cmake-4.0/Modules/Compiler/MSVC-CXX.cmake
 C:/Program Files/CMake/share/cmake-4.0/Modules/Compiler/MSVC.cmake
-C:/Program Files/CMake/share/cmake-4.0/Modules/FindPackageHandleStandardArgs.cmake
-C:/Program Files/CMake/share/cmake-4.0/Modules/FindPackageMessage.cmake
-C:/Program Files/CMake/share/cmake-4.0/Modules/FindPython/Support.cmake
-C:/Program Files/CMake/share/cmake-4.0/Modules/FindPython3.cmake
 C:/Program Files/CMake/share/cmake-4.0/Modules/Internal/CMakeCLinkerInformation.cmake
 C:/Program Files/CMake/share/cmake-4.0/Modules/Internal/CMakeCXXLinkerInformation.cmake
 C:/Program Files/CMake/share/cmake-4.0/Modules/Internal/CMakeCommonLinkerInformation.cmake
-C:/Program Files/CMake/share/cmake-4.0/Modules/Internal/CheckCompilerFlag.cmake
-C:/Program Files/CMake/share/cmake-4.0/Modules/Internal/CheckFlagCommonConfig.cmake
-C:/Program Files/CMake/share/cmake-4.0/Modules/Internal/CheckSourceCompiles.cmake
 C:/Program Files/CMake/share/cmake-4.0/Modules/Linker/MSVC-C.cmake
 C:/Program Files/CMake/share/cmake-4.0/Modules/Linker/MSVC-CXX.cmake
 C:/Program Files/CMake/share/cmake-4.0/Modules/Linker/MSVC.cmake
@@ -37,11 +27,6 @@ C:/Program Files/CMake/share/cmake-4.0/Modules/Platform/Windows-MSVC-CXX.cmake
 C:/Program Files/CMake/share/cmake-4.0/Modules/Platform/Windows-MSVC.cmake
 C:/Program Files/CMake/share/cmake-4.0/Modules/Platform/Windows.cmake
 C:/Program Files/CMake/share/cmake-4.0/Modules/Platform/WindowsPaths.cmake
-C:/Users/DELL/Documents/mihansolo_bot/.venv/Lib/site-packages/pybind11/share/cmake/pybind11/pybind11Common.cmake
-C:/Users/DELL/Documents/mihansolo_bot/.venv/Lib/site-packages/pybind11/share/cmake/pybind11/pybind11Config.cmake
-C:/Users/DELL/Documents/mihansolo_bot/.venv/Lib/site-packages/pybind11/share/cmake/pybind11/pybind11ConfigVersion.cmake
-C:/Users/DELL/Documents/mihansolo_bot/.venv/Lib/site-packages/pybind11/share/cmake/pybind11/pybind11NewTools.cmake
-C:/Users/DELL/Documents/mihansolo_bot/.venv/Lib/site-packages/pybind11/share/cmake/pybind11/pybind11Targets.cmake
 C:/Users/DELL/Documents/mihansolo_bot/CMakeLists.txt
 C:/Users/DELL/Documents/mihansolo_bot/build/CMakeFiles/4.0.3/CMakeCCompiler.cmake
 C:/Users/DELL/Documents/mihansolo_bot/build/CMakeFiles/4.0.3/CMakeCXXCompiler.cmake

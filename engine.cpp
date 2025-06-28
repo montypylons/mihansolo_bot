@@ -2,23 +2,26 @@
 #include <tuple>
 #include <string>
 #include <iostream>
-#include <pybind11/pybind11.h>
 #include "reader.hpp"
 #include <optional>
 #include <vector>
 #include <map>
-#include <pybind11/stl.h>
 #include <algorithm>
 
-namespace py = pybind11;
 using namespace chess;
 Board board = Board();
 Reader::Book book;
+Movelist get_legal_moves()
 
-bool game_over(Board board)
 {
     Movelist moves;
     movegen::legalmoves(moves, board);
+    return moves;
+}
+
+bool game_over()
+{
+    Movelist moves = get_legal_moves();
     bool no_moves = moves.empty();
     if ((no_moves) | board.isHalfMoveDraw() | board.isInsufficientMaterial() | board.isRepetition())
     {
@@ -29,7 +32,6 @@ bool game_over(Board board)
         return false;
     }
 }
-
 // tables are from Tomasz Michniewski's Simplified Evaluation Function
 int piece_square[7][64] = {
     {
@@ -105,7 +107,7 @@ int piece_square[7][64] = {
     },
 };
 
-int mvv_lva(std::string move_uci)
+int move_ordering(std::string move_uci)
 
 {
     Move move = uci::uciToMove(board, move_uci);
@@ -124,48 +126,10 @@ int mvv_lva(std::string move_uci)
     return -100;
 }
 
-Movelist get_legal_moves()
-
-{
-    Movelist moves;
-    movegen::legalmoves(moves, board);
-    return moves;
-}
-
 void init_book()
 {
 
     book.Load("gm2600.bin");
-}
-
-bool game_over()
-{
-    Movelist moves;
-    movegen::legalmoves(moves, board);
-    bool no_moves = moves.empty();
-    if (no_moves | board.isHalfMoveDraw() | board.isRepetition() | board.isInsufficientMaterial())
-    {
-        return true;
-    }
-    return false;
-}
-void make_move(std::string move)
-{
-    Move real_move = uci::uciToMove(board, move);
-
-    if (board.at(real_move.from()) == chess::Piece::NONE)
-    {
-        std::cout << "FATAL: ILLEGAL MOVE" << uci::moveToUci(real_move) << "FEN" << board.getFen() << std::endl;
-    }
-    std::cout << "[DEBUG] FEN before move: " << board.getFen() << std::endl;
-    std::cout << "[DEBUG] Move UCI: " << move << std::endl;
-
-    board.makeMove(real_move);
-}
-
-void unmake_move(std::string move)
-{
-    board.unmakeMove(uci::uciToMove(board, move));
 }
 
 std::optional<std::string> book_move()
@@ -316,10 +280,9 @@ int evaluate(int ply = 0)
     return score;
 }
 
-std::tuple<int, Move> negamax(
-    int alpha, int beta, Move last_move, int depth, int ply)
+std::tuple<int, Move> negamax(int alpha, int beta, Move last_move, int depth, int ply)
 {
-    if (depth == 0 | (game_over(board)))
+    if (depth == 0 | (game_over()))
     {
         return std::make_tuple(evaluate(ply), last_move);
     }
@@ -347,4 +310,9 @@ std::tuple<int, Move> negamax(
         }
     }
     return std::make_tuple(best_eval, best_move);
+}
+
+void main()
+{
+    std::cout << "testing , implement main later" << std::endl;
 }
