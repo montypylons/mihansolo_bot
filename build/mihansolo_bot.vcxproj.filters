@@ -70,6 +70,9 @@
     <ClCompile Include="C:\Users\DELL\Documents\mihansolo_bot\engine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="C:\Users\DELL\Documents\mihansolo_bot\testing.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="C:\Users\DELL\Documents\mihansolo_bot\.venv\Lib\site-packages\debugpy\_vendored\pydevd\_pydevd_frame_eval\release_mem.h">

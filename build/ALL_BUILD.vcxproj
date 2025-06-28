@@ -188,6 +188,10 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <Project>{AC63D380-FC9B-32CA-9838-C4B07A2D78AB}</Project>
       <Name>mihansolo_bot</Name>
     </ProjectReference>
+    <ProjectReference Include="C:\Users\DELL\Documents\mihansolo_bot\build\testing.vcxproj">
+      <Project>{0ADA02CE-25F1-33EF-B3C7-666047F476CD}</Project>
+      <Name>testing</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

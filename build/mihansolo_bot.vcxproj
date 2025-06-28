@@ -409,6 +409,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClInclude Include="C:\Users\DELL\Documents\mihansolo_bot\.venv\Lib\site-packages\zmq\utils\zmq_compat.h" />
     <ClInclude Include="C:\Users\DELL\Documents\mihansolo_bot\chess.hpp" />
     <ClCompile Include="C:\Users\DELL\Documents\mihansolo_bot\engine.cpp" />
+    <ClCompile Include="C:\Users\DELL\Documents\mihansolo_bot\testing.cpp" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

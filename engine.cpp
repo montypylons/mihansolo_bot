@@ -3,28 +3,32 @@
 #include <string>
 #include <iostream>
 #include <pybind11/pybind11.h>
-#include <Windows.h>
 #include "reader.hpp"
 #include <optional>
 #include <vector>
 #include <map>
+#include <pybind11/stl.h>
+#include <algorithm>
 
 namespace py = pybind11;
 using namespace chess;
 Board board = Board();
 Reader::Book book;
 
-void position_set(std::string fen_string)
+bool game_over(Board board)
 {
-    board.setFen(fen_string);
+    Movelist moves;
+    movegen::legalmoves(moves, board);
+    bool no_moves = moves.empty();
+    if ((no_moves) | board.isHalfMoveDraw() | board.isInsufficientMaterial() | board.isRepetition())
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
-
-int piece_values[5] = {
-    100,
-    300,
-    300,
-    500,
-    900};
 
 // tables are from Tomasz Michniewski's Simplified Evaluation Function
 int piece_square[7][64] = {
@@ -102,29 +106,30 @@ int piece_square[7][64] = {
 };
 
 int mvv_lva(std::string move_uci)
+
 {
     Move move = uci::uciToMove(board, move_uci);
-    if (board.isCapture(move) | !((move.typeOf()) == Move::CASTLING))
+    if (board.isCapture(move) && (move.typeOf() != Move::CASTLING && Move::ENPASSANT))
     {
-        int from_value = piece_values[static_cast<int>(board.at(move.from()))];
-        int to_value = piece_values[static_cast<int>(board.at(move.to()))];
+        if ((board.at(move.from()) == Piece::NONE) | (board.at(move.to()) == Piece::NONE))
+        {
+            std::cerr << "[Warning] Tried to evaluate a capture move with no target piece (bad move?): " << move_uci << "\n";
+            return -100;
+        }
+
+        int from_value = 3; // piece_values[static_cast<int>(board.at(move.from()))];
+        int to_value = 3;   // piece_values[static_cast<int>(board.at(move.to()))];
         return to_value - from_value;
     }
     return -100;
 }
 
-std::vector<std::string> get_legal_moves(const Board &board)
+Movelist get_legal_moves()
+
 {
     Movelist moves;
     movegen::legalmoves(moves, board);
-
-    std::vector<std::string> uciMoves;
-    uciMoves.reserve(moves.size());
-    for (const auto &move : moves)
-    {
-        uciMoves.push_back(uci::moveToUci(move));
-    }
-    return uciMoves;
+    return moves;
 }
 
 void init_book()
@@ -132,8 +137,6 @@ void init_book()
 
     book.Load("gm2600.bin");
 }
-
-void init_book();
 
 bool game_over()
 {
@@ -148,7 +151,16 @@ bool game_over()
 }
 void make_move(std::string move)
 {
-    board.makeMove(uci::uciToMove(board, move));
+    Move real_move = uci::uciToMove(board, move);
+
+    if (board.at(real_move.from()) == chess::Piece::NONE)
+    {
+        std::cout << "FATAL: ILLEGAL MOVE" << uci::moveToUci(real_move) << "FEN" << board.getFen() << std::endl;
+    }
+    std::cout << "[DEBUG] FEN before move: " << board.getFen() << std::endl;
+    std::cout << "[DEBUG] Move UCI: " << move << std::endl;
+
+    board.makeMove(real_move);
 }
 
 void unmake_move(std::string move)
@@ -156,14 +168,14 @@ void unmake_move(std::string move)
     board.unmakeMove(uci::uciToMove(board, move));
 }
 
-std::string book_move()
+std::optional<std::string> book_move()
 {
     Reader::BookMoves book_moves = book.GetBookMoves((uint64_t)board.zobrist());
     if (!(book_moves.empty()))
     {
         return Reader::ConvertBookMoveToUci(Reader::RandomBookMove(book_moves));
     }
-    return NULL;
+    return std::nullopt;
 }
 
 int evaluate(int ply = 0)
@@ -304,15 +316,35 @@ int evaluate(int ply = 0)
     return score;
 }
 
-PYBIND11_MODULE(engine, m)
+std::tuple<int, Move> negamax(
+    int alpha, int beta, Move last_move, int depth, int ply)
 {
-    m.doc() = "engine cpp"; // optional module docstring
-
-    m.def("evaluate", &evaluate, "evaluate the position");
-    m.def("position_set", &position_set, "set the board position from FEN");
-    m.def("game_over", &game_over, "check if the game is over");
-    m.def("get_legal_moves", &get_legal_moves, "get all legal moves");
-    m.def("make_move", &make_move, "make a move");
-    m.def("unmake_move", &unmake_move, "unmake a move");
-    m.def("book_move", &book_move, "get a book move");
+    if (depth == 0 | (game_over(board)))
+    {
+        return std::make_tuple(evaluate(ply), last_move);
+    }
+    Move best_move = NULL;
+    int best_eval = std::numeric_limits<int>::max();
+    Movelist legal_moves = get_legal_moves();
+    for (const auto &move : legal_moves)
+    {
+        std::cout << "[DEBUG]: cpp: depth = " << depth << ", move = " << uci::moveToUci(move) << std::endl;
+        board.makeMove(move);
+        int score;
+        Move dummy_move;
+        std::tie(score, dummy_move) = negamax(-beta, -alpha, move, depth - 1, ply + 1);
+        score = -score;
+        board.unmakeMove(move);
+        if (score > best_eval)
+        {
+            best_eval = score;
+            best_move = move;
+        }
+        alpha = std::max(alpha, score);
+        if (beta <= alpha)
+        {
+            break;
+        }
+    }
+    return std::make_tuple(best_eval, best_move);
 }
