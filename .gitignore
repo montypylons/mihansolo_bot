@@ -1,16 +1,40 @@
+# YAML
 *.yml
-**/__pycache__
+
+# Python
+**/__pycache__/
+
+# Chess engine files
 /engines/*
 !/engines/README.md
+
+# Logs and generated data
 lichess_bot_auto_logs/*
-!/build/
-.vscode/*
-.vs/*
-*.pgn
-*.log
-*.txt
 TEMP/*
+
+# Editor configs
+.vscode/
+.vs/
+.idea/
+*.user
+
+# Build artifacts
+**/build/
+**/CMakeFiles/
+**/CMakeCache.txt
+*.o
+*.obj
+*.exe
+*.dll
+*.so
+*.a
+*.lib
+
+# File types to ignore
+*.log
+*.pgn
+*.txt
+
+# Temporary / lock files
 .~lock.*.ods#
-**/CMakeFiles
-**/build
 **/.cursor
