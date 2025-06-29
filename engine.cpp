@@ -7,10 +7,16 @@
 #include <vector>
 #include <map>
 #include <algorithm>
+#include <limits>
+#include <chrono>
 
 using namespace chess;
+
 Board board = Board();
 Reader::Book book;
+int intial_alpha = std::numeric_limits<int>::min();
+int inital_beta = std::numeric_limits<int>::max();
+
 Movelist get_legal_moves()
 
 {
@@ -286,12 +292,13 @@ std::tuple<int, Move> negamax(int alpha, int beta, Move last_move, int depth, in
     {
         return std::make_tuple(evaluate(ply), last_move);
     }
-    Move best_move = NULL;
-    int best_eval = std::numeric_limits<int>::max();
+    Move best_move = Move::NO_MOVE;
+    int best_eval = std::numeric_limits<int>::min();
     Movelist legal_moves = get_legal_moves();
     for (const auto &move : legal_moves)
     {
-        std::cout << "[DEBUG]: cpp: depth = " << depth << ", move = " << uci::moveToUci(move) << std::endl;
+        // std::cout << "[DEBUG]: cpp: depth = " << depth << ", move = " << uci::moveToUci(move) << std::endl;
+        // added for debugging
         board.makeMove(move);
         int score;
         Move dummy_move;
@@ -312,7 +319,24 @@ std::tuple<int, Move> negamax(int alpha, int beta, Move last_move, int depth, in
     return std::make_tuple(best_eval, best_move);
 }
 
+void search(std::string fen)
+{
+    int eval;
+    Move returned_move;
+    if (!(fen == "0"))
+    {
+        board.setFen(fen);
+        std::tie(eval, returned_move) = negamax(intial_alpha, inital_beta, Move::NO_MOVE, 5, 0);
+    }
+    std::cout << "Move: " << uci::moveToUci(returned_move) << std::endl;
+}
+
 void main()
 {
-    std::cout << "testing , implement main later" << std::endl;
+    auto start = std::chrono::high_resolution_clock::now();
+    search("8/8/8/8/8/1k1r4/8/1K6 b - - 0 1");
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
+    double seconds = static_cast<double>(duration) / 1000000000.0;
+    std::cout << std::to_string(seconds) << " seconds" << std::endl;
 }
