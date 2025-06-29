@@ -331,10 +331,14 @@ void search(std::string fen)
     std::cout << "Move: " << uci::moveToUci(returned_move) << std::endl;
 }
 
+void start_uci(){
+    // TODO: add stuff later
+}
+
 void main()
 {
     auto start = std::chrono::high_resolution_clock::now();
-    search("8/8/8/8/8/1k1r4/8/1K6 b - - 0 1");
+    search("r1bqk2r/pppp1ppp/2n2n2/1B2p3/1b6/1P2P3/PBPP1PPP/RN1QK1NR w KQkq - 3 5");
     auto end = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
     double seconds = static_cast<double>(duration) / 1000000000.0;
