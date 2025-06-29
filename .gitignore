@@ -9,7 +9,7 @@ lichess_bot_auto_logs/*
 *.log
 *.txt
 TEMP/*
-*.~lock.improvements.ods#
-!/CMakeFiles
-!/build
-!/.cursor
+.~lock.*.ods#
+**/CMakeFiles
+**/build
+**/.cursor
