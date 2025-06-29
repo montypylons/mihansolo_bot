@@ -16,10 +16,11 @@ TEMP/*
 .vscode/
 .vs/
 .idea/
+build/
 *.user
 
 # Build artifacts
-**/build/
+# **/build/
 **/CMakeFiles/
 **/CMakeCache.txt
 *.o
