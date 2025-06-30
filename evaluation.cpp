@@ -1,21 +1,13 @@
 #include "chess.hpp"
-#include <tuple>
 #include <string>
 #include <iostream>
-#include "reader.hpp"
-#include <optional>
-#include <vector>
-#include <map>
 #include <algorithm>
-#include <limits>
-#include <chrono>
-#include <sstream>
+#include <vector>
 
 using namespace chess;
 
-auto board = chess::Board();
-
 int piece_square[7][64] = {
+
     {
         0, 0, 0, 0, 0, 0, 0, 0,         // rank 1 (a1-h1)
         5, 10, 10, -20, -20, 10, 10, 5, // rank 2 (a2-h2) - the -20 row
@@ -89,17 +81,41 @@ int piece_square[7][64] = {
     },
 };
 
-int evaluate(int ply = 0)
+// eval functions, each function should do one and only one thing
+// should all return from POV of side to move & int
+
+std::vector<Bitboard> generate_bitboards(Board board) // move functions like this to utils.cpp later
 {
-    int score = 0;
+    chess::Color side_to_move = board.sideToMove();
+
+    Bitboard pawns = board.pieces(PieceType::PAWN, side_to_move);
+    Bitboard knights = board.pieces(PieceType::KNIGHT, side_to_move);
+    Bitboard bishops = board.pieces(PieceType::BISHOP, side_to_move);
+    Bitboard rooks = board.pieces(PieceType::ROOK, side_to_move);
+    Bitboard queens = board.pieces(PieceType::QUEEN, side_to_move);
+
+    Bitboard enemy_pawns = board.pieces(PieceType::PAWN, !side_to_move);
+    Bitboard enemy_knights = board.pieces(PieceType::KNIGHT, !side_to_move);
+    Bitboard enemy_bishops = board.pieces(PieceType::BISHOP, !side_to_move);
+    Bitboard enemy_rooks = board.pieces(PieceType::ROOK, !side_to_move);
+    Bitboard enemy_queens = board.pieces(PieceType::QUEEN, !side_to_move);
+}
+
+int material_eval(Board board)
+{
+}
+
+int piece_square_eval(Board board)
+{
+}
+
+int game_over_eval(Board board, int ply = 0)
+{
     bool is_endgame;
     bool check = board.inCheck();
     Movelist moves;
-    chess::Color side_to_move = board.sideToMove();
-
     movegen::legalmoves(moves, board);
     bool no_moves = moves.empty();
-
     if (check && no_moves)
     {
         return -10000 + ply;
@@ -108,19 +124,15 @@ int evaluate(int ply = 0)
     {
         return 0;
     }
+}
 
-    // TODO: MAKE THIS RETURN FROM THE SIDE TO MOVE'S PERSPECTIVE
-    Bitboard pawns = board.pieces(PieceType::PAWN, side_to_move);
-    Bitboard knights = board.pieces(PieceType::KNIGHT, side_to_move);
-    Bitboard bishops = board.pieces(PieceType::BISHOP, side_to_move);
-    Bitboard rooks = board.pieces(PieceType::ROOK, side_to_move);
-    Bitboard queens = board.pieces(PieceType::QUEEN, side_to_move);
+int main_eval(Board board)
+{
+}
 
-    Bitboard black_pawns = board.pieces(PieceType::PAWN, !side_to_move);
-    Bitboard black_knights = board.pieces(PieceType::KNIGHT, !side_to_move);
-    Bitboard black_bishops = board.pieces(PieceType::BISHOP, !side_to_move);
-    Bitboard black_rooks = board.pieces(PieceType::ROOK, !side_to_move);
-    Bitboard black_queens = board.pieces(PieceType::QUEEN, !side_to_move);
+int evaluate(Board board, int ply = 0)
+{
+    int score = 0;
 
     int p_count = pawns.count();
     int n_count = knights.count();
