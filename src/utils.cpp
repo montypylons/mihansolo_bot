@@ -1,10 +1,9 @@
-#include "include/chess.hpp"
+#include "chess.hpp"
+#include "utils.hpp"
 #include <string>
 #include <iostream>
 #include <algorithm>
 #include <vector>
-
-using namespace chess;
 
 int piece_square[7][64] = {
 
@@ -84,19 +83,21 @@ int piece_square[7][64] = {
 // eval functions, each function should do one and only one thing
 // should all return from POV of side to move & int
 
-std::vector<Bitboard> generate_bitboards(Board board) // move functions like this to utils.cpp later
+std::vector<chess::Bitboard> generate_bitboards(chess::Board board) // move functions like this to utils.cpp later
 {
     chess::Color side_to_move = board.sideToMove();
 
-    Bitboard pawns = board.pieces(PieceType::PAWN, side_to_move);
-    Bitboard knights = board.pieces(PieceType::KNIGHT, side_to_move);
-    Bitboard bishops = board.pieces(PieceType::BISHOP, side_to_move);
-    Bitboard rooks = board.pieces(PieceType::ROOK, side_to_move);
-    Bitboard queens = board.pieces(PieceType::QUEEN, side_to_move);
+    chess::Bitboard pawns = board.pieces(chess::PieceType::PAWN, side_to_move);
+    chess::Bitboard knights = board.pieces(chess::PieceType::KNIGHT, side_to_move);
+    chess::Bitboard bishops = board.pieces(chess::PieceType::BISHOP, side_to_move);
+    chess::Bitboard rooks = board.pieces(chess::PieceType::ROOK, side_to_move);
+    chess::Bitboard queens = board.pieces(chess::PieceType::QUEEN, side_to_move);
 
-    Bitboard enemy_pawns = board.pieces(PieceType::PAWN, !side_to_move);
-    Bitboard enemy_knights = board.pieces(PieceType::KNIGHT, !side_to_move);
-    Bitboard enemy_bishops = board.pieces(PieceType::BISHOP, !side_to_move);
-    Bitboard enemy_rooks = board.pieces(PieceType::ROOK, !side_to_move);
-    Bitboard enemy_queens = board.pieces(PieceType::QUEEN, !side_to_move);
+    chess::Bitboard enemy_pawns = board.pieces(chess::PieceType::PAWN, !side_to_move);
+    chess::Bitboard enemy_knights = board.pieces(chess::PieceType::KNIGHT, !side_to_move);
+    chess::Bitboard enemy_bishops = board.pieces(chess::PieceType::BISHOP, !side_to_move);
+    chess::Bitboard enemy_rooks = board.pieces(chess::PieceType::ROOK, !side_to_move);
+    chess::Bitboard enemy_queens = board.pieces(chess::PieceType::QUEEN, !side_to_move);
+
+    return std::vector<chess::Bitboard> names = {pawns, knights, bishops, rooks, queens, enemy_pawns, enemy_knights, enemy_bishops, enemy_rooks, enemy_queens};
 }

@@ -1,12 +1,14 @@
 #include "chess.hpp"
+#include "utils.hpp"
+#include "evaluation.hpp"
 #include <string>
 #include <iostream>
 #include <algorithm>
 #include <vector>
 
-using namespace chess;
 
-int material_eval(Board board)
+
+int material_eval(chess::Board board)
 {
     int p_count = pawns.count();
     int n_count = knights.count();
@@ -32,38 +34,38 @@ int material_eval(Board board)
     material_score += q_count_black * 900 * -1;
 }
 
-int piece_square_eval(Board board)
+int piece_square_eval(chess::Board board)
 {
     while (pawns)
     {
         int square = pawns.pop();
-        int p_score = piece_square[0][side_to_move == Color::WHITE ? square : square ^ 56];
+        int p_score = piece_square[0][side_to_move == chess::Color::WHITE ? square : square ^ 56];
         positional_score += p_score;
     }
     while (knights)
     {
         int square = knights.pop();
-        int n_score = piece_square[1][side_to_move == Color::WHITE ? square : square ^ 56];
+        int n_score = piece_square[1][side_to_move == chess::Color::WHITE ? square : square ^ 56];
 
         positional_score += n_score;
     }
     while (bishops)
     {
         int square = bishops.pop();
-        int b_score = piece_square[2][side_to_move == Color::WHITE ? square : square ^ 56];
+        int b_score = piece_square[2][side_to_move == chess::Color::WHITE ? square : square ^ 56];
 
         positional_score += b_score;
     }
     while (rooks)
     {
         int square = rooks.pop();
-        int r_score = piece_square[3][side_to_move == Color::WHITE ? square : square ^ 56];
+        int r_score = piece_square[3][side_to_move == chess::Color::WHITE ? square : square ^ 56];
         positional_score += r_score;
     }
     while (queens)
     {
         int square = queens.pop();
-        int q_score = piece_square[4][side_to_move == Color::WHITE ? square : square ^ 56];
+        int q_score = piece_square[4][side_to_move == chess::Color::WHITE ? square : square ^ 56];
 
         positional_score += q_score;
     }
@@ -71,41 +73,41 @@ int piece_square_eval(Board board)
     while (black_pawns)
     {
         int square = black_pawns.pop();
-        int p_score = piece_square[0][side_to_move == Color::WHITE ? square : square ^ 56];
+        int p_score = piece_square[0][side_to_move == chess::Color::WHITE ? square : square ^ 56];
         positional_score -= p_score;
     }
     while (black_knights)
     {
         int square = black_knights.pop();
-        int n_score = piece_square[1][side_to_move == Color::WHITE ? square : square ^ 56];
+        int n_score = piece_square[1][side_to_move == chess::Color::WHITE ? square : square ^ 56];
         positional_score -= n_score;
     }
     while (black_bishops)
     {
         int square = black_bishops.pop();
-        int b_score = piece_square[2][side_to_move == Color::WHITE ? square : square ^ 56];
+        int b_score = piece_square[2][side_to_move == chess::Color::WHITE ? square : square ^ 56];
         positional_score -= b_score;
     }
     while (black_rooks)
     {
         int square = black_rooks.pop();
-        int r_score = piece_square[3][side_to_move == Color::WHITE ? square : square ^ 56];
+        int r_score = piece_square[3][side_to_move == chess::Color::WHITE ? square : square ^ 56];
         positional_score -= r_score;
     }
     while (black_queens)
     {
         int square = black_queens.pop();
-        int q_score = piece_square[4][side_to_move == Color::WHITE ? square : square ^ 56];
+        int q_score = piece_square[4][side_to_move == chess::Color::WHITE ? square : square ^ 56];
         positional_score -= q_score;
     }
 }
 
-int game_over_eval(Board board, int ply = 0)
+int game_over_eval(chess::Board board, int ply = 0)
 {
     bool is_endgame;
     bool check = board.inCheck();
-    Movelist moves;
-    movegen::legalmoves(moves, board);
+    chess::Movelist moves;
+    chess::movegen::legalmoves(moves, board);
     bool no_moves = moves.empty();
     if (check && no_moves)
     {
@@ -117,11 +119,12 @@ int game_over_eval(Board board, int ply = 0)
     }
 }
 
-int main_eval(Board board)
+int main_eval(chess::Board board)
 {
+    auto bitboards = utils::generate_bitboards
 }
 
-int evaluate(Board board, int ply = 0)
+int evaluate(chess::Board board, int ply = 0)
 {
     int score = 0;
     int positional_score = 0;
