@@ -1,6 +1,5 @@
-@echo off
+rm -r build
+mkdir build
 cd build
 cmake ..
-cd ..
-cmake --build build --target engine
-cd build/debug
+cmake --build . --config Release

@@ -10,6 +10,7 @@
 #include <limits>
 #include <chrono>
 #include <sstream>
+#include "evaluation.hpp"
 
 using namespace chess;
 
@@ -81,7 +82,7 @@ std::tuple<int, Move> negamax(int alpha, int beta, Move last_move, int depth, in
 {
     if (depth == 0 || (game_over()))
     {
-        return std::make_tuple(evaluate(ply), last_move);
+        return std::make_tuple(evaluation::main_eval(board, ply), last_move);
     }
     Move best_move = Move::NO_MOVE;
     int best_eval = std::numeric_limits<int>::min();
@@ -214,45 +215,9 @@ void start_uci()
     }
 }
 
-void test()
-{
-    std::vector<std::string> fens = {
-        "r1bqk2r/pppp1ppp/2n2n2/1B2p3/1b6/1P2P3/PBPP1PPP/RN1QK1NR w KQkq - 3 5",
-        "8/8/8/8/8/1k1r4/8/1K6 b - - 0 1"};
-    /* std::vector<std::string> eval_fens = {
-        "2k5/ppp2p1p/8/2b5/8/8/4r1p1/K7 w - - 4 50",
-        "8/8/8/8/8/1k1r4/8/1K6 b - - 0 1"}; */
-
-    std::vector<std::string> eval_fens = {"8/8/8/8/8/1k1r4/8/1K6 b - - 0 1", "rnbqkb1r/pppppppp/5n2/8/8/5N2/PPPPPPPP/RNBQKB1R w KQkq - 0 1", "rnbqkb1r/pppppppp/5n2/8/8/7N/PPPPPPPP/RNBQKB1R w KQkq - 0 1"};
-
-    /* for (const auto &fen : fens)
-    {
-        auto start = std::chrono::high_resolution_clock::now();
-        std::string bestmove = search(fen);
-        auto end = std::chrono::high_resolution_clock::now();
-
-        double seconds = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count() / 1000000000.0;
-
-        std::cout << "FEN: " << fen << "\n";
-        std::cout << "Best move: " << bestmove << " | Time: " << seconds << "s\n\n";
-    } */
-    for (const auto &fen : eval_fens)
-    {
-        board.setFen(fen);
-        auto start2 = std::chrono::high_resolution_clock::now();
-        int best_eval = evaluate();
-        auto end2 = std::chrono::high_resolution_clock::now();
-
-        double seconds2 = std::chrono::duration_cast<std::chrono::nanoseconds>(end2 - start2).count() / 1000000000.0;
-
-        std::cout << "FEN: " << fen << "\n";
-        std::cout << std::fixed << "Best eval: " << std::to_string(best_eval) << " | Time: " << seconds2 << "s\n\n";
-    }
-}
 
 void main()
 {
     init_book();
-    // start_uci();
-    test();
+    start_uci();
 }

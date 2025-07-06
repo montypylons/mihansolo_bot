@@ -4,6 +4,15 @@
 #include <iostream>
 #include <algorithm>
 #include <vector>
+namespace utils
+{
+int piece_values[5] = {
+    100, // pawn
+    300, // knight
+    300, // bishop
+    500, // rook
+    900, // queen
+};
 
 int piece_square[7][64] = {
 
@@ -102,4 +111,5 @@ std::tuple<std::vector<chess::Bitboard>, std::vector<chess::Bitboard>> generate_
     return std::make_tuple(
         std::vector<chess::Bitboard>{pawns, knights, bishops, rooks, queens},
         std::vector<chess::Bitboard>{enemy_pawns, enemy_knights, enemy_bishops, enemy_rooks, enemy_queens});
+}
 }
