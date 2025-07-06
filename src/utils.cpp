@@ -83,7 +83,7 @@ int piece_square[7][64] = {
 // eval functions, each function should do one and only one thing
 // should all return from POV of side to move & int
 
-std::vector<chess::Bitboard> generate_bitboards(chess::Board board) // move functions like this to utils.cpp later
+std::tuple<std::vector<chess::Bitboard>, std::vector<chess::Bitboard>> generate_bitboards(chess::Board board) // move functions like this to utils.cpp later
 {
     chess::Color side_to_move = board.sideToMove();
 
@@ -99,5 +99,7 @@ std::vector<chess::Bitboard> generate_bitboards(chess::Board board) // move func
     chess::Bitboard enemy_rooks = board.pieces(chess::PieceType::ROOK, !side_to_move);
     chess::Bitboard enemy_queens = board.pieces(chess::PieceType::QUEEN, !side_to_move);
 
-    return std::vector<chess::Bitboard> names = {pawns, knights, bishops, rooks, queens, enemy_pawns, enemy_knights, enemy_bishops, enemy_rooks, enemy_queens};
+    return std::make_tuple(
+        std::vector<chess::Bitboard>{pawns, knights, bishops, rooks, queens},
+        std::vector<chess::Bitboard>{enemy_pawns, enemy_knights, enemy_bishops, enemy_rooks, enemy_queens});
 }
