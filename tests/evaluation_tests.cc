@@ -40,13 +40,17 @@ TEST(BitboardTest, BasicAssertions)
 
 TEST(MaterialEvalTest, BasicAssertions)
 {
-  int eval1 = evaluation::material_eval(board, pawns, knights, bishops, rooks, queens,
+  int material_evaluation = evaluation::material_eval(board, pawns, knights, bishops, rooks, queens,
                                         black_pawns, black_knights, black_bishops, black_rooks, black_queens);
-  ASSERT_EQ(eval1, 300);
+  ASSERT_EQ(material_evaluation, 300);
 }
 
 TEST(PSQTTest, BasicAssertions)
 {
-  int eval2 = evaluation::piece_square_eval(board, our_pieces, enemy_pieces);
-  ASSERT_EQ(eval2, 10);
+  int psqt_eval = evaluation::piece_square_eval(board, our_pieces, enemy_pieces);
+  ASSERT_EQ(psqt_eval, 10);
+}
+
+TEST(GameOverTest, BasicAssertions){
+  // TODO: implement this to test game_over_eval
 }
