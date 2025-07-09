@@ -5,8 +5,11 @@
 #include <iostream>
 #include <algorithm>
 #include <vector>
-#include "spdlog/spdlog.h"
+#include "spdlog/logger.h"
 #include "magic_enum.hpp"
+#include "spdlog/sinks/basic_file_sink.h"
+
+auto logger = spdlog::basic_logger_mt("basic_logger2", "logs/basic-log.txt");
 
 namespace evaluation
 {
@@ -57,30 +60,30 @@ namespace evaluation
     {
         // initialize variables
         int positional_score = 0;
-        spdlog::info("positional_score", positional_score);
+        logger->info("positional_score", positional_score);
         // our pieces
         for (auto bitboard : pieces)
         {
             while (bitboard)
             {
                 int square = bitboard.pop();
-                spdlog::info("square {}", square);
+                logger->info("square {}", square);
 
                 auto piece = board.at(chess::Square(square));
-                spdlog::info("piece {}", magic_enum::enum_name(piece.type().internal()));
+                logger->info("piece {}", magic_enum::enum_name(piece.type().internal()));
 
                 int piece_index = static_cast<int>(piece.type());
-                spdlog::info("piece_index {}", piece_index);
+                logger->info("piece_index {}", piece_index);
 
-                square =  board.at(chess::Square(square)).color() == chess::Color::WHITE ? square : square ^ 56;
-                spdlog::info("updated square {}", square);
+                square = board.at(chess::Square(square)).color() == chess::Color::WHITE ? square : square ^ 56;
+                logger->info("updated square {}", square);
 
                 int psqt_value = utils::piece_square[piece_index][square];
-                spdlog::info("called utils::piece_square[{}][{}] = {}", piece_index, square, psqt_value);
+                logger->info("called utils::piece_square[{}][{}] = {}", piece_index, square, psqt_value);
 
-                spdlog::info("psqt_value {}", psqt_value);
+                logger->info("psqt_value {}", psqt_value);
                 positional_score += psqt_value;
-                spdlog::info("new positional_score {}", positional_score);
+                logger->info("new positional_score {}", positional_score);
             }
         }
         // enemy pieces
@@ -89,29 +92,28 @@ namespace evaluation
             while (bitboard)
             {
                 int square = bitboard.pop();
-                spdlog::info("ENEMY square {}", square);
+                logger->info("ENEMY square {}", square);
 
                 auto piece = board.at(chess::Square(square));
-                spdlog::info("ENEMY piece {}", magic_enum::enum_name(piece.type().internal()));
+                logger->info("ENEMY piece {}", magic_enum::enum_name(piece.type().internal()));
 
                 int piece_index = static_cast<int>(piece.type());
-                spdlog::info("ENEMY piece_index {}", piece_index);
+                logger->info("ENEMY piece_index {}", piece_index);
 
-                square =  board.at(chess::Square(square)).color() == chess::Color::WHITE ? square : square ^ 56;
-                spdlog::info("ENEMY updated square {}", square);
+                square = board.at(chess::Square(square)).color() == chess::Color::WHITE ? square : square ^ 56;
+                logger->info("ENEMY updated square {}", square);
 
                 int psqt_value = utils::piece_square[piece_index][square];
-                spdlog::info("ENEMY called utils::piece_square[{}][{}] = {}", piece_index, square, psqt_value);
+                logger->info("ENEMY called utils::piece_square[{}][{}] = {}", piece_index, square, psqt_value);
 
-                spdlog::info("ENEMY psqt_value = -{} (since subtracted from positional_score )", psqt_value);
+                logger->info("ENEMY psqt_value = -{} (since subtracted from positional_score )", psqt_value);
                 positional_score -= psqt_value;
-                spdlog::info("ENEMY new positional_score {}", positional_score);
+                logger->info("ENEMY new positional_score {}", positional_score);
             }
         }
 
-        spdlog::info("returning final PSQT score of {}", positional_score);
+        logger->info("returning final PSQT score of {}", positional_score);
         return positional_score;
-        
     }
 
     std::optional<int> game_over_eval(chess::Board board, int ply)

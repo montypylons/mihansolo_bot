@@ -11,8 +11,12 @@
 #include <chrono>
 #include <sstream>
 #include "evaluation.hpp"
+#include "spdlog/sinks/basic_file_sink.h"
+#include "spdlog/logger.h"
 
 using namespace chess;
+
+auto logger2 = spdlog::basic_logger_mt("basic_logger", "logs/basic-log.txt");
 
 Board board = Board();
 Reader::Book book;
@@ -23,6 +27,7 @@ Movelist get_legal_moves()
 
 {
     Movelist moves;
+    logger2->info("board: {}", board.getFen());
     movegen::legalmoves(moves, board);
     return moves;
 }
@@ -33,15 +38,15 @@ bool game_over()
     bool no_moves = moves.empty();
     if ((no_moves) || board.isHalfMoveDraw() || board.isInsufficientMaterial() || board.isRepetition())
     {
+        logger2->info("Game over detected: no legal moves or draw conditions met.");
         return true;
     }
     else
     {
+        logger2->info("game not over");
         return false;
     }
 }
-// tables are from Tomasz Michniewski's Simplified Evaluation Function
-
 
 int move_ordering(std::string move_uci)
 
@@ -64,8 +69,8 @@ int move_ordering(std::string move_uci)
 
 void init_book()
 {
-
     book.Load("C:/Users/DELL/Documents/mihansolo_bot/gm2600.bin");
+    logger2->info("successfuly initiated book");
 }
 
 std::optional<std::string> book_move()
@@ -73,8 +78,11 @@ std::optional<std::string> book_move()
     Reader::BookMoves book_moves = book.GetBookMoves((uint64_t)board.zobrist());
     if (!(book_moves.empty()))
     {
-        return Reader::ConvertBookMoveToUci(Reader::RandomBookMove(book_moves));
+        std::string found_move = Reader::ConvertBookMoveToUci(Reader::RandomBookMove(book_moves));
+        logger2->info("book move {} found for position {}", found_move, board.getFen());
+        return found_move;
     }
+    logger2->info("no book move found for position {}", board.getFen());
     return std::nullopt;
 }
 
@@ -82,7 +90,10 @@ std::tuple<int, Move> negamax(int alpha, int beta, Move last_move, int depth, in
 {
     if (depth == 0 || (game_over()))
     {
-        return std::make_tuple(evaluation::main_eval(board, ply), last_move);
+        logger2->info("found leaf node at depth {}, ply {}, board {} with last move {}", depth, ply, board.getFen(), uci::moveToUci(last_move));
+        int leaf_eval = evaluation::main_eval(board, ply);
+        logger2->info("leaf eval {} on position {}", leaf_eval, board.getFen());
+        return std::make_tuple(leaf_eval, last_move);
     }
     Move best_move = Move::NO_MOVE;
     int best_eval = std::numeric_limits<int>::min();
@@ -113,8 +124,9 @@ std::tuple<int, Move> negamax(int alpha, int beta, Move last_move, int depth, in
 std::string search(const std::string &fen)
 {
     if (fen != "0")
+    {
         board.setFen(fen);
-
+    }
     auto bookmove = book_move();
     if (bookmove.has_value())
     {
@@ -131,6 +143,7 @@ std::string search(const std::string &fen)
     }
 
     std::string move_uci = uci::moveToUci(returned_move);
+    logger2->info("negamax believes best move {} in position {}", move_uci, board.getFen());
 
     return move_uci;
 }
@@ -206,7 +219,7 @@ void start_uci()
         }
         else if (token == "setoption")
         {
-            // Silently ignore UCI options for now (they're declared, but not applied)
+            // nothing except the DPRK missle program
         }
         else
         {
@@ -214,7 +227,6 @@ void start_uci()
         }
     }
 }
-
 
 void main()
 {
