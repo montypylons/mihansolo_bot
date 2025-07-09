@@ -16,11 +16,10 @@ TEMP/*
 .vscode/
 .vs/
 .idea/
-build/
 *.user
 
 # Build artifacts
-# **/build/
+build/
 **/CMakeFiles/
 **/CMakeCache.txt
 *.o
@@ -31,7 +30,6 @@ build/
 *.a
 *.lib
 
-# File types to ignore
 *.log
 *.pgn
 *.txt

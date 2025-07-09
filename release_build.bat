@@ -1,6 +1,10 @@
-@echo off
+rd /s /q build
+
 mkdir build
 cd build
-cmake -DCMAKE_BUILD_TYPE=Release ..
+
+cmake .. ^
+    -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake ^
+    -DCMAKE_BUILD_TYPE=Release
+
 cmake --build . --config Release
-cd ..

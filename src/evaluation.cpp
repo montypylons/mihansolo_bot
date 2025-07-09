@@ -65,9 +65,19 @@ namespace evaluation
             {
                 int square = bitboard.pop();
                 spdlog::info("square {}", square);
+
                 auto piece = board.at(chess::Square(square));
                 spdlog::info("piece {}", magic_enum::enum_name(piece.type().internal()));
-                int psqt_value = utils::piece_square[utils::piece_values[static_cast<int>(piece.type())]][board.at(chess::Square(square)).color() == chess::Color::WHITE ? square : square ^ 56];
+
+                int piece_index = static_cast<int>(piece.type());
+                spdlog::info("piece_index {}", piece_index);
+
+                square =  board.at(chess::Square(square)).color() == chess::Color::WHITE ? square : square ^ 56;
+                spdlog::info("updated square {}", square);
+
+                int psqt_value = utils::piece_square[piece_index][square];
+                spdlog::info("called utils::piece_square[{}][{}] = {}", piece_index, square, psqt_value);
+
                 spdlog::info("psqt_value {}", psqt_value);
                 positional_score += psqt_value;
                 spdlog::info("new positional_score {}", positional_score);
@@ -80,12 +90,22 @@ namespace evaluation
             {
                 int square = bitboard.pop();
                 spdlog::info("ENEMY square {}", square);
+
                 auto piece = board.at(chess::Square(square));
                 spdlog::info("ENEMY piece {}", magic_enum::enum_name(piece.type().internal()));
-                int psqt_value = utils::piece_square[utils::piece_values[static_cast<int>(piece.type())]][board.at(chess::Square(square)).color() == chess::Color::WHITE ? square : square ^ 56];
-                spdlog::info("ENEMY psqt_value -{} (since subtracted from the total)", psqt_value);
+
+                int piece_index = static_cast<int>(piece.type());
+                spdlog::info("ENEMY piece_index {}", piece_index);
+
+                square =  board.at(chess::Square(square)).color() == chess::Color::WHITE ? square : square ^ 56;
+                spdlog::info("ENEMY updated square {}", square);
+
+                int psqt_value = utils::piece_square[piece_index][square];
+                spdlog::info("ENEMY called utils::piece_square[{}][{}] = {}", piece_index, square, psqt_value);
+
+                spdlog::info("ENEMY psqt_value = -{} (since subtracted from positional_score )", psqt_value);
                 positional_score -= psqt_value;
-                spdlog::info("new positional_score {}", positional_score);
+                spdlog::info("ENEMY new positional_score {}", positional_score);
             }
         }
 
@@ -123,7 +143,6 @@ namespace evaluation
         if (!(result == std::nullopt))
         {
             return result.value();
-            // TODO: getting error no suitable conversion function
         }
 
         auto generated_bitboards = initialize_bitboards(board);

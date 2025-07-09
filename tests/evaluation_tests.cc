@@ -55,17 +55,23 @@ TEST(MaterialEvalTest, BasicAssertions)
 
 TEST(PSQTTest, BasicAssertions)
 {
-    chess::Board board1("r4rk1/bppn2p1/p1nppq1p/4p3/PP2P3/1QPPBN1P/5PP1/R4RK1 b - - 3 15");
+    chess::Board board1("r1bqkbnr/pppppppp/n7/8/8/2N5/PPPPPPPP/R1BQKBNR w KQkq - 2 2");
     auto generated_bitboards = evaluation::initialize_bitboards(board1);
 
     auto our_pieces = std::get<0>(generated_bitboards);
     auto enemy_pieces = std::get<1>(generated_bitboards);
 
     int psqt_eval = evaluation::piece_square_eval(board1, our_pieces, enemy_pieces);
-    ASSERT_EQ(psqt_eval, 10);
+    ASSERT_EQ(psqt_eval, 40); // verified with hand count
 }
 
 TEST(GameOverTest, BasicAssertions)
 {
-    // TODO: implement this to test game_over_eval
+    chess::Board board1("r1bqkbnr/pppp1Qp1/2n4p/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 2 2");
+    auto result = evaluation::game_over_eval(board1, 0);
+    chess::Board board2("r1bqkbnr/pppppppp/n7/8/8/2N5/PPPPPPPP/R1BQKBNR w KQkq - 2 2");
+    auto result2 = evaluation::game_over_eval(board2, 0);
+    ASSERT_EQ(result, -10000);
+    ASSERT_EQ(result2, std::nullopt);
+
 }
