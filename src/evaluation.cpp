@@ -79,12 +79,19 @@ namespace evaluation
             while (bitboard)
             {
                 int square = bitboard.pop();
+                spdlog::info("ENEMY square {}", square);
                 auto piece = board.at(chess::Square(square));
-                positional_score -= utils::piece_square[0][board.at(chess::Square(square)).color() == chess::Color::WHITE ? square : square ^ 56];
+                spdlog::info("ENEMY piece {}", magic_enum::enum_name(piece.type().internal()));
+                int psqt_value = utils::piece_square[utils::piece_values[static_cast<int>(piece.type())]][board.at(chess::Square(square)).color() == chess::Color::WHITE ? square : square ^ 56];
+                spdlog::info("ENEMY psqt_value -{} (since subtracted from the total)", psqt_value);
+                positional_score -= psqt_value;
+                spdlog::info("new positional_score {}", positional_score);
             }
         }
 
+        spdlog::info("returning final PSQT score of {}", positional_score);
         return positional_score;
+        
     }
 
     std::optional<int> game_over_eval(chess::Board board, int ply)
