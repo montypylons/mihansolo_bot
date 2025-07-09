@@ -5,6 +5,8 @@
 #include <iostream>
 #include <algorithm>
 #include <vector>
+#include "spdlog/spdlog.h"
+#include "magic_enum.hpp"
 
 namespace evaluation
 {
@@ -55,14 +57,20 @@ namespace evaluation
     {
         // initialize variables
         int positional_score = 0;
+        spdlog::info("positional_score", positional_score);
         // our pieces
         for (auto bitboard : pieces)
         {
             while (bitboard)
             {
                 int square = bitboard.pop();
+                spdlog::info("square {}", square);
                 auto piece = board.at(chess::Square(square));
-                positional_score += utils::piece_square[utils::piece_values[static_cast<int>(piece.type())]][board.at(chess::Square(square)).color() == chess::Color::WHITE ? square : square ^ 56];
+                spdlog::info("piece {}", magic_enum::enum_name(piece.type().internal()));
+                int psqt_value = utils::piece_square[utils::piece_values[static_cast<int>(piece.type())]][board.at(chess::Square(square)).color() == chess::Color::WHITE ? square : square ^ 56];
+                spdlog::info("psqt_value {}", psqt_value);
+                positional_score += psqt_value;
+                spdlog::info("new positional_score {}", positional_score);
             }
         }
         // enemy pieces
@@ -107,7 +115,7 @@ namespace evaluation
 
         if (!(result == std::nullopt))
         {
-            return result.value(); 
+            return result.value();
             // TODO: getting error no suitable conversion function
         }
 

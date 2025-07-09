@@ -4,12 +4,6 @@
     <ClCompile Include="C:\Users\DELL\Documents\mihansolo_bot\src\engine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\DELL\Documents\mihansolo_bot\src\evaluation.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Users\DELL\Documents\mihansolo_bot\src\utils.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="C:\Users\DELL\Documents\mihansolo_bot\CMakeLists.txt" />

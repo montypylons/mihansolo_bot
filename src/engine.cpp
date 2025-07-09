@@ -65,7 +65,7 @@ int move_ordering(std::string move_uci)
 void init_book()
 {
 
-    book.Load("gm2600.bin");
+    book.Load("C:/Users/DELL/Documents/mihansolo_bot/gm2600.bin");
 }
 
 std::optional<std::string> book_move()
