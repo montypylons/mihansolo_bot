@@ -135,7 +135,7 @@ std::string search(const std::string &fen)
 
     Move returned_move;
     int eval;
-    std::tie(eval, returned_move) = negamax(intial_alpha, inital_beta, Move::NO_MOVE, 6, 0);
+    std::tie(eval, returned_move) = negamax(intial_alpha, inital_beta, Move::NO_MOVE, 4, 0);
 
     if (returned_move == Move::NO_MOVE)
     {
