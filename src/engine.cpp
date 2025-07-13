@@ -41,10 +41,10 @@ namespace engine
 
     {
         chess::Move move = chess::uci::uciToMove(board, move_uci);
-        if (board.isCapture(move) && (move.typeOf() != chess::Move::CASTLING) && (move.typeOf() !=
-            chess::Move::ENPASSANT))
+        if (board.isCapture(move) && move.typeOf() != chess::Move::CASTLING && move.typeOf() !=
+            chess::Move::ENPASSANT)
         {
-            if ((board.at(move.from()) == chess::Piece::NONE) || (board.at(move.to()) == chess::Piece::NONE))
+            if (board.at(move.from()) == chess::Piece::NONE || board.at(move.to()) == chess::Piece::NONE)
             {
                 std::cerr << "[Warning] Tried to evaluate a capture move with no target piece (bad move?): " << move_uci
                     << "\n";
@@ -65,8 +65,8 @@ namespace engine
 
     std::optional<std::string> book_move(const chess::Board& board)
     {
-        Reader::BookMoves book_moves = book.GetBookMoves((uint64_t)board.zobrist());
-        if (!(book_moves.empty()))
+        Reader::BookMoves book_moves = book.GetBookMoves(board.zobrist());
+        if (!book_moves.empty())
         {
             std::string found_move = Reader::ConvertBookMoveToUci(Reader::RandomBookMove(book_moves));
             return found_move;
@@ -77,7 +77,7 @@ namespace engine
     std::tuple<int, chess::Move> negamax(chess::Board& board, int alpha, const int& beta, const chess::Move& last_move,
                                          const int& depth, const int& ply)
     {
-        if (depth == 0 || (game_over(board)))
+        if (depth == 0 || game_over(board))
         {
             int leaf_eval = evaluation::main_eval(board, ply);
             return std::make_tuple(leaf_eval, last_move);
