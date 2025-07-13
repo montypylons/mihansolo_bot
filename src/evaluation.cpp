@@ -5,11 +5,7 @@
 #include <iostream>
 #include <algorithm>
 #include <vector>
-#include "spdlog/logger.h"
 #include "magic_enum.hpp"
-#include "spdlog/sinks/basic_file_sink.h"
-
-auto logger = spdlog::basic_logger_mt("basic_logger2", "logs/basic-log.txt");
 
 namespace evaluation
 {
@@ -60,30 +56,22 @@ namespace evaluation
     {
         // initialize variables
         int positional_score = 0;
-        logger->info("positional_score", positional_score);
         // our pieces
         for (auto bitboard : pieces)
         {
             while (bitboard)
             {
                 int square = bitboard.pop();
-                logger->info("square {}", square);
 
                 auto piece = board.at(chess::Square(square));
-                logger->info("piece {}", magic_enum::enum_name(piece.type().internal()));
 
                 int piece_index = static_cast<int>(piece.type());
-                logger->info("piece_index {}", piece_index);
 
                 square = board.at(chess::Square(square)).color() == chess::Color::WHITE ? square : square ^ 56;
-                logger->info("updated square {}", square);
 
                 int psqt_value = utils::piece_square[piece_index][square];
-                logger->info("called utils::piece_square[{}][{}] = {}", piece_index, square, psqt_value);
 
-                logger->info("psqt_value {}", psqt_value);
                 positional_score += psqt_value;
-                logger->info("new positional_score {}", positional_score);
             }
         }
         // enemy pieces
@@ -92,27 +80,19 @@ namespace evaluation
             while (bitboard)
             {
                 int square = bitboard.pop();
-                logger->info("ENEMY square {}", square);
 
                 auto piece = board.at(chess::Square(square));
-                logger->info("ENEMY piece {}", magic_enum::enum_name(piece.type().internal()));
 
                 int piece_index = static_cast<int>(piece.type());
-                logger->info("ENEMY piece_index {}", piece_index);
 
                 square = board.at(chess::Square(square)).color() == chess::Color::WHITE ? square : square ^ 56;
-                logger->info("ENEMY updated square {}", square);
 
                 int psqt_value = utils::piece_square[piece_index][square];
-                logger->info("ENEMY called utils::piece_square[{}][{}] = {}", piece_index, square, psqt_value);
 
-                logger->info("ENEMY psqt_value = -{} (since subtracted from positional_score )", psqt_value);
                 positional_score -= psqt_value;
-                logger->info("ENEMY new positional_score {}", positional_score);
             }
         }
 
-        logger->info("returning final PSQT score of {}", positional_score);
         return positional_score;
     }
 

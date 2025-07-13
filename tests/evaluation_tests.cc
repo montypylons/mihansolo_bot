@@ -63,6 +63,25 @@ TEST(PSQTTest, BasicAssertions)
 
     int psqt_eval = evaluation::piece_square_eval(board1, our_pieces, enemy_pieces);
     ASSERT_EQ(psqt_eval, 40); // verified with hand count
+
+    // start relative tests
+    board1 = chess::Board("rnbqkbnr/p3pppp/1ppp4/8/3PP3/2N2N2/PPP2PPP/R1BQKB1R b KQkq - 0 4");
+    generated_bitboards = evaluation::initialize_bitboards(board1);
+
+    our_pieces = std::get<0>(generated_bitboards);
+    enemy_pieces = std::get<1>(generated_bitboards);
+
+    psqt_eval = evaluation::piece_square_eval(board1, our_pieces, enemy_pieces);
+
+    chess::Board board2 = chess::Board("rnbqkbnr/p3pppp/1ppp4/8/4P3/2N2N2/PPPP1PPP/R1BQKB1R w KQkq - 0 4");
+    auto generated_bitboards2 = evaluation::initialize_bitboards(board2);
+
+    auto our_pieces2 = std::get<0>(generated_bitboards2);
+    auto enemy_pieces2 = std::get<1>(generated_bitboards2);
+
+    int psqt_eval2 = evaluation::piece_square_eval(board2, our_pieces2, enemy_pieces2);
+
+    ASSERT_GT(psqt_eval2, psqt_eval); // verified with hand count
 }
 
 TEST(GameOverTest, BasicAssertions)
@@ -73,5 +92,4 @@ TEST(GameOverTest, BasicAssertions)
     auto result2 = evaluation::game_over_eval(board2, 0);
     ASSERT_EQ(result, -10000);
     ASSERT_EQ(result2, std::nullopt);
-
 }

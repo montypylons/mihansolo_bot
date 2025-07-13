@@ -6,29 +6,33 @@
 #include <optional>
 #include <vector>
 
-namespace engine{
-// Book initialization
-void init_book();
+namespace engine
+{
+    // logger initialization
+    void init_logger();
 
-// Book move lookup
-std::optional<std::string> book_move(chess::Board board);
+    // Book initialization
+    void init_book();
 
-// Search for best move (returns UCI string)
-std::string search(const std::string &fen);
+    // Book move lookup
+    std::optional<std::string> book_move(const chess::Board& board);
 
-// Negamax search (returns eval and best move)
-std::tuple<int, chess::Move> negamax(
-    chess::Board board, int alpha, int beta, chess::Move last_move, int depth, int ply);
+    // Search for best move (returns UCI string)
+    std::string search(std::optional<chess::Board> fen);
 
-// Game over detection
-bool game_over(chess::Board board);
+    // Negamax search (returns eval and best move)
+    std::tuple<int, chess::Move> negamax(
+        chess::Board& board, int alpha, int beta, const chess::Move& last_move, int depth, int ply);
 
-// Generate legal moves
-chess::Movelist get_legal_moves(chess::Board board);
+    // Game over detection
+    bool game_over(const chess::Board& board);
 
-// Move ordering heuristic
-int move_ordering(chess::Board board, std::string move_uci);
+    // Generate legal moves
+    chess::Movelist get_legal_moves(const chess::Board& board);
 
-// UCI protocol loop
-void start_uci();
+    // Move ordering heuristic
+    int move_ordering(const chess::Board& board, const std::string& move_uci);
+
+    // UCI protocol loop
+    void start_uci();
 }

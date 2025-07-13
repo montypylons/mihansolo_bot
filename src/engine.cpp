@@ -1,54 +1,49 @@
 #include "chess.hpp"
-#include <tuple>
-#include <string>
-#include <iostream>
-#include "reader.hpp"
-#include <optional>
-#include <vector>
-#include <map>
-#include <algorithm>
-#include <limits>
-#include <chrono>
-#include <sstream>
-#include "evaluation.hpp"
-#include "spdlog/sinks/basic_file_sink.h"
-#include "spdlog/logger.h"
 #include "engine.hpp"
+#include "evaluation.hpp"
+#include "reader.hpp"
+#include <algorithm>
+#include <chrono>
+#include <filesystem>
+#include <iostream>
+#include <limits>
+#include <optional>
+#include <sstream>
+#include <string>
+#include <tuple>
+#include <vector>
 
 namespace engine
 {
-    auto logger2 = spdlog::basic_logger_mt("basic_logger", "logs/basic-log.txt");
+
 
     Reader::Book book;
     int intial_alpha = std::numeric_limits<int>::min();
     int inital_beta = std::numeric_limits<int>::max();
 
-    chess::Movelist get_legal_moves(chess::Board board)
+    chess::Movelist get_legal_moves(const chess::Board& board)
 
     {
         chess::Movelist moves;
-        logger2->info("board: {}", board.getFen());
         chess::movegen::legalmoves(moves, board);
         return moves;
     }
 
-    bool game_over(chess::Board board)
+    bool game_over(const chess::Board& board)
     {
         chess::Movelist moves = get_legal_moves(board);
         bool no_moves = moves.empty();
         if ((no_moves) || board.isHalfMoveDraw() || board.isInsufficientMaterial() || board.isRepetition())
         {
-            logger2->info("Game over detected: no legal moves or draw conditions met.");
             return true;
         }
         else
         {
-            logger2->info("game not over");
             return false;
         }
     }
 
-    int move_ordering(chess::Board board, std::string move_uci)
+    int move_ordering(const chess::Board& board, const std::string& move_uci)
 
     {
         chess::Move move = chess::uci::uciToMove(board, move_uci);
@@ -70,29 +65,24 @@ namespace engine
     void init_book()
     {
         book.Load("C:/Users/DELL/Documents/mihansolo_bot/gm2600.bin");
-        logger2->info("successfuly initiated book");
     }
 
-    std::optional<std::string> book_move(chess::Board board)
+    std::optional<std::string> book_move(const chess::Board& board)
     {
         Reader::BookMoves book_moves = book.GetBookMoves((uint64_t)board.zobrist());
         if (!(book_moves.empty()))
         {
             std::string found_move = Reader::ConvertBookMoveToUci(Reader::RandomBookMove(book_moves));
-            logger2->info("book move {} found for position {}", found_move, board.getFen());
             return found_move;
         }
-        logger2->info("no book move found for position {}", board.getFen());
         return std::nullopt;
     }
 
-    std::tuple<int, chess::Move> negamax(chess::Board board, int alpha, int beta, chess::Move last_move, int depth, int ply)
+    std::tuple<int, chess::Move> negamax(chess::Board& board, int alpha, int beta, const chess::Move& last_move, int depth, int ply)
     {
         if (depth == 0 || (game_over(board)))
         {
-            logger2->info("found leaf node at depth {}, ply {}, board {} with last move {}", depth, ply, board.getFen(), chess::uci::moveToUci(last_move));
             int leaf_eval = evaluation::main_eval(board, ply);
-            logger2->info("leaf eval {} on position {}", leaf_eval, board.getFen());
             return std::make_tuple(leaf_eval, last_move);
         }
         chess::Move best_move = chess::Move::NO_MOVE;
@@ -121,12 +111,13 @@ namespace engine
         return std::make_tuple(best_eval, best_move);
     }
 
-    std::string search(const std::string &fen)
+    std::string search(std::optional<chess::Board> fen)
     {
         chess::Board board;
-        if (fen != "0")
+
+        if (fen.has_value())
         {
-            board.setFen(fen);
+            board = fen.value();
         }
         auto bookmove = book_move(board);
         if (bookmove.has_value())
@@ -136,7 +127,7 @@ namespace engine
 
         chess::Move returned_move;
         int eval;
-        std::tie(eval, returned_move) = negamax(board, intial_alpha, inital_beta, chess::Move::NO_MOVE, 4, 0);
+        std::tie(eval, returned_move) = negamax(board, intial_alpha, inital_beta, chess::Move::NO_MOVE, 5, 0);
 
         if (returned_move == chess::Move::NO_MOVE)
         {
@@ -144,7 +135,6 @@ namespace engine
         }
 
         std::string move_uci = chess::uci::moveToUci(returned_move);
-        logger2->info("negamax believes best move {} in position {}", move_uci, board.getFen());
 
         return move_uci;
     }
@@ -212,7 +202,7 @@ namespace engine
             }
             else if (token == "go")
             {
-                std::string bestmove = search("0");
+                std::string bestmove = search(board);
                 std::cout << "bestmove " << bestmove << "\n";
             }
             else if (token == "quit")
@@ -221,7 +211,7 @@ namespace engine
             }
             else if (token == "setoption")
             {
-                // nothing except the DPRK missle program
+                // good luck debugging suckers :)
             }
             else
             {

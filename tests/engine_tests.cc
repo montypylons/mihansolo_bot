@@ -11,14 +11,12 @@
 #include <chrono>
 #include <sstream>
 #include "evaluation.hpp"
-#include "spdlog/sinks/basic_file_sink.h"
-#include "spdlog/logger.h"
 #include "engine.hpp"
 #include "gtest/gtest.h"
 
 // many thanks to https://lichess.org/training for providing puzzle FENs
 
-TEST(GameOverTest, BasicAssertions) 
+TEST(GameOverTest, BasicAssertions)
 {
     ASSERT_FALSE(engine::game_over(chess::Board("2r3k1/p4p2/6pp/1pr2b2/2p5/1PR1PB2/P4PPP/2R3K1 w - - 2 26")));
     ASSERT_FALSE(engine::game_over(chess::Board("4rbkr/ppp3pp/5N2/n7/3pP2q/5Q1P/PPP1K2P/R1B2R2 b - - 0 15")));
@@ -31,26 +29,43 @@ TEST(GameOverTest, BasicAssertions)
     ASSERT_TRUE(engine::game_over(chess::Board("r4rk1/pbp2p1p/1p2pBp1/4N3/3P4/1BP1b3/PP3QqP/R4RK1 w - - 0 23")));
 }
 
-
 TEST(BookMoveTest, BasicAssertions)
 {
     ASSERT_NO_FATAL_FAILURE(engine::init_book());
-    ASSERT_NO_FATAL_FAILURE(engine::book_move(chess::Board("rnbqkbnr/ppp1pppp/8/3p4/2PP4/8/PP2PPPP/RNBQKBNR b KQkq - 0 2")));
-    ASSERT_NO_FATAL_FAILURE(engine::book_move(chess::Board("rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2")));
+    ASSERT_TRUE(engine::book_move(chess::Board("rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2")).has_value());
+    ASSERT_TRUE(engine::book_move(chess::Board("rnbqkbnr/ppp1pppp/8/3p4/2PP4/8/PP2PPPP/RNBQKBNR b KQkq - 0 2")).has_value());
+    ASSERT_TRUE(engine::book_move(chess::Board("r1bqkbnr/pppp1ppp/2n5/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 0 1")).has_value());
+
+    ASSERT_FALSE(engine::book_move(chess::Board("2rq1rk1/pQ3Rbp/3p2p1/1p4N1/2p3N1/2P5/PP3PPP/n5K1 b - - 0 21")).has_value());
 }
 
-TEST(SearchTest, BasicAssertions){
+TEST(SearchTestMateInOne, BasicAssertions)
+{
+    std::string result1 = engine::search(chess::Board("1k6/1b6/3p1Q2/1p1P3p/1P2PR2/8/r2r4/5K2 b - - 0 41"));
+    ASSERT_EQ(result1, "d2d1");
 
+    std::string result2 = engine::search(chess::Board("2r5/5Qnk/3p1Rp1/3Pp3/2P3PK/4q2P/8/2R5 b - - 6 43"));
+    ASSERT_EQ(result2, "g6g5");
+
+    std::string result3 = engine::search(chess::Board("3rn2R/ppp1qkp1/8/2Np1r2/3Pp3/2P5/PP4Q1/1K4R1 w - - 6 32"));
+    ASSERT_EQ(result3, "g2g6");
+
+    std::string result4 = engine::search(chess::Board("4Q3/p7/6p1/P1b2k2/3pq1p1/5N1P/2P5/7K w - - 0 41"));
+    ASSERT_EQ(result4, "e8f7");
 }
 
-TEST(LegalMovesTest, BasicAssertions){
-
+TEST(SearchTestMateInTwo, BasicAssertions)
+{
 }
 
-TEST(MoveOrderingTest, BasicAssertions){
-
+TEST(LegalMovesTest, BasicAssertions)
+{
 }
 
-TEST(NegamaxTest, BasicAssertions){
+TEST(MoveOrderingTest, BasicAssertions)
+{
+}
 
+TEST(NegamaxTest, BasicAssertions)
+{
 }
