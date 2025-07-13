@@ -1,7 +1,6 @@
 #include "chess.hpp"
 #include <tuple>
 #include <string>
-#include <iostream>
 #include "reader.hpp"
 #include <optional>
 #include <vector>
@@ -10,7 +9,6 @@
 #include <limits>
 #include <chrono>
 #include <sstream>
-#include "evaluation.hpp"
 #include "engine.hpp"
 #include "gtest/gtest.h"
 
@@ -56,16 +54,30 @@ TEST(SearchTestMateInOne, BasicAssertions)
 
 TEST(SearchTestMateInTwo, BasicAssertions)
 {
+
 }
 
 TEST(LegalMovesTest, BasicAssertions)
 {
+
 }
 
 TEST(MoveOrderingTest, BasicAssertions)
 {
+
 }
 
-TEST(NegamaxTest, BasicAssertions)
+TEST (NegamaxTest, BasicAssertions)
 {
+    auto board1 = chess::Board("r1bqkb1r/pppp1ppp/2n2n2/4P3/8/5N2/PPP1PPPP/RNBQKB1R w KQkq - 3 4");
+    auto negamax_result = engine::negamax(board1, engine::initial_alpha,engine::initial_beta, chess::Move::NO_MOVE, 5, 0);
+    chess::Move expected_move = chess::Move::make<chess::Move::NORMAL>(chess::Square::SQ_E5, chess::Square::SQ_F6);
+	ASSERT_EQ(std::get<1>(negamax_result), expected_move); // Assuming the evaluation function returns 100 for this position
 }
+
+TEST(SearchTestCrushingMove, BasicAssertions)
+{
+	std::string search_result = engine::search(chess::Board("r1bqkb1r/pppp1ppp/2n2n2/4P3/8/5N2/PPP1PPPP/RNBQKB1R w KQkq - 3 4"));
+    ASSERT_EQ(search_result, "e5f6");
+}
+

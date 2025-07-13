@@ -19,7 +19,7 @@ namespace evaluation
 
     int material_eval(chess::Board board, chess::Bitboard pawns, chess::Bitboard knights, chess::Bitboard bishops, chess::Bitboard rooks, chess::Bitboard queens, chess::Bitboard black_pawns, chess::Bitboard black_knights, chess::Bitboard black_bishops, chess::Bitboard black_rooks, chess::Bitboard black_queens)
     {
-        // intialize score
+        // initialize score
         int material_score = 0;
 
         // basic material counting

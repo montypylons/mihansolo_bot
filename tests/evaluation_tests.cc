@@ -51,6 +51,20 @@ TEST(MaterialEvalTest, BasicAssertions)
         our_pieces[0], our_pieces[1], our_pieces[2], our_pieces[3], our_pieces[4],
         enemy_pieces[0], enemy_pieces[1], enemy_pieces[2], enemy_pieces[3], enemy_pieces[4]);
     ASSERT_EQ(material_evaluation, 300);
+
+    chess::Board board2("r1bqk2r/ppp1bppp/2n2n2/3pp3/2P5/PPN1P3/1B1PKPPP/R2Q1BNR b kq - 1 7");
+    auto generated_bitboards2 = evaluation::initialize_bitboards(board2);
+
+    auto our_pieces2 = std::get<0>(generated_bitboards2);
+    auto enemy_pieces2 = std::get<1>(generated_bitboards2);
+
+    int material_evaluation2 = evaluation::material_eval(
+        board2,
+        our_pieces2[0], our_pieces2[1], our_pieces2[2], our_pieces2[3], our_pieces2[4],
+        enemy_pieces2[0], enemy_pieces2[1], enemy_pieces2[2], enemy_pieces2[3], enemy_pieces2[4]);
+    ASSERT_GT(material_evaluation, material_evaluation2);
+	ASSERT_EQ(material_evaluation2, 0); // verified with hand count
+
 }
 
 TEST(PSQTTest, BasicAssertions)

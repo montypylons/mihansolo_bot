@@ -35,4 +35,7 @@ namespace engine
 
     // UCI protocol loop
     void start_uci();
+
+    const extern int initial_alpha;
+	const extern int initial_beta;
 }
