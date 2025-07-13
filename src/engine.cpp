@@ -3,7 +3,6 @@
 #include "evaluation.hpp"
 #include "reader.hpp"
 #include <algorithm>
-#include <chrono>
 #include <filesystem>
 #include <iostream>
 #include <limits>
@@ -15,8 +14,6 @@
 
 namespace engine
 {
-
-
     Reader::Book book;
     int intial_alpha = std::numeric_limits<int>::min();
     int inital_beta = std::numeric_limits<int>::max();
@@ -31,32 +28,31 @@ namespace engine
 
     bool game_over(const chess::Board& board)
     {
-        chess::Movelist moves = get_legal_moves(board);
-        bool no_moves = moves.empty();
-        if ((no_moves) || board.isHalfMoveDraw() || board.isInsufficientMaterial() || board.isRepetition())
+        if (get_legal_moves(board).empty() || board.isHalfMoveDraw() || board.isInsufficientMaterial() || board.
+            isRepetition())
         {
             return true;
         }
-        else
-        {
-            return false;
-        }
+
+        return false;
     }
 
-    int move_ordering(const chess::Board& board, const std::string& move_uci)
+    int move_ordering(const chess::Board& board, const std::string& move_uci) // not currently used
 
     {
         chess::Move move = chess::uci::uciToMove(board, move_uci);
-        if (board.isCapture(move) && (move.typeOf() != chess::Move::CASTLING && chess::Move::ENPASSANT))
+        if (board.isCapture(move) && (move.typeOf() != chess::Move::CASTLING) && (move.typeOf() !=
+            chess::Move::ENPASSANT))
         {
             if ((board.at(move.from()) == chess::Piece::NONE) || (board.at(move.to()) == chess::Piece::NONE))
             {
-                std::cerr << "[Warning] Tried to evaluate a capture move with no target piece (bad move?): " << move_uci << "\n";
+                std::cerr << "[Warning] Tried to evaluate a capture move with no target piece (bad move?): " << move_uci
+                    << "\n";
                 return -100;
             }
 
-            int from_value = 3; // piece_values[static_cast<int>(board.at(move.from()))];
-            int to_value = 3;   // piece_values[static_cast<int>(board.at(move.to()))];
+            constexpr int from_value = 3; // piece_values[static_cast<int>(board.at(move.from()))];
+            constexpr int to_value = 3; // piece_values[static_cast<int>(board.at(move.to()))];
             return to_value - from_value;
         }
         return -100;
@@ -78,7 +74,8 @@ namespace engine
         return std::nullopt;
     }
 
-    std::tuple<int, chess::Move> negamax(chess::Board& board, int alpha, int beta, const chess::Move& last_move, int depth, int ply)
+    std::tuple<int, chess::Move> negamax(chess::Board& board, int alpha, const int& beta, const chess::Move& last_move,
+                                         const int& depth, const int& ply)
     {
         if (depth == 0 || (game_over(board)))
         {
@@ -88,11 +85,11 @@ namespace engine
         chess::Move best_move = chess::Move::NO_MOVE;
         int best_eval = std::numeric_limits<int>::min();
         chess::Movelist legal_moves = get_legal_moves(board);
-        for (const auto &move : legal_moves)
+        for (const auto& move : legal_moves)
         {
             board.makeMove(move);
             int score;
-            chess::Move dummy_move;
+            chess::Move dummy_move{};
             std::tie(score, dummy_move) = negamax(board, -beta, -alpha, move, depth - 1, ply + 1);
 
             score = -score;
@@ -111,7 +108,7 @@ namespace engine
         return std::make_tuple(best_eval, best_move);
     }
 
-    std::string search(std::optional<chess::Board> fen)
+    std::string search(const std::optional<chess::Board>& fen)
     {
         chess::Board board;
 
@@ -125,9 +122,7 @@ namespace engine
             return bookmove.value();
         }
 
-        chess::Move returned_move;
-        int eval;
-        std::tie(eval, returned_move) = negamax(board, intial_alpha, inital_beta, chess::Move::NO_MOVE, 5, 0);
+        auto [eval, returned_move] = negamax(board, intial_alpha, inital_beta, chess::Move::NO_MOVE, 5, 0);
 
         if (returned_move == chess::Move::NO_MOVE)
         {

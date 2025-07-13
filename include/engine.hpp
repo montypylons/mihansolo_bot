@@ -4,7 +4,6 @@
 #include <string>
 #include <tuple>
 #include <optional>
-#include <vector>
 
 namespace engine
 {
@@ -18,12 +17,11 @@ namespace engine
     std::optional<std::string> book_move(const chess::Board& board);
 
     // Search for best move (returns UCI string)
-    std::string search(std::optional<chess::Board> fen);
+    std::string search(const std::optional<chess::Board>& fen);
 
     // Negamax search (returns eval and best move)
-    std::tuple<int, chess::Move> negamax(
-        chess::Board& board, int alpha, int beta, const chess::Move& last_move, int depth, int ply);
-
+    std::tuple<int, chess::Move> negamax(chess::Board& board, int alpha, const int& beta, const chess::Move& last_move,
+                                         const int& depth, const int& ply);
     // Game over detection
     bool game_over(const chess::Board& board);
 
@@ -37,5 +35,5 @@ namespace engine
     void start_uci();
 
     const extern int initial_alpha;
-	const extern int initial_beta;
+    const extern int initial_beta;
 }

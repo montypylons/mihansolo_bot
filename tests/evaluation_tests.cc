@@ -1,7 +1,6 @@
 #include <gtest/gtest.h>
 #include "evaluation.hpp"
 #include "chess.hpp"
-#include "utils.hpp"
 
 TEST(BitboardTest, BasicAssertions)
 {
@@ -47,7 +46,6 @@ TEST(MaterialEvalTest, BasicAssertions)
     auto enemy_pieces = std::get<1>(generated_bitboards);
 
     int material_evaluation = evaluation::material_eval(
-        board1,
         our_pieces[0], our_pieces[1], our_pieces[2], our_pieces[3], our_pieces[4],
         enemy_pieces[0], enemy_pieces[1], enemy_pieces[2], enemy_pieces[3], enemy_pieces[4]);
     ASSERT_EQ(material_evaluation, 300);
@@ -59,7 +57,6 @@ TEST(MaterialEvalTest, BasicAssertions)
     auto enemy_pieces2 = std::get<1>(generated_bitboards2);
 
     int material_evaluation2 = evaluation::material_eval(
-        board2,
         our_pieces2[0], our_pieces2[1], our_pieces2[2], our_pieces2[3], our_pieces2[4],
         enemy_pieces2[0], enemy_pieces2[1], enemy_pieces2[2], enemy_pieces2[3], enemy_pieces2[4]);
     ASSERT_GT(material_evaluation, material_evaluation2);
@@ -87,7 +84,7 @@ TEST(PSQTTest, BasicAssertions)
 
     psqt_eval = evaluation::piece_square_eval(board1, our_pieces, enemy_pieces);
 
-    chess::Board board2 = chess::Board("rnbqkbnr/p3pppp/1ppp4/8/4P3/2N2N2/PPPP1PPP/R1BQKB1R w KQkq - 0 4");
+    auto board2 = chess::Board("rnbqkbnr/p3pppp/1ppp4/8/4P3/2N2N2/PPPP1PPP/R1BQKB1R w KQkq - 0 4");
     auto generated_bitboards2 = evaluation::initialize_bitboards(board2);
 
     auto our_pieces2 = std::get<0>(generated_bitboards2);
@@ -100,10 +97,10 @@ TEST(PSQTTest, BasicAssertions)
 
 TEST(GameOverTest, BasicAssertions)
 {
-    chess::Board board1("r1bqkbnr/pppp1Qp1/2n4p/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 2 2");
-    auto result = evaluation::game_over_eval(board1, 0);
-    chess::Board board2("r1bqkbnr/pppppppp/n7/8/8/2N5/PPPPPPPP/R1BQKBNR w KQkq - 2 2");
-    auto result2 = evaluation::game_over_eval(board2, 0);
+    const chess::Board board1("r1bqkbnr/pppp1Qp1/2n4p/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 2 2");
+    const auto result = evaluation::game_over_eval(board1, 0);
+    const chess::Board board2("r1bqkbnr/pppppppp/n7/8/8/2N5/PPPPPPPP/R1BQKBNR w KQkq - 2 2");
+    const auto result2 = evaluation::game_over_eval(board2, 0);
     ASSERT_EQ(result, -10000);
     ASSERT_EQ(result2, std::nullopt);
 }

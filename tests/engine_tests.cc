@@ -39,16 +39,16 @@ TEST(BookMoveTest, BasicAssertions)
 
 TEST(SearchTestMateInOne, BasicAssertions)
 {
-    std::string result1 = engine::search(chess::Board("1k6/1b6/3p1Q2/1p1P3p/1P2PR2/8/r2r4/5K2 b - - 0 41"));
+    const std::string result1 = engine::search(chess::Board("1k6/1b6/3p1Q2/1p1P3p/1P2PR2/8/r2r4/5K2 b - - 0 41"));
     ASSERT_EQ(result1, "d2d1");
 
-    std::string result2 = engine::search(chess::Board("2r5/5Qnk/3p1Rp1/3Pp3/2P3PK/4q2P/8/2R5 b - - 6 43"));
+    const std::string result2 = engine::search(chess::Board("2r5/5Qnk/3p1Rp1/3Pp3/2P3PK/4q2P/8/2R5 b - - 6 43"));
     ASSERT_EQ(result2, "g6g5");
 
-    std::string result3 = engine::search(chess::Board("3rn2R/ppp1qkp1/8/2Np1r2/3Pp3/2P5/PP4Q1/1K4R1 w - - 6 32"));
+    const std::string result3 = engine::search(chess::Board("3rn2R/ppp1qkp1/8/2Np1r2/3Pp3/2P5/PP4Q1/1K4R1 w - - 6 32"));
     ASSERT_EQ(result3, "g2g6");
 
-    std::string result4 = engine::search(chess::Board("4Q3/p7/6p1/P1b2k2/3pq1p1/5N1P/2P5/7K w - - 0 41"));
+    const std::string result4 = engine::search(chess::Board("4Q3/p7/6p1/P1b2k2/3pq1p1/5N1P/2P5/7K w - - 0 41"));
     ASSERT_EQ(result4, "e8f7");
 }
 
@@ -70,14 +70,14 @@ TEST(MoveOrderingTest, BasicAssertions)
 TEST (NegamaxTest, BasicAssertions)
 {
     auto board1 = chess::Board("r1bqkb1r/pppp1ppp/2n2n2/4P3/8/5N2/PPP1PPPP/RNBQKB1R w KQkq - 3 4");
-    auto negamax_result = engine::negamax(board1, engine::initial_alpha,engine::initial_beta, chess::Move::NO_MOVE, 5, 0);
-    chess::Move expected_move = chess::Move::make<chess::Move::NORMAL>(chess::Square::SQ_E5, chess::Square::SQ_F6);
+    const auto negamax_result = engine::negamax(board1, engine::initial_alpha,engine::initial_beta, chess::Move::NO_MOVE, 5, 0);
+    constexpr chess::Move expected_move = chess::Move::make<chess::Move::NORMAL>(chess::Square::SQ_E5, chess::Square::SQ_F6);
 	ASSERT_EQ(std::get<1>(negamax_result), expected_move); // Assuming the evaluation function returns 100 for this position
 }
 
 TEST(SearchTestCrushingMove, BasicAssertions)
 {
-	std::string search_result = engine::search(chess::Board("r1bqkb1r/pppp1ppp/2n2n2/4P3/8/5N2/PPP1PPPP/RNBQKB1R w KQkq - 3 4"));
+	const std::string search_result = engine::search(chess::Board("r1bqkb1r/pppp1ppp/2n2n2/4P3/8/5N2/PPP1PPPP/RNBQKB1R w KQkq - 3 4"));
     ASSERT_EQ(search_result, "e5f6");
 }
 
