@@ -15,8 +15,8 @@
 namespace engine
 {
     Reader::Book book;
-    int intial_alpha = std::numeric_limits<int>::min();
-    int inital_beta = std::numeric_limits<int>::max();
+    const int initial_alpha = std::numeric_limits<int>::min();
+    const int initial_beta = std::numeric_limits<int>::max();
 
     chess::Movelist get_legal_moves(const chess::Board& board)
 
@@ -122,7 +122,7 @@ namespace engine
             return bookmove.value();
         }
 
-        auto [eval, returned_move] = negamax(board, intial_alpha, inital_beta, chess::Move::NO_MOVE, 5, 0);
+        auto [eval, returned_move] = negamax(board, initial_alpha, initial_beta, chess::Move::NO_MOVE, 5, 0);
 
         if (returned_move == chess::Move::NO_MOVE)
         {
