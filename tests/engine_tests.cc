@@ -7,7 +7,6 @@
 #include <map>
 #include <algorithm>
 #include <limits>
-#include <chrono>
 #include <sstream>
 #include "engine.hpp"
 #include "gtest/gtest.h"
@@ -71,7 +70,7 @@ TEST (NegamaxTest, BasicAssertions)
 {
     auto board1 = chess::Board("r1bqkb1r/pppp1ppp/2n2n2/4P3/8/5N2/PPP1PPPP/RNBQKB1R w KQkq - 3 4");
     const auto negamax_result = chess::uci::moveToUci(std::get<1>(engine::negamax(board1, engine::initial_alpha,engine::initial_beta, chess::Move::NO_MOVE, 5, 0)));
-    std::string expected_move = chess::uci::moveToUci(chess::Move::make<chess::Move::NORMAL>(chess::Square::SQ_E5, chess::Square::SQ_F6));
+    const std::string expected_move = chess::uci::moveToUci(chess::Move::make<chess::Move::NORMAL>(chess::Square::SQ_E5, chess::Square::SQ_F6));
 	ASSERT_EQ(negamax_result, expected_move); // Assuming the evaluation function returns 100 for this position
 }
 

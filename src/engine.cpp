@@ -40,8 +40,8 @@ namespace engine
     int move_ordering(const chess::Board& board, const std::string& move_uci) // not currently used
 
     {
-        chess::Move move = chess::uci::uciToMove(board, move_uci);
-        if (board.isCapture(move) && move.typeOf() != chess::Move::CASTLING && move.typeOf() !=
+        if (const chess::Move move = chess::uci::uciToMove(board, move_uci); board.isCapture(move) && move.typeOf() !=
+            chess::Move::CASTLING && move.typeOf() !=
             chess::Move::ENPASSANT)
         {
             if (board.at(move.from()) == chess::Piece::NONE || board.at(move.to()) == chess::Piece::NONE)
@@ -65,8 +65,7 @@ namespace engine
 
     std::optional<std::string> book_move(const chess::Board& board)
     {
-        Reader::BookMoves book_moves = book.GetBookMoves(board.zobrist());
-        if (!book_moves.empty())
+        if (const Reader::BookMoves book_moves = book.GetBookMoves(board.zobrist()); !book_moves.empty())
         {
             std::string found_move = Reader::ConvertBookMoveToUci(Reader::RandomBookMove(book_moves));
             return found_move;
@@ -94,6 +93,8 @@ namespace engine
 
             score = -score;
             board.unmakeMove(move);
+
+
             if (score > best_eval)
             {
                 best_eval = score;
@@ -116,8 +117,8 @@ namespace engine
         {
             board = fen.value();
         }
-        auto bookmove = book_move(board);
-        if (bookmove.has_value())
+        if (auto bookmove = book_move(board);
+            bookmove.has_value())
         {
             return bookmove.value();
         }

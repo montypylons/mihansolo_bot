@@ -16,7 +16,8 @@ namespace evaluation
 
     int material_eval(const chess::Bitboard& pawns, const chess::Bitboard& knights,
                       const chess::Bitboard& bishops, const chess::Bitboard& rooks, const chess::Bitboard& queens,
-                      const chess::Bitboard& black_pawns, const chess::Bitboard& black_knights, const chess::Bitboard& black_bishops,
+                      const chess::Bitboard& black_pawns, const chess::Bitboard& black_knights,
+                      const chess::Bitboard& black_bishops,
                       const chess::Bitboard& black_rooks, const chess::Bitboard& black_queens)
     {
         // initialize score
@@ -120,9 +121,8 @@ namespace evaluation
     int main_eval(const chess::Board& board, const int& ply)
     {
         int score = 0;
-        std::optional<int> result = game_over_eval(board, ply);
 
-        if (result != std::nullopt)
+        if (const std::optional<int> result = game_over_eval(board, ply); result != std::nullopt)
         {
             return result.value();
         }
