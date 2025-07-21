@@ -60,8 +60,7 @@ TEST(MaterialEvalTest, BasicAssertions)
         our_pieces2[0], our_pieces2[1], our_pieces2[2], our_pieces2[3], our_pieces2[4],
         enemy_pieces2[0], enemy_pieces2[1], enemy_pieces2[2], enemy_pieces2[3], enemy_pieces2[4]);
     ASSERT_GT(material_evaluation, material_evaluation2);
-	ASSERT_EQ(material_evaluation2, 0); // verified with hand count
-
+    ASSERT_EQ(material_evaluation2, 0); // verified with hand count
 }
 
 TEST(PSQTTest, BasicAssertions)
@@ -103,4 +102,14 @@ TEST(GameOverTest, BasicAssertions)
     const auto result2 = evaluation::game_over_eval(board2, 0);
     ASSERT_EQ(result, -10000);
     ASSERT_EQ(result2, std::nullopt);
+}
+
+TEST(NoEarlyKingMovesTest, BasicAssertions)
+{
+    const auto board1 = chess::Board("r1bqkb1r/pppp1ppp/2n2P2/8/8/5N2/PPP1PPPP/RNBQKB1R b KQkq - 0 4");
+    const auto board2 = chess::Board("r1bqkb1r/pppp1ppp/2n2n2/4P3/8/5N2/PPPKPPPP/RNBQ1B1R b kq - 4 4");
+    const auto result1 = evaluation::main_eval(board1, 0);
+    const auto result2 = evaluation::main_eval(board2, 0);
+    ASSERT_GT(-result1, -result2);
+    ASSERT_GT(result2, result1); // take negative to get White's POV
 }

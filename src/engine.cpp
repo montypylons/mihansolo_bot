@@ -73,12 +73,13 @@ namespace engine
         return std::nullopt;
     }
 
-    std::tuple<int, chess::Move> negamax(chess::Board& board, int alpha, const int& beta, const chess::Move& last_move,
+
+    std::tuple<int, chess::Move> negamax(chess::Board& board, int alpha, int beta, const chess::Move& last_move,
                                          const int& depth, const int& ply)
     {
         if (depth == 0 || game_over(board))
         {
-            int leaf_eval = evaluation::main_eval(board, ply);
+            int leaf_eval {evaluation::main_eval(board, ply)};
             return std::make_tuple(leaf_eval, last_move);
         }
         chess::Move best_move = chess::Move::NO_MOVE;
@@ -97,10 +98,10 @@ namespace engine
 
             if (score > best_eval)
             {
-                best_eval = score;
+                best_eval = int{score};
                 best_move = move;
             }
-            alpha = std::max(alpha, score);
+            alpha = std::max(alpha, int{score});
             if (beta <= alpha)
             {
                 break;
