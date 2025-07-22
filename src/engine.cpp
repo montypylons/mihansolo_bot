@@ -2,7 +2,6 @@
 #include "engine.hpp"
 #include "evaluation.hpp"
 #include "reader.hpp"
-#include <algorithm>
 #include <filesystem>
 #include <iostream>
 #include <limits>
@@ -15,7 +14,7 @@
 namespace engine
 {
     Reader::Book book;
-    const int initial_alpha = std::numeric_limits<int>::min();
+    const int initial_alpha = std::numeric_limits<int>::min() + 1; // to prevent integer overflow, since the min is 1 smaller than -(max)
     const int initial_beta = std::numeric_limits<int>::max();
 
     chess::Movelist get_legal_moves(const chess::Board& board)
@@ -79,7 +78,7 @@ namespace engine
     {
         if (depth == 0 || game_over(board))
         {
-            int leaf_eval {evaluation::main_eval(board, ply)};
+            int leaf_eval{evaluation::main_eval(board, ply)};
             return std::make_tuple(leaf_eval, last_move);
         }
         chess::Move best_move = chess::Move::NO_MOVE;
@@ -90,9 +89,10 @@ namespace engine
             board.makeMove(move);
             int score;
             chess::Move dummy_move{};
-            std::tie(score, dummy_move) = negamax(board, -beta, -alpha, move, depth - 1, ply + 1);
 
+            std::tie(score, dummy_move) = negamax(board, -beta, -alpha, move, depth - 1, ply + 1);
             score = -score;
+
             board.unmakeMove(move);
 
 
@@ -100,13 +100,16 @@ namespace engine
             {
                 best_eval = int{score};
                 best_move = move;
+
+                if (score > alpha)
+                    alpha = score;
             }
-            alpha = std::max(alpha, int{score});
-            if (beta <= alpha)
+            if (score >= beta)
             {
-                break;
+                return std::make_tuple(best_eval, best_move);
             }
         }
+
         return std::make_tuple(best_eval, best_move);
     }
 

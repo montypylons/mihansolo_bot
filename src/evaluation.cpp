@@ -1,6 +1,7 @@
 #include "chess.hpp"
 #include "utils.hpp"
 #include "evaluation.hpp"
+#include "engine.hpp"
 #include <vector>
 
 namespace evaluation
