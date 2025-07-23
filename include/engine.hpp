@@ -21,8 +21,8 @@ namespace engine
 
     // Negamax search (returns eval and best move)
     std::tuple<int, chess::Move> negamax(chess::Board& board, int alpha, int beta, const chess::Move& last_move,
-                                             const int& depth, const int& ply);
-       // Game over detection
+                                         const int& depth, const int& ply);
+    // Game over detection
     bool game_over(const chess::Board& board);
 
     // Generate legal moves

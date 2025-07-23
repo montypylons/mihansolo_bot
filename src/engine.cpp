@@ -11,11 +11,16 @@
 #include <tuple>
 #include <vector>
 
+// TODO: add search extensions
+
+
 namespace engine
 {
     Reader::Book book;
-    const int initial_alpha = std::numeric_limits<int>::min() + 1; // to prevent integer overflow, since the min is 1 smaller than -(max)
+    const int initial_alpha = std::numeric_limits<int>::min() + 1;
+    // to prevent integer overflow, since the min is 1 smaller than -(max)
     const int initial_beta = std::numeric_limits<int>::max();
+
 
     chess::Movelist get_legal_moves(const chess::Board& board)
 
@@ -36,26 +41,26 @@ namespace engine
         return false;
     }
 
-    int move_ordering(const chess::Board& board, const std::string& move_uci) // not currently used
+    /* int move_ordering(const chess::Board& board, const std::string& move_uci) // not currently used
 
-    {
-        if (const chess::Move move = chess::uci::uciToMove(board, move_uci); board.isCapture(move) && move.typeOf() !=
-            chess::Move::CASTLING && move.typeOf() !=
-            chess::Move::ENPASSANT)
-        {
-            if (board.at(move.from()) == chess::Piece::NONE || board.at(move.to()) == chess::Piece::NONE)
-            {
-                std::cerr << "[Warning] Tried to evaluate a capture move with no target piece (bad move?): " << move_uci
-                    << "\n";
-                return -100;
-            }
+     {
+         if (const chess::Move move = chess::uci::uciToMove(board, move_uci); board.isCapture(move) && move.typeOf() !=
+             chess::Move::CASTLING && move.typeOf() !=
+             chess::Move::ENPASSANT)
+         {
+             if (board.at(move.from()) == chess::Piece::NONE || board.at(move.to()) == chess::Piece::NONE)
+             {
+                 std::cerr << "[Warning] Tried to evaluate a capture move with no target piece (bad move?): " << move_uci
+                     << "\n";
+                 return -100;
+             }
 
-            constexpr int from_value = 3; // piece_values[static_cast<int>(board.at(move.from()))];
-            constexpr int to_value = 3; // piece_values[static_cast<int>(board.at(move.to()))];
-            return to_value - from_value;
-        }
-        return -100;
-    }
+             constexpr int from_value = 3; // piece_values[static_cast<int>(board.at(move.from()))];
+             constexpr int to_value = 3; // piece_values[static_cast<int>(board.at(move.to()))];
+             return to_value - from_value;
+         }
+         return -100;
+     } */
 
     void init_book()
     {
@@ -86,6 +91,9 @@ namespace engine
         chess::Movelist legal_moves = get_legal_moves(board);
         for (const auto& move : legal_moves)
         {
+            // extend search by 1 depth if you are in check, up to 10 extensions
+            // const int checkExtension = ((numExtensions < 16) && (board.inCheck())) ? 1 : 0;
+
             board.makeMove(move);
             int score;
             chess::Move dummy_move{};
