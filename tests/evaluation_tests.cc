@@ -130,3 +130,21 @@ TEST(IsEndgameTest, BasicAssertions)
     const auto LotsOfPawns = chess::Board("8/1k2pP2/3pP3/2pP4/1pP5/pP6/P7/1K6 w - - 0 1");
     ASSERT_TRUE(evaluation::is_endgame(LotsOfPawns));
 }
+
+TEST(KingPSQTTest, BasicAssertions)
+{
+    // Arrange
+    const auto WhiteGoodKing = chess::Board("r1bqk2r/pppp1pp1/2n2n2/2b1p2p/2B1P2P/2N2N2/PPPP1PP1/R1BQ2KR w KQkq - 0 1");
+    auto generated_bitboards = evaluation::initialize_bitboards(WhiteGoodKing);
+    auto our_pieces = std::get<0>(generated_bitboards);
+    auto enemy_pieces = std::get<1>(generated_bitboards);
+
+    const auto BlackGoodKing = chess::Board("r1bq2kr/pppp1pp1/2n2n2/2b1p2p/2B1P2P/2N2N2/PPPP1PP1/R1BQK2R w KQkq - 0 1");
+    auto generated_bitboards2 = evaluation::initialize_bitboards(BlackGoodKing);
+    auto our_pieces2 = std::get<0>(generated_bitboards2);
+    auto enemy_pieces2 = std::get<1>(generated_bitboards2);
+
+    // Action
+    ASSERT_GT(evaluation::king_psqt_eval(WhiteGoodKing,our_pieces,enemy_pieces),
+              evaluation::king_psqt_eval(BlackGoodKing,our_pieces2,enemy_pieces2));
+}
