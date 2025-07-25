@@ -1,7 +1,5 @@
-MihanSolo chess bot
-Used some ai assistance to find bugs, most was done by hand
+MihanSolo chess engine
 
-This is still in dev, please have mercy ...
+Play me at lichess.org/@/MihanSolo or lichess.org/MihanSolo2!
 
-
-May the eforth be with you! (haha)
+Thanks for visiting. 😊
