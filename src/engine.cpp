@@ -11,6 +11,8 @@
 #include <tuple>
 #include <vector>
 
+#include "utils.hpp"
+
 
 namespace engine
 {
@@ -42,13 +44,15 @@ namespace engine
     int MVV_LAA_helper(const chess::Board& board, const chess::Move& move)
 
     {
-        // TODO: implement this
-        int move_score;
-        chess::PieceType from_piece = board.at(move.from()).type();
+        // TODO: implement this fully and add tests
         if (move.typeOf() != chess::Move::ENPASSANT && move.typeOf() != chess::Move::CASTLING)
         {
+            const int from_score = utils::piece_values[board.at(move.from()).type()];
+            const int to_score = utils::piece_values[board.at(move.to()).type()];
+            const int move_score = to_score - from_score;
+            return move_score;
         }
-        return move_score;
+        return 0;
     }
 
 

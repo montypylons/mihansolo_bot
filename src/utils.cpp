@@ -5,10 +5,10 @@
 
 namespace utils
 {
-     int piece_values[7] = {
+     int piece_values[7] = { // TODO: update piece values later
         100, // PAWN
-        320, // KNIGHT
-        330, // BISHOP
+        300, // KNIGHT
+        300, // BISHOP
         500, // ROOK
         900, // QUEEN
         0, // KING (usually infinite, but 0 in evaluation)
