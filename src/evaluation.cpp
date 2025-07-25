@@ -2,11 +2,11 @@
 #include "utils.hpp"
 #include "evaluation.hpp"
 #include "engine.hpp"
-#include <vector>
+#include <array>
 
 namespace evaluation
 {
-    std::tuple<std::vector<chess::Bitboard>, std::vector<chess::Bitboard>> initialize_bitboards(
+    std::tuple<std::array<chess::Bitboard, 6>, std::array<chess::Bitboard, 6>> initialize_bitboards(
         const chess::Board& board)
     {
         // Gets bitboards for each piece from the chess::Board
@@ -71,8 +71,8 @@ namespace evaluation
         return material_score;
     }
 
-    int king_psqt_eval(const chess::Board& board, const std::vector<chess::Bitboard>& pieces,
-                       const std::vector<chess::Bitboard>& enemy_pieces)
+    int king_psqt_eval(const chess::Board& board, const std::array<chess::Bitboard, 6>& pieces,
+                       const std::array<chess::Bitboard, 6>& enemy_pieces)
     {
         int positional_score = 0;
         auto kings_bitboard = pieces[5];
@@ -109,8 +109,8 @@ namespace evaluation
     }
 
 
-    int piece_square_eval(const chess::Board& board, const std::vector<chess::Bitboard>& pieces,
-                          const std::vector<chess::Bitboard>& enemy_pieces)
+    int piece_square_eval(const chess::Board& board, const std::array<chess::Bitboard, 6>& pieces,
+                          const std::array<chess::Bitboard, 6>& enemy_pieces)
     {
         // initialize variables
         int positional_score = 0;
@@ -190,8 +190,8 @@ namespace evaluation
 
         const auto generated_bitboards = initialize_bitboards(board);
 
-        const std::vector<chess::Bitboard> our_pieces = std::get<0>(generated_bitboards);
-        const std::vector<chess::Bitboard> enemy_pieces = std::get<1>(generated_bitboards);
+        const auto our_pieces = std::get<0>(generated_bitboards);
+        const auto enemy_pieces = std::get<1>(generated_bitboards);
 
         const auto pawns = our_pieces[0];
         const auto knights = our_pieces[1];

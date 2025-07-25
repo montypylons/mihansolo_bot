@@ -39,26 +39,17 @@ namespace engine
         return false;
     }
 
-    /* int move_ordering(const chess::Board& board, const std::string& move_uci) // not currently used
+    int MVV_LAA_helper(const chess::Board& board, const chess::Move& move)
 
-     {
-         if (const chess::Move move = chess::uci::uciToMove(board, move_uci); board.isCapture(move) && move.typeOf() !=
-             chess::Move::CASTLING && move.typeOf() !=
-             chess::Move::ENPASSANT)
-         {
-             if (board.at(move.from()) == chess::Piece::NONE || board.at(move.to()) == chess::Piece::NONE)
-             {
-                 std::cerr << "[Warning] Tried to evaluate a capture move with no target piece (bad move?): " << move_uci
-                     << "\n";
-                 return -100;
-             }
-
-             constexpr int from_value = 3; // piece_values[static_cast<int>(board.at(move.from()))];
-             constexpr int to_value = 3; // piece_values[static_cast<int>(board.at(move.to()))];
-             return to_value - from_value;
-         }
-         return -100;
-     } */
+    {
+        // TODO: implement this
+        int move_score;
+        chess::PieceType from_piece = board.at(move.from()).type();
+        if (move.typeOf() != chess::Move::ENPASSANT && move.typeOf() != chess::Move::CASTLING)
+        {
+        }
+        return move_score;
+    }
 
 
     void init_book()
@@ -122,6 +113,12 @@ namespace engine
         }
 
         return std::make_tuple(best_eval, best_move);
+    }
+
+    std::string q_search(const chess::Board& board)
+    {
+        // TODO: implement quiescence search
+        return board.getFen();
     }
 
 
