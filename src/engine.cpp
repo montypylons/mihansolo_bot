@@ -11,8 +11,6 @@
 #include <tuple>
 #include <vector>
 
-// TODO: add search extensions
-
 
 namespace engine
 {
@@ -62,6 +60,7 @@ namespace engine
          return -100;
      } */
 
+
     void init_book()
     {
         book.Load("C:/Users/DELL/Documents/mihansolo_bot/gm2600.bin");
@@ -86,19 +85,23 @@ namespace engine
             int leaf_eval{evaluation::main_eval(board, ply)};
             return std::make_tuple(leaf_eval, last_move);
         }
+
+
         chess::Move best_move = chess::Move::NO_MOVE;
         int best_eval = std::numeric_limits<int>::min();
         chess::Movelist legal_moves = get_legal_moves(board);
+
         for (const auto& move : legal_moves)
         {
-            // extend search by 1 depth if you are in check, up to 10 extensions
-            // const int checkExtension = ((numExtensions < 16) && (board.inCheck())) ? 1 : 0;
-
             board.makeMove(move);
+
+
             int score;
             chess::Move dummy_move{};
 
+
             std::tie(score, dummy_move) = negamax(board, -beta, -alpha, move, depth - 1, ply + 1);
+
             score = -score;
 
             board.unmakeMove(move);
@@ -120,6 +123,7 @@ namespace engine
 
         return std::make_tuple(best_eval, best_move);
     }
+
 
     std::string search(const std::optional<chess::Board>& fen)
     {

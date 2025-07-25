@@ -6,6 +6,11 @@
 
 namespace evaluation
 {
+    int king_psqt_eval(const chess::Board& board, const std::vector<chess::Bitboard>& pieces,
+                       const std::vector<chess::Bitboard>& enemy_pieces);
+
+    bool is_endgame(const chess::Board& board);
+
     std::tuple<std::vector<chess::Bitboard>, std::vector<chess::Bitboard>> initialize_bitboards(
         const chess::Board& board);
 

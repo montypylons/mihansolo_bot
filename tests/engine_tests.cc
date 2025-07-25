@@ -71,12 +71,12 @@ TEST(MoveOrderingTest, BasicAssertions)
 
 TEST(NegamaxTest, BasicAssertions)
 {
-    auto board2 = chess::Board("8/1k6/3b4/8/8/8/7R/1K6 b - - 0 1");
+    auto board2 = chess::Board("r1bqkb1r/pppp1ppp/2n2n2/4P3/8/5N2/PPP1PPPP/RNBQKB1R w KQkq - 3 4");
 
     const auto negamax_result2 = chess::uci::moveToUci(
         std::get<1>(engine::negamax(board2, engine::initial_alpha, engine::initial_beta, chess::Move::NO_MOVE, 5, 0)));
     const std::string expected_move2 = chess::uci::moveToUci(
-        chess::Move::make<chess::Move::NORMAL>(chess::Square::SQ_D6, chess::Square::SQ_H2));
+        chess::Move::make<chess::Move::NORMAL>(chess::Square::SQ_E5, chess::Square::SQ_F6));
 
     ASSERT_EQ(negamax_result2, expected_move2);
 }

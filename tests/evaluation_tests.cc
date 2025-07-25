@@ -21,8 +21,8 @@ TEST(BitboardTest, BasicAssertions)
     auto black_rooks = enemy_pieces[3];
     auto black_queens = enemy_pieces[4];
 
-    ASSERT_EQ(our_pieces.size(), 5);
-    ASSERT_EQ(enemy_pieces.size(), 5);
+    ASSERT_EQ(our_pieces.size(), 6);
+    ASSERT_EQ(enemy_pieces.size(), 6);
 
     ASSERT_EQ(pawns.count(), 8);
     ASSERT_EQ(knights.count(), 2);
@@ -112,4 +112,21 @@ TEST(NoEarlyKingMovesTest, BasicAssertions)
     const auto result2 = evaluation::main_eval(board2, 0);
     ASSERT_GT(-result1, -result2);
     ASSERT_GT(result2, result1); // take negative to get White's POV
+}
+
+TEST(IsEndgameTest, BasicAssertions)
+{
+    const auto TwoQueensBoard = chess::Board("2q5/k7/8/8/8/8/8/1K1Q4 w - - 0 1");
+    ASSERT_FALSE(evaluation::is_endgame(TwoQueensBoard));
+    // if two queens then it isn't an endgame
+    const auto LotsOfPiecesBoard = chess::Board(
+        "r1b1k2r/1ppqb1pp/2np1n2/4ppB1/pP2P2P/2NP1N2/P1PQ1PP1/2K1RB1R b kq b3 0 10");
+    // has castling, en passant, and all the original pieces
+    ASSERT_FALSE(evaluation::is_endgame(LotsOfPiecesBoard));
+
+    const auto NoQueensBoard = chess::Board("1r6/1b1pP3/k1pP4/1pP1p3/1P6/P3B1R1/8/1K6 w - - 0 1");
+    ASSERT_TRUE(evaluation::is_endgame(NoQueensBoard));
+
+    const auto LotsOfPawns = chess::Board("8/1k2pP2/3pP3/2pP4/1pP5/pP6/P7/1K6 w - - 0 1");
+    ASSERT_TRUE(evaluation::is_endgame(LotsOfPawns));
 }

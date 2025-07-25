@@ -15,6 +15,23 @@ namespace evaluation
         return generated_bitboards;
     }
 
+    bool is_endgame(const chess::Board& board)
+    {
+        bool queens = false;
+        bool under_seven_men = false;
+
+        if (board.pieces(chess::PieceType::KING).count() + board.pieces(chess::PieceType::KNIGHT).count() + board.
+            pieces(chess::PieceType::BISHOP).count() + board.pieces(chess::PieceType::ROOK).count() < 8)
+        {
+            under_seven_men = true;
+        }
+        if (board.pieces(chess::PieceType::QUEEN).count() == 0)
+        {
+            queens = true;
+        }
+        return under_seven_men && queens;
+    }
+
     int material_eval(const chess::Bitboard& pawns, const chess::Bitboard& knights,
                       const chess::Bitboard& bishops, const chess::Bitboard& rooks, const chess::Bitboard& queens,
                       const chess::Bitboard& black_pawns, const chess::Bitboard& black_knights,
@@ -54,21 +71,60 @@ namespace evaluation
         return material_score;
     }
 
+    int king_psqt_eval(const chess::Board& board, const std::vector<chess::Bitboard>& pieces,
+                       const std::vector<chess::Bitboard>& enemy_pieces)
+    {
+        int positional_score = 0;
+        auto kings_bitboard = pieces[5];
+        int kings_square = kings_bitboard.pop();
+        kings_square = board.at(chess::Square(kings_square)).color() == chess::Color::WHITE
+                           ? kings_square
+                           : kings_square ^ 56;
+
+        if (is_endgame(board))
+        {
+            positional_score += utils::piece_square[6][kings_square];
+        }
+        else
+        {
+            positional_score += utils::piece_square[5][kings_square];
+        }
+
+        auto enemy_kings_bitboard = enemy_pieces[5];
+        int enemy_kings_square = enemy_kings_bitboard.pop();
+        enemy_kings_square = board.at(chess::Square(enemy_kings_square)).color() == chess::Color::WHITE
+                                 ? enemy_kings_square
+                                 : enemy_kings_square ^ 56;
+
+
+        if (is_endgame(board))
+        {
+            positional_score -= utils::piece_square[6][enemy_kings_square];
+        }
+        else
+        {
+            positional_score -= utils::piece_square[5][enemy_kings_square];
+        }
+        return positional_score;
+    }
+
+
     int piece_square_eval(const chess::Board& board, const std::vector<chess::Bitboard>& pieces,
                           const std::vector<chess::Bitboard>& enemy_pieces)
     {
         // initialize variables
         int positional_score = 0;
         // our pieces
-        for (auto bitboard : pieces)
+        for (size_t i = 0; i + 1 < pieces.size(); i++)
         {
+            auto bitboard = pieces[i];
             while (bitboard)
             {
                 int square = bitboard.pop();
 
                 auto piece = board.at(chess::Square(square));
 
-                const int piece_index = static_cast<int>(piece.type());
+                const int piece_index = piece.type();
 
                 square = board.at(chess::Square(square)).color() == chess::Color::WHITE ? square : square ^ 56;
 
@@ -78,15 +134,16 @@ namespace evaluation
             }
         }
         // enemy pieces
-        for (auto bitboard : enemy_pieces)
+        for (size_t i = 0; i + 1 < enemy_pieces.size(); i++)
         {
+            auto bitboard = enemy_pieces[i];
             while (bitboard)
             {
                 int square = bitboard.pop();
 
                 auto piece = board.at(chess::Square(square));
 
-                const int piece_index = static_cast<int>(piece.type());
+                const int piece_index = piece.type();
 
                 square = board.at(chess::Square(square)).color() == chess::Color::WHITE ? square : square ^ 56;
 
@@ -95,6 +152,8 @@ namespace evaluation
                 positional_score -= psqt_value;
             }
         }
+        positional_score = positional_score + king_psqt_eval(board, pieces, enemy_pieces);
+
 
         return positional_score;
     }
@@ -118,6 +177,7 @@ namespace evaluation
         }
         return std::nullopt;
     }
+
 
     int main_eval(const chess::Board& board, const int& ply)
     {

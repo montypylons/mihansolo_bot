@@ -91,15 +91,17 @@ namespace utils
         const chess::Bitboard bishops = board.pieces(chess::PieceType::BISHOP, side_to_move);
         const chess::Bitboard rooks = board.pieces(chess::PieceType::ROOK, side_to_move);
         const chess::Bitboard queens = board.pieces(chess::PieceType::QUEEN, side_to_move);
+        const chess::Bitboard kings = board.pieces(chess::PieceType::KING, side_to_move);
 
         const chess::Bitboard enemy_pawns = board.pieces(chess::PieceType::PAWN, !side_to_move);
         const chess::Bitboard enemy_knights = board.pieces(chess::PieceType::KNIGHT, !side_to_move);
         const chess::Bitboard enemy_bishops = board.pieces(chess::PieceType::BISHOP, !side_to_move);
         const chess::Bitboard enemy_rooks = board.pieces(chess::PieceType::ROOK, !side_to_move);
         const chess::Bitboard enemy_queens = board.pieces(chess::PieceType::QUEEN, !side_to_move);
+        const chess::Bitboard enemy_kings = board.pieces(chess::PieceType::KING, !side_to_move);
 
         return std::make_tuple(
-            std::vector{pawns, knights, bishops, rooks, queens},
-            std::vector{enemy_pawns, enemy_knights, enemy_bishops, enemy_rooks, enemy_queens});
+            std::vector{pawns, knights, bishops, rooks, queens, kings},
+            std::vector{enemy_pawns, enemy_knights, enemy_bishops, enemy_rooks, enemy_queens, enemy_kings});
     }
 }
