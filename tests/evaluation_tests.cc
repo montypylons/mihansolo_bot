@@ -72,7 +72,7 @@ TEST(PSQTTest, BasicAssertions)
     auto enemy_pieces = std::get<1>(generated_bitboards);
 
     int psqt_eval = evaluation::piece_square_eval(board1, our_pieces, enemy_pieces);
-    ASSERT_EQ(psqt_eval, 40); // verified with hand count
+    ASSERT_EQ(psqt_eval, 40); // verified with hand count, king safety does not effect
 
     // start relative tests
     board1 = chess::Board("rnbqkbnr/p3pppp/1ppp4/8/3PP3/2N2N2/PPP2PPP/R1BQKB1R b KQkq - 0 4");
