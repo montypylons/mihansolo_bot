@@ -1,11 +1,11 @@
-# MihanSolo Engine
+# MihanSolo engine
 
-[![GitHub stars](https://img.shields.io/github/stars/YOUR_USERNAME/mihansolo_bot?style=social)](https://github.com/YOUR_USERNAME/mihansolo_bot)
-[![Lichess Bot](https://img.shields.io/badge/Play%20on-Lichess-green?logo=lichess)](https://lichess.org/@/MihanSolo)
+[![GitHub stars](https://img.shields.io/github/stars/montypylons/mihansolo_bot?style=social)](https://github.com/YOUR_USERNAME/mihansolo_bot)
+[![Lichess](https://img.shields.io/badge/Play%20on-Lichess-green?logo=lichess)](https://lichess.org/@/MihanSolo)
 
 ---
 
-## 🧠 About
+## About mihansolo
 
 **MihanSolo** is a indie chess engine written in C++, using Negamax at depth 5 as well as quiescence search, PSQT, and MVV-LAA. (I know, its pretty bad right now) Around 1700 bullet and blitz on [Lichess](https://lichess.org/). Relies on magic_enum and Disservin's chess-lib.
 
