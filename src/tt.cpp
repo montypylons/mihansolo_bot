@@ -6,41 +6,40 @@
 struct TTEntry; // TODO: get tests for TT
 
 
-
-    void TranspositionTable::put(const uint64_t zobrist_key,
-             const chess::Move& best_move,
-             const int depth,
-             const int score,
-             const NodeType node_type,
-             const int age)
+void TranspositionTable::put(const uint64_t zobrist_key,
+                             const chess::Move& best_move,
+                             const int depth,
+                             const int score,
+                             const NodeType node_type,
+                             const int age)
+{
+    const int index = TranspositionTable::address_calc(zobrist_key);
+    if (!find(zobrist_key) || depth >= table[index].depth)
     {
-        const int index = TranspositionTable::address_calc(zobrist_key);
-        if (!find(zobrist_key) || depth >= table[index].depth)
-        {
-            table[index] = TTEntry{zobrist_key, best_move, depth, score, node_type, age};
-        }
-        else
-        {
-            // Do nothing, leave the existing entry as it is
-        }
+        table[index] = TTEntry{zobrist_key, best_move, depth, score, node_type, age};
     }
-
-    [[nodiscard]] std::optional<TTEntry> TranspositionTable::get(const uint64_t zobrist_key) const
+    else
     {
-        auto found_entry = table[address_calc(zobrist_key)];
-        if (found_entry.zobrist_key == zobrist_key)
-        {
-            return found_entry;
-        }
-        return std::nullopt;
+        // Do nothing, leave the existing entry as it is
     }
+}
 
-    [[nodiscard]] bool TranspositionTable::find(const uint64_t zobrist_key) const
+[[nodiscard]] std::optional<TTEntry> TranspositionTable::get(const uint64_t zobrist_key) const
+{
+    auto found_entry = table[address_calc(zobrist_key)];
+    if (found_entry.zobrist_key == zobrist_key)
     {
-        return table[address_calc(zobrist_key)].zobrist_key == zobrist_key;
+        return found_entry;
     }
+    return std::nullopt;
+}
 
-    [[nodiscard]] int TranspositionTable::address_calc(const uint64_t key) const
-    {
-        return key % table.size(); // NOLINT
-    }
+[[nodiscard]] bool TranspositionTable::find(const uint64_t zobrist_key) const
+{
+    return table[address_calc(zobrist_key)].zobrist_key == zobrist_key;
+}
+
+[[nodiscard]] int TranspositionTable::address_calc(const uint64_t key) const
+{
+    return key % table.size(); // NOLINT
+}
