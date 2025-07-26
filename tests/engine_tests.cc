@@ -12,7 +12,7 @@
 #include "gtest/gtest.h"
 
 // many thanks to https://lichess.org/training for providing puzzle FENs
-
+// TODO: add tests for quiescence search and MVV-LAA
 TEST(GameOverTest, BasicAssertions)
 {
     ASSERT_FALSE(engine::game_over(chess::Board("2r3k1/p4p2/6pp/1pr2b2/2p5/1PR1PB2/P4PPP/2R3K1 w - - 2 26")));

@@ -26,9 +26,6 @@ namespace engine
     // Game over detection
     bool game_over(const chess::Board& board);
 
-    // Generate legal moves
-    chess::Movelist get_legal_moves(const chess::Board& board);
-
     // Move ordering heuristic
     int move_ordering(const chess::Board& board, const std::string& move_uci);
 
