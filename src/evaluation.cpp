@@ -188,21 +188,21 @@ namespace evaluation
             return result.value();
         }
 
-        const auto generated_bitboards = initialize_bitboards(board);
+        const auto& generated_bitboards = initialize_bitboards(board);
 
-        const auto our_pieces = std::get<0>(generated_bitboards);
-        const auto enemy_pieces = std::get<1>(generated_bitboards);
+        const auto& our_pieces = std::get<0>(generated_bitboards);
+        const auto& enemy_pieces = std::get<1>(generated_bitboards);
 
-        const auto pawns = our_pieces[0];
-        const auto knights = our_pieces[1];
-        const auto bishops = our_pieces[2];
-        const auto rooks = our_pieces[3];
-        const auto queens = our_pieces[4];
-        const auto black_pawns = enemy_pieces[0];
-        const auto black_knights = enemy_pieces[1];
-        const auto black_bishops = enemy_pieces[2];
-        const auto black_rooks = enemy_pieces[3];
-        const auto black_queens = enemy_pieces[4];
+        const auto& pawns = our_pieces[0];
+        const auto& knights = our_pieces[1];
+        const auto& bishops = our_pieces[2];
+        const auto& rooks = our_pieces[3];
+        const auto& queens = our_pieces[4];
+        const auto& black_pawns = enemy_pieces[0];
+        const auto& black_knights = enemy_pieces[1];
+        const auto& black_bishops = enemy_pieces[2];
+        const auto& black_rooks = enemy_pieces[3];
+        const auto& black_queens = enemy_pieces[4];
 
         score += material_eval(pawns, knights, bishops, rooks, queens, black_pawns, black_knights, black_bishops,
                                black_rooks, black_queens);
