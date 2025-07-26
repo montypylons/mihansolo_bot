@@ -21,19 +21,12 @@ namespace engine
     // to prevent integer overflow, since the min is 1 smaller than -(max)
     const int initial_beta = std::numeric_limits<int>::max();
 
-
-    chess::Movelist get_legal_moves(const chess::Board& board)
-
+    // NOLINTBEGIN
+    bool game_over(const chess::Board& board)
     {
         chess::Movelist moves;
         chess::movegen::legalmoves(moves, board);
-        return moves;
-    }
-
-    bool game_over(const chess::Board& board)
-    {
-        if (get_legal_moves(board).empty() || board.isHalfMoveDraw() || board.isInsufficientMaterial() || board.
-            isRepetition())
+        if (moves.empty() || board.isHalfMoveDraw() || board.isInsufficientMaterial() || board.isRepetition())
         {
             return true;
         }
@@ -41,6 +34,7 @@ namespace engine
         return false;
     }
 
+    // NOLINTEND
     int MVV_LAA_helper(const chess::Board& board, const chess::Move& move)
     // Most Valuable Victim - Least Valuable Aggressor
 
@@ -66,21 +60,14 @@ namespace engine
         return moves;
     }
 
-    int QuiescenceSearch(int alpha, int beta, chess::Board board, int ply)
+    int QuiescenceSearch(int alpha, int beta, chess::Board& board, int ply)
     {
         const int static_eval = evaluation::main_eval(board, ply);
         int best_value = static_eval;
-        // we will filter this to get only capture moves
-        chess::Movelist moves;
-        std::vector<chess::Move> capture_moves;
-        chess::movegen::legalmoves(moves, board);
-        for (const auto& move : moves)
-        {
-            if (board.isCapture(move))
-            {
-                capture_moves.push_back(move); // put all capture moves into this vector
-            }
-        }
+        // UPDATE: using native capture move generator now
+        chess::Movelist capture_moves;
+        chess::movegen::legalmoves<chess::movegen::MoveGenType::CAPTURE>(capture_moves, board);
+
 
         if (best_value >= beta)
         {
@@ -133,16 +120,17 @@ namespace engine
     std::tuple<int, chess::Move> negamax(chess::Board& board, int alpha, int beta, const chess::Move& last_move,
                                          const int& depth, const int& ply)
     {
-        if (depth == 0 || game_over(board))
+        if (depth == 0 || game_over(board)) // NOLINT
         {
             int leaf_eval{QuiescenceSearch(alpha, beta, board, ply)};
             return std::make_tuple(leaf_eval, last_move);
         }
 
-
+        // NOLINTBEGIN (linter says this is unreachable for some reason)
         chess::Move best_move = chess::Move::NO_MOVE;
         int best_eval = std::numeric_limits<int>::min();
-        auto legal_moves = get_legal_moves(board);
+        chess::Movelist legal_moves;
+        chess::movegen::legalmoves(legal_moves, board);
         legal_moves = MVV_LAA(legal_moves, board);
 
         for (const auto& move : legal_moves)
@@ -176,10 +164,13 @@ namespace engine
         }
 
         return std::make_tuple(best_eval, best_move);
+        // NOLINTEND
+
     }
 
     std::string search(const std::optional<chess::Board>& fen)
     {
+        constexpr int depth = 5;
         chess::Board board;
 
         if (fen.has_value())
@@ -192,7 +183,7 @@ namespace engine
             return bookmove.value();
         }
 
-        auto [eval, returned_move] = negamax(board, initial_alpha, initial_beta, chess::Move::NO_MOVE, 5, 0);
+        auto [eval, returned_move] = negamax(board, initial_alpha, initial_beta, chess::Move::NO_MOVE, depth, 0);
 
         if (returned_move == chess::Move::NO_MOVE)
         {
