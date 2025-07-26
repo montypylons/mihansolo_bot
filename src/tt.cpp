@@ -22,4 +22,5 @@ struct TTEntry // TODO: implement transposition table
 class TranspositionTable
 {
     int address_calc(uint64_t key);
+
 };
