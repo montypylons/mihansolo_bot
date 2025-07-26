@@ -66,6 +66,53 @@ namespace engine
         return moves;
     }
 
+    int QuiescenceSearch(int alpha, int beta, chess::Board board, int ply)
+    {
+        const int static_eval = evaluation::main_eval(board, ply);
+        int best_value = static_eval;
+        // we will filter this to get only capture moves
+        chess::Movelist moves;
+        std::vector<chess::Move> capture_moves;
+        chess::movegen::legalmoves(moves, board);
+        for (const auto& move : moves)
+        {
+            if (board.isCapture(move))
+            {
+                capture_moves.push_back(move); // put all capture moves into this vector
+            }
+        }
+
+        if (best_value >= beta)
+        {
+            return best_value;
+        }
+        if (best_value > alpha)
+        {
+            alpha = best_value;
+        }
+
+        for (const auto& move : capture_moves)
+        {
+            board.makeMove(move);
+            const int score = -QuiescenceSearch(-beta, -alpha, board, ply + 1);
+            board.unmakeMove(move);
+
+            if (score >= beta)
+            {
+                return score;
+            }
+            if (score > best_value)
+            {
+                best_value = score;
+            }
+            if (score > alpha)
+            {
+                alpha = score;
+            }
+        }
+        return best_value;
+    }
+
 
     void init_book()
     {
@@ -88,14 +135,15 @@ namespace engine
     {
         if (depth == 0 || game_over(board))
         {
-            int leaf_eval{evaluation::main_eval(board, ply)};
+            int leaf_eval{QuiescenceSearch(alpha, beta, board, ply)};
             return std::make_tuple(leaf_eval, last_move);
         }
 
 
         chess::Move best_move = chess::Move::NO_MOVE;
         int best_eval = std::numeric_limits<int>::min();
-        chess::Movelist legal_moves = MVV_LAA(get_legal_moves(board), board);
+        auto legal_moves = get_legal_moves(board);
+        legal_moves = MVV_LAA(legal_moves, board);
 
         for (const auto& move : legal_moves)
         {
@@ -129,13 +177,6 @@ namespace engine
 
         return std::make_tuple(best_eval, best_move);
     }
-
-    std::string q_search(const chess::Board& board)
-    {
-        // TODO: implement quiescence search
-        return board.getFen();
-    }
-
 
     std::string search(const std::optional<chess::Board>& fen)
     {
