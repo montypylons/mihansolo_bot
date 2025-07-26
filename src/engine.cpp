@@ -10,7 +10,7 @@
 #include <string>
 #include <tuple>
 #include <vector>
-
+#include <cstdint>
 #include "utils.hpp"
 
 
@@ -165,7 +165,6 @@ namespace engine
 
         return std::make_tuple(best_eval, best_move);
         // NOLINTEND
-
     }
 
     std::string search(const std::optional<chess::Board>& fen)
