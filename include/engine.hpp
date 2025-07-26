@@ -7,8 +7,9 @@
 
 namespace engine
 {
-    // logger initialization
-    void init_logger();
+    int MVV_LAA_helper(const chess::Board& board, const chess::Move& move);
+
+    chess::Movelist MVV_LAA(chess::Movelist& moves, const chess::Board& board);
 
     // Book initialization
     void init_book();

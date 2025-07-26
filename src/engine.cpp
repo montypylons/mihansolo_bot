@@ -42,17 +42,28 @@ namespace engine
     }
 
     int MVV_LAA_helper(const chess::Board& board, const chess::Move& move)
+    // Most Valuable Victim - Least Valuable Aggressor
 
     {
-        // TODO: implement this fully and add tests
-        if (move.typeOf() != chess::Move::ENPASSANT && move.typeOf() != chess::Move::CASTLING)
+        // TODO: Add tests
+        if (board.isCapture(move) && move.typeOf() != chess::Move::ENPASSANT && move.typeOf() !=
+            chess::Move::CASTLING) // do not use move ordering this for castling or en-passant
         {
             const int from_score = utils::piece_values[board.at(move.from()).type()];
             const int to_score = utils::piece_values[board.at(move.to()).type()];
             const int move_score = to_score - from_score;
             return move_score;
         }
-        return 0;
+        return 0; // not a capture
+    }
+
+    chess::Movelist MVV_LAA(chess::Movelist& moves, const chess::Board& board)
+    {
+        std::sort(moves.begin(), moves.end(), [board](const chess::Move& m1, const chess::Move& m2)-> bool
+        {
+            return MVV_LAA_helper(board, m1) > MVV_LAA_helper(board, m2);
+        });
+        return moves;
     }
 
 
@@ -84,7 +95,7 @@ namespace engine
 
         chess::Move best_move = chess::Move::NO_MOVE;
         int best_eval = std::numeric_limits<int>::min();
-        chess::Movelist legal_moves = get_legal_moves(board);
+        chess::Movelist legal_moves = MVV_LAA(get_legal_moves(board), board);
 
         for (const auto& move : legal_moves)
         {
