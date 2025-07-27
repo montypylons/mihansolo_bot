@@ -124,11 +124,10 @@ namespace engine
                                          const int& depth, const int& ply)
     {
         // initialize variables
-        int alpha_original = alpha;
+        const int alpha_original = alpha;
         auto zobrist_key = board.zobrist();
-        auto ttEntry = table.get(zobrist_key);
 
-        if (ttEntry.has_value() && ttEntry->depth >= depth)
+        if (auto ttEntry = table.get(zobrist_key); ttEntry.has_value() && ttEntry->depth >= depth)
         {
             if (ttEntry->node_type == NodeType::EXACT)
             {
