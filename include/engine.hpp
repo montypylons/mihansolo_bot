@@ -10,7 +10,7 @@ namespace engine
 {
     int MVV_LAA_helper(const chess::Board& board, const chess::Move& move);
 
-    chess::Movelist MVV_LAA(chess::Movelist& moves, const chess::Board& board);
+    chess::Movelist MVV_LAA(const chess::Move& PV_Move, chess::Movelist& moves, const chess::Board& board);
 
     // Book initialization
     void init_book();
@@ -22,7 +22,8 @@ namespace engine
     std::string search(const std::optional<chess::Board>& fen);
 
     // Negamax search (returns eval and best move)
-    std::tuple<int, chess::Move> negamax(TranspositionTable& table, chess::Board& board, int alpha, int beta,
+    std::tuple<int, chess::Move> negamax(const chess::Move& PV_Move, TranspositionTable& table, chess::Board& board,
+                                         int alpha, int beta,
                                          const chess::Move& last_move,
                                          const int& depth, const int& ply);
     // Game over detection
