@@ -17,7 +17,7 @@
 namespace engine
 {
     Reader::Book book;
-    auto table = TranspositionTable();
+    TranspositionTable table;
 
     const int initial_alpha = std::numeric_limits<int>::min() + 1;
     // to prevent integer overflow, since the min is 1 smaller than -(max)
@@ -131,15 +131,15 @@ namespace engine
         {
             if (ttEntry->node_type == NodeType::EXACT)
             {
-                return std::make_tuple(ttEntry->score, last_move);
+                return std::make_tuple(ttEntry->score, ttEntry->best_move);
             }
             if (ttEntry->node_type == NodeType::LOWERBOUND && ttEntry->score >= beta)
             {
-                return std::make_tuple(ttEntry->score, last_move);
+                return std::make_tuple(ttEntry->score, ttEntry->best_move);
             }
             if (ttEntry->node_type == NodeType::UPPERBOUND && ttEntry->score <= alpha)
             {
-                return std::make_tuple(ttEntry->score, last_move);
+                return std::make_tuple(ttEntry->score, ttEntry->best_move);
             }
         }
 
