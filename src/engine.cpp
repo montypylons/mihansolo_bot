@@ -240,7 +240,7 @@ namespace engine // TODO: add iterative deepening tests
                                   chess::Move::NO_MOVE, i,
                                   0);
             returned_move = std::get<1>(result);
-            PV_Move = returned_move;
+            PV_Move = returned_move; // speeds up by getting early cutoffs (passed to MVV_LAA and placed first in moves list)
         }
 
         if (returned_move == chess::Move::NO_MOVE)
