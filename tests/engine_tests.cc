@@ -11,6 +11,7 @@
 #include "engine.hpp"
 #include "gtest/gtest.h"
 #include "tt.hpp"
+#include <chrono>
 
 // many thanks to https://lichess.org/training for providing puzzle FENs
 // TODO: add tests for quiescence search and MVV-LAA
@@ -75,7 +76,8 @@ TEST(NegamaxTest, BasicAssertions)
     auto board2 = chess::Board("r1bqkb1r/pppp1ppp/2n2n2/4P3/8/5N2/PPP1PPPP/RNBQKB1R w KQkq - 3 4");
     auto table = TranspositionTable();
     const auto negamax_result2 = chess::uci::moveToUci(
-        std::get<1>(engine::negamax(table, board2, engine::initial_alpha, engine::initial_beta, chess::Move::NO_MOVE, 5, 0)));
+        std::get<1>(engine::negamax(chess::Move::NO_MOVE,table, board2, engine::initial_alpha, engine::initial_beta, chess::Move::NO_MOVE, 5,
+                                    0)));
     const std::string expected_move2 = chess::uci::moveToUci(
         chess::Move::make<chess::Move::NORMAL>(chess::Square::SQ_E5, chess::Square::SQ_F6));
 
@@ -87,11 +89,4 @@ TEST(SearchTestCrushingMove, BasicAssertions)
     const std::string search_result = engine::search(
         chess::Board("r1bqkb1r/pppp1ppp/2n2n2/4P3/8/5N2/PPP1PPPP/RNBQKB1R w KQkq - 3 4"));
     ASSERT_EQ(search_result, "e5f6");
-}
-
-TEST(StartPosTest,BasicAssertions)
-{
-    chess::Board board;
-    board.setFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-    std::cout << engine::search(board) << std::endl;
 }

@@ -14,7 +14,7 @@
 #include "tt.hpp"
 
 
-namespace engine
+namespace engine // TODO: add iterative deepening tests
 {
     Reader::Book book;
     TranspositionTable table;
@@ -53,12 +53,18 @@ namespace engine
         return 0; // not a capture
     }
 
-    chess::Movelist MVV_LAA(chess::Movelist& moves, const chess::Board& board)
+    chess::Movelist MVV_LAA(const chess::Move& PV_Move, chess::Movelist& moves, const chess::Board& board)
     {
         std::sort(moves.begin(), moves.end(), [board](const chess::Move& m1, const chess::Move& m2)-> bool
         {
             return MVV_LAA_helper(board, m1) > MVV_LAA_helper(board, m2);
         });
+
+        if (const auto PV_pos = moves.find(PV_Move); PV_pos > 0) // NOLINT
+        {
+            std::swap(moves[0], moves[PV_pos]);
+        }
+
         return moves;
     }
 
@@ -119,7 +125,9 @@ namespace engine
     }
 
 
-    std::tuple<int, chess::Move> negamax(TranspositionTable& table, chess::Board& board, int alpha, int beta,
+    std::tuple<int, chess::Move> negamax(const chess::Move& PV_Move, TranspositionTable& table, chess::Board& board,
+                                         int alpha,
+                                         int beta,
                                          const chess::Move& last_move,
                                          const int& depth, const int& ply)
     {
@@ -146,6 +154,7 @@ namespace engine
         if (depth == 0 || game_over(board)) // NOLINT
         {
             int leaf_eval{QuiescenceSearch(alpha, beta, board, ply)};
+            // int leaf_eval{evaluation::main_eval(board, ply)};
             return std::make_tuple(leaf_eval, last_move);
         }
 
@@ -154,7 +163,7 @@ namespace engine
         int best_eval = std::numeric_limits<int>::min();
         chess::Movelist legal_moves;
         chess::movegen::legalmoves(legal_moves, board);
-        legal_moves = MVV_LAA(legal_moves, board);
+        legal_moves = MVV_LAA(PV_Move, legal_moves, board);
 
         for (const auto& move : legal_moves)
         {
@@ -165,7 +174,7 @@ namespace engine
             chess::Move dummy_move{};
 
 
-            std::tie(score, dummy_move) = negamax(table, board, -beta, -alpha, move, depth - 1, ply + 1);
+            std::tie(score, dummy_move) = negamax(PV_Move, table, board, -beta, -alpha, move, depth - 1, ply + 1);
 
             score = -score;
 
@@ -212,6 +221,8 @@ namespace engine
     {
         constexpr int depth = 5;
         chess::Board board;
+        chess::Move PV_Move = chess::Move::NO_MOVE;
+        chess::Move returned_move{};
 
         if (fen.has_value())
         {
@@ -222,8 +233,15 @@ namespace engine
         {
             return bookmove.value();
         }
-
-        auto [eval, returned_move] = negamax(table, board, initial_alpha, initial_beta, chess::Move::NO_MOVE, depth, 0);
+        // Iterative deepening
+        for (int i = 1; i <= depth; ++i)
+        {
+            auto result = negamax(PV_Move, table, board, initial_alpha, initial_beta,
+                                  chess::Move::NO_MOVE, i,
+                                  0);
+            returned_move = std::get<1>(result);
+            PV_Move = returned_move;
+        }
 
         if (returned_move == chess::Move::NO_MOVE)
         {
