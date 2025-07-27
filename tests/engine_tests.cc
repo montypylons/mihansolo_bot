@@ -15,6 +15,7 @@
 
 // many thanks to https://lichess.org/training for providing puzzle FENs
 // TODO: add tests for quiescence search and MVV-LAA
+// TODO: this position takes lots of time: r3k2r/2p2ppp/p1n2q2/1p1Np3/1b2n2P/N3P3/PPPP2P1/R1BbKB1R b KQkq - 1 15, figure out why and add tests
 TEST(GameOverTest, BasicAssertions)
 {
     ASSERT_FALSE(engine::game_over(chess::Board("2r3k1/p4p2/6pp/1pr2b2/2p5/1PR1PB2/P4PPP/2R3K1 w - - 2 26")));
@@ -76,7 +77,8 @@ TEST(NegamaxTest, BasicAssertions)
     auto board2 = chess::Board("r1bqkb1r/pppp1ppp/2n2n2/4P3/8/5N2/PPP1PPPP/RNBQKB1R w KQkq - 3 4");
     auto table = TranspositionTable();
     const auto negamax_result2 = chess::uci::moveToUci(
-        std::get<1>(engine::negamax(chess::Move::NO_MOVE,table, board2, engine::initial_alpha, engine::initial_beta, chess::Move::NO_MOVE, 5,
+        std::get<1>(engine::negamax(chess::Move::NO_MOVE, table, board2, engine::initial_alpha, engine::initial_beta,
+                                    chess::Move::NO_MOVE, 5,
                                     0)));
     const std::string expected_move2 = chess::uci::moveToUci(
         chess::Move::make<chess::Move::NORMAL>(chess::Square::SQ_E5, chess::Square::SQ_F6));
