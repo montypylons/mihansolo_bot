@@ -10,13 +10,12 @@ void TranspositionTable::put(const uint64_t zobrist_key,
                              const chess::Move& best_move,
                              const int depth,
                              const int score,
-                             const NodeType node_type,
-                             const int age)
+                             const NodeType node_type)
 {
     const int index = TranspositionTable::address_calc(zobrist_key);
     if (!find(zobrist_key) || depth >= table[index].depth)
     {
-        table[index] = TTEntry{zobrist_key, best_move, depth, score, node_type, age};
+        table[index] = TTEntry{zobrist_key, best_move, depth, score, node_type};
     }
     else
     {

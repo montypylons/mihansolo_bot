@@ -17,6 +17,8 @@
 namespace engine
 {
     Reader::Book book;
+    auto table = TranspositionTable();
+
     const int initial_alpha = std::numeric_limits<int>::min() + 1;
     // to prevent integer overflow, since the min is 1 smaller than -(max)
     const int initial_beta = std::numeric_limits<int>::max();
@@ -117,9 +119,31 @@ namespace engine
     }
 
 
-    std::tuple<int, chess::Move> negamax(chess::Board& board, int alpha, int beta, const chess::Move& last_move,
+    std::tuple<int, chess::Move> negamax(TranspositionTable& table, chess::Board& board, int alpha, int beta,
+                                         const chess::Move& last_move,
                                          const int& depth, const int& ply)
     {
+        // initialize variables
+        int alpha_original = alpha;
+        auto zobrist_key = board.zobrist();
+        auto ttEntry = table.get(zobrist_key);
+
+        if (ttEntry.has_value() && ttEntry->depth >= depth)
+        {
+            if (ttEntry->node_type == NodeType::EXACT)
+            {
+                return std::make_tuple(ttEntry->score, last_move);
+            }
+            if (ttEntry->node_type == NodeType::LOWERBOUND && ttEntry->score >= beta)
+            {
+                return std::make_tuple(ttEntry->score, last_move);
+            }
+            if (ttEntry->node_type == NodeType::UPPERBOUND && ttEntry->score <= alpha)
+            {
+                return std::make_tuple(ttEntry->score, last_move);
+            }
+        }
+
         if (depth == 0 || game_over(board)) // NOLINT
         {
             int leaf_eval{QuiescenceSearch(alpha, beta, board, ply)};
@@ -142,9 +166,10 @@ namespace engine
             chess::Move dummy_move{};
 
 
-            std::tie(score, dummy_move) = negamax(board, -beta, -alpha, move, depth - 1, ply + 1);
+            std::tie(score, dummy_move) = negamax(table, board, -beta, -alpha, move, depth - 1, ply + 1);
 
             score = -score;
+
 
             board.unmakeMove(move);
 
@@ -159,9 +184,26 @@ namespace engine
             }
             if (score >= beta)
             {
+                table.put(zobrist_key, best_move, depth, best_eval, NodeType::LOWERBOUND);
                 return std::make_tuple(best_eval, best_move);
             }
         }
+        // Start transposition table stuff
+        NodeType node_type;
+        if (best_eval <= alpha_original)
+        {
+            node_type = NodeType::UPPERBOUND;
+        }
+        else if (best_eval >= beta)
+        {
+            node_type = NodeType::LOWERBOUND;
+        }
+        else
+        {
+            node_type = NodeType::EXACT;
+        }
+        table.put(zobrist_key, best_move, depth, best_eval, node_type);
+        // End transposition table stuff
 
         return std::make_tuple(best_eval, best_move);
         // NOLINTEND
@@ -182,7 +224,7 @@ namespace engine
             return bookmove.value();
         }
 
-        auto [eval, returned_move] = negamax(board, initial_alpha, initial_beta, chess::Move::NO_MOVE, depth, 0);
+        auto [eval, returned_move] = negamax(table, board, initial_alpha, initial_beta, chess::Move::NO_MOVE, depth, 0);
 
         if (returned_move == chess::Move::NO_MOVE)
         {
