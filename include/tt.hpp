@@ -14,7 +14,6 @@ struct TTEntry // TODO: get tests for TT
     int depth;
     int score;
     NodeType node_type;
-    int age;
 };
 
 class TranspositionTable
@@ -26,16 +25,14 @@ public:
              const chess::Move& best_move,
              int depth,
              int score,
-             NodeType node_type,
-             int age);
+             NodeType node_type);
 
 
     [[nodiscard]] std::optional<TTEntry> get(uint64_t zobrist_key) const;
-
-private:
     [[nodiscard]] bool find(uint64_t zobrist_key) const;
 
+private:
     [[nodiscard]] int address_calc(uint64_t key) const;
 
-    std::array<TTEntry, 1000000> table;
+    std::vector<TTEntry> table = std::vector<TTEntry>(100'000);
 };
