@@ -88,3 +88,10 @@ TEST(SearchTestCrushingMove, BasicAssertions)
         chess::Board("r1bqkb1r/pppp1ppp/2n2n2/4P3/8/5N2/PPP1PPPP/RNBQKB1R w KQkq - 3 4"));
     ASSERT_EQ(search_result, "e5f6");
 }
+
+TEST(StartPosTest,BasicAssertions)
+{
+    chess::Board board;
+    board.setFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+    std::cout << engine::search(board) << std::endl;
+}
