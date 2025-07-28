@@ -14,8 +14,11 @@
 #include <chrono>
 
 // many thanks to https://lichess.org/training for providing puzzle FENs
-// TODO: add tests for quiescence search and MVV-LAA
-// TODO: this position takes lots of time: r3k2r/2p2ppp/p1n2q2/1p1Np3/1b2n2P/N3P3/PPPP2P1/R1BbKB1R b KQkq - 1 15, figure out why and add tests
+
+// TODO: add tests for quiescence search and MVV-LAA and transposition table and iterative
+// TODO: this position takes lots of time: r3k2r/2p2ppp/p1n2q2/1p1Np3/1b2n2P/N3P3/PPPP2P1/R1BbKB1R b KQkq - 1 15,
+// TODO: this takes 160 sec r2q1rk1/ppp2pbp/3p1np1/2nPp1B1/2P1P1b1/2N2N2/PP2BPPP/R2Q1RK1 w - - 3 10
+// TODO: figure out why
 TEST(GameOverTest, BasicAssertions)
 {
     ASSERT_FALSE(engine::game_over(chess::Board("2r3k1/p4p2/6pp/1pr2b2/2p5/1PR1PB2/P4PPP/2R3K1 w - - 2 26")));
