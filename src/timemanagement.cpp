@@ -1,12 +1,14 @@
 #include "timemanagement.hpp"
 #include <chrono>
+#include <iostream>
+#include <__msvc_ostream.hpp>
 
 namespace TimeManagement
 {
     bool TimeManager::time_remaining() const
     {
         return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - last_move_time).
-            count() > time_remaining_for_move;
+            count() < time_remaining_for_move;
     }
 
     void TimeManager::go(const int wtime, const int btime, const int winc, const int binc)

@@ -17,6 +17,7 @@
 namespace engine // TODO: add iterative deepening tests
 {
     constexpr int TIME_RAN_OUT_EVAL = -88888888;
+    bool abort_due_to_time = false;
     Reader::Book book;
     TranspositionTable table; // TODO: add tests fr this
     std::optional<TimeManagement::TimeManager> manager; // TODO: add tests fr this
@@ -72,6 +73,11 @@ namespace engine // TODO: add iterative deepening tests
 
     int QuiescenceSearch(int alpha, int beta, chess::Board& board, int ply)
     {
+        if (manager.has_value() && !manager->time_remaining())
+        {
+            abort_due_to_time = true;
+            return 0;
+        }
         const int static_eval = evaluation::main_eval(board, ply);
         int best_value = static_eval;
         // UPDATE: using native capture move generator now
@@ -134,6 +140,12 @@ namespace engine // TODO: add iterative deepening tests
                                          const int& depth, const int& ply)
     {
         // initialize variables
+        if (manager.has_value() && !manager->time_remaining())
+        {
+            abort_due_to_time = true;
+            return std::make_tuple(0, chess::Move::NO_MOVE);
+        }
+
         const int alpha_original = alpha;
         auto zobrist_key = board.zobrist();
 
@@ -222,6 +234,7 @@ namespace engine // TODO: add iterative deepening tests
     std::string search(const std::optional<chess::Board>& fen)
     {
         constexpr int depth = 5;
+        abort_due_to_time = false;
         chess::Board board;
         chess::Move PV_Move = chess::Move::NO_MOVE;
         chess::Move returned_move{};
@@ -239,10 +252,11 @@ namespace engine // TODO: add iterative deepening tests
         // Iterative deepening
         for (int i = 1; i <= depth; ++i)
         {
-            if (!manager->time_remaining())
+            if (manager.has_value() && !manager->time_remaining())
             {
                 break;
             }
+
             auto result = negamax(PV_Move, table, board, initial_alpha, initial_beta,
                                   chess::Move::NO_MOVE, i,
                                   0);
@@ -252,7 +266,10 @@ namespace engine // TODO: add iterative deepening tests
             {
                 break;
             } */
-            PV_Move = returned_move;
+            if (!abort_due_to_time) // prevents using corrupted moves
+            {
+                PV_Move = returned_move;
+            }
             // speeds up by getting early cutoffs (passed to MVV_LAA and placed first in moves list)
         }
 
@@ -261,7 +278,7 @@ namespace engine // TODO: add iterative deepening tests
             return "0000";
         }
 
-        std::string move_uci = chess::uci::moveToUci(returned_move);
+        std::string move_uci = chess::uci::moveToUci(PV_Move);
 
         return move_uci;
     }
