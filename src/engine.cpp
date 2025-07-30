@@ -12,12 +12,14 @@
 #include <vector>
 #include "utils.hpp"
 #include "tt.hpp"
-
+#include "timemanagement.hpp"
 
 namespace engine // TODO: add iterative deepening tests
 {
+    constexpr int TIME_RAN_OUT_EVAL = -88888888;
     Reader::Book book;
-    TranspositionTable table;
+    TranspositionTable table; // TODO: add tests fr this
+    std::optional<TimeManagement::TimeManager> manager; // TODO: add tests fr this
 
     const int initial_alpha = std::numeric_limits<int>::min() + 1;
     // to prevent integer overflow, since the min is 1 smaller than -(max)
@@ -224,6 +226,7 @@ namespace engine // TODO: add iterative deepening tests
         chess::Move PV_Move = chess::Move::NO_MOVE;
         chess::Move returned_move{};
 
+
         if (fen.has_value())
         {
             board = fen.value();
@@ -236,6 +239,10 @@ namespace engine // TODO: add iterative deepening tests
         // Iterative deepening
         for (int i = 1; i <= depth; ++i)
         {
+            if (!manager->time_remaining())
+            {
+                break;
+            }
             auto result = negamax(PV_Move, table, board, initial_alpha, initial_beta,
                                   chess::Move::NO_MOVE, i,
                                   0);
@@ -293,9 +300,11 @@ namespace engine // TODO: add iterative deepening tests
                 std::string pos_type;
                 iss >> pos_type;
 
+
                 if (pos_type == "startpos")
                 {
                     board.setFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+                    manager = TimeManagement::TimeManager(board.sideToMove());
                 }
                 else if (pos_type == "fen")
                 {
@@ -306,6 +315,7 @@ namespace engine // TODO: add iterative deepening tests
                     }
                     fen.pop_back(); // remove trailing space
                     board.setFen(fen);
+                    manager = TimeManagement::TimeManager(board.sideToMove());
                 }
 
                 std::string next;
@@ -322,6 +332,22 @@ namespace engine // TODO: add iterative deepening tests
             }
             else if (token == "go")
             {
+                int wtime = 0, btime = 0, winc = 0, binc = 0;
+
+                std::string param;
+                while (iss >> param)
+                {
+                    if (param == "wtime") iss >> wtime;
+                    else if (param == "btime") iss >> btime;
+                    else if (param == "winc") iss >> winc;
+                    else if (param == "binc") iss >> binc;
+                }
+
+                if (manager.has_value())
+                {
+                    manager->go(wtime, btime, winc, binc);
+                }
+
                 std::string bestmove = search(board);
                 std::cout << "bestmove " << bestmove << "\n";
             }
