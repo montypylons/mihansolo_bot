@@ -21,6 +21,7 @@ namespace engine // TODO: add iterative deepening tests
     Reader::Book book;
     TranspositionTable table; // TODO: add tests fr this
     std::optional<TimeManagement::TimeManager> manager; // TODO: add tests fr this
+    bool manager_exists = false;
 
     const int initial_alpha = std::numeric_limits<int>::min() + 1;
     // to prevent integer overflow, since the min is 1 smaller than -(max)
@@ -233,8 +234,8 @@ namespace engine // TODO: add iterative deepening tests
 
     std::string search(const std::optional<chess::Board>& fen)
     {
-        constexpr int depth = 5;
         abort_due_to_time = false;
+        constexpr int default_depth = 5;
         chess::Board board;
         chess::Move PV_Move = chess::Move::NO_MOVE;
         chess::Move returned_move{};
@@ -249,28 +250,39 @@ namespace engine // TODO: add iterative deepening tests
         {
             return bookmove.value();
         }
-        // Iterative deepening
-        for (int i = 1; i <= depth; ++i)
+        if (manager_exists)
         {
-            if (manager.has_value() && !manager->time_remaining())
+            int depth = 1;
+            while (!manager->time_remaining()) // Iterative deepening
             {
-                break;
-            }
+                auto result = negamax(PV_Move, table, board, initial_alpha, initial_beta,
+                                      chess::Move::NO_MOVE, depth,
+                                      0);
+                returned_move = std::get<1>(result);
 
-            auto result = negamax(PV_Move, table, board, initial_alpha, initial_beta,
-                                  chess::Move::NO_MOVE, i,
-                                  0);
-            returned_move = std::get<1>(result);
-
-            /* if (const int eval = std::get<0>(result); eval > 9995 || eval < -9995)
-            {
-                break;
-            } */
-            if (!abort_due_to_time) // prevents using corrupted moves
-            {
-                PV_Move = returned_move;
+                /* if (const int eval = std::get<0>(result); eval > 9995 || eval < -9995)
+                {
+                    break;
+                } */
+                if (!abort_due_to_time) // prevents using corrupted moves
+                {
+                    PV_Move = returned_move;
+                }
+                depth++;
             }
-            // speeds up by getting early cutoffs (passed to MVV_LAA and placed first in moves list)
+        }
+        else // in testing time management is often not tested
+        // TODO: add UCI E2E tests as part of CTest suite, since there are none currently
+        {
+            for (int _i; _i < default_depth; _i++)
+            {
+                auto result = negamax(PV_Move, table, board, initial_alpha, initial_beta,
+                                      chess::Move::NO_MOVE, _i,
+                                      0);
+                returned_move = std::get<1>(result);
+
+                PV_Move = returned_move; // no time management logic here
+            }
         }
 
         if (returned_move == chess::Move::NO_MOVE)
@@ -322,6 +334,7 @@ namespace engine // TODO: add iterative deepening tests
                 {
                     board.setFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
                     manager = TimeManagement::TimeManager(board.sideToMove());
+                    manager_exists = true;
                 }
                 else if (pos_type == "fen")
                 {
@@ -333,6 +346,7 @@ namespace engine // TODO: add iterative deepening tests
                     fen.pop_back(); // remove trailing space
                     board.setFen(fen);
                     manager = TimeManagement::TimeManager(board.sideToMove());
+                    manager_exists = true;
                 }
 
                 std::string next;

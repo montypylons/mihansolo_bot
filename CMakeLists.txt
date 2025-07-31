@@ -19,11 +19,12 @@ if (MSVC AND CMAKE_BUILD_TYPE STREQUAL "Release")
             /GL        # Whole program optimization
             /fp:fast   # Fast floating-point math
             /Gy        # Function-level linking
+
     )
 
     # Link-time optimizations
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /LTCG /OPT:REF /OPT:ICF")
-endif()
+endif ()
 
 # -------------------------------
 # Dependencies
