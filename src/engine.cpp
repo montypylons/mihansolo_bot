@@ -253,7 +253,7 @@ namespace engine // TODO: add iterative deepening tests
         if (manager_exists)
         {
             int depth = 1;
-            while (!manager->time_remaining()) // Iterative deepening
+            while (manager->time_remaining()) // Iterative deepening
             {
                 auto result = negamax(PV_Move, table, board, initial_alpha, initial_beta,
                                       chess::Move::NO_MOVE, depth,
