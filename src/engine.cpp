@@ -234,12 +234,13 @@ namespace engine // TODO: add iterative deepening tests
 
     std::string search(const std::optional<chess::Board>& fen)
     {
+        int depth = 1;
+        int eval = 0;
+
         abort_due_to_time = false;
-        constexpr int default_depth = 5;
         chess::Board board;
         chess::Move PV_Move = chess::Move::NO_MOVE;
         chess::Move returned_move{};
-
 
         if (fen.has_value())
         {
@@ -252,13 +253,14 @@ namespace engine // TODO: add iterative deepening tests
         }
         if (manager_exists)
         {
-            int depth = 1;
             while (manager->time_remaining()) // Iterative deepening
             {
                 auto result = negamax(PV_Move, table, board, initial_alpha, initial_beta,
                                       chess::Move::NO_MOVE, depth,
                                       0);
+
                 returned_move = std::get<1>(result);
+                eval = std::get<0>(result);
 
                 /* if (const int eval = std::get<0>(result); eval > 9995 || eval < -9995)
                 {
@@ -268,12 +270,14 @@ namespace engine // TODO: add iterative deepening tests
                 {
                     PV_Move = returned_move;
                 }
+
                 depth++;
             }
         }
         else // in testing time management is often not tested
         // TODO: add UCI E2E tests as part of CTest suite, since there are none currently
         {
+            constexpr int default_depth = 5;
             for (int _i; _i < default_depth; _i++)
             {
                 auto result = negamax(PV_Move, table, board, initial_alpha, initial_beta,
@@ -291,6 +295,7 @@ namespace engine // TODO: add iterative deepening tests
         }
 
         std::string move_uci = chess::uci::moveToUci(PV_Move);
+        std::cout << "info depth " << depth << " score cp " << eval << "\n";
 
         return move_uci;
     }
