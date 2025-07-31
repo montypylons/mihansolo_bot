@@ -18,6 +18,7 @@ namespace engine // TODO: add iterative deepening tests
 {
     constexpr int TIME_RAN_OUT_EVAL = -88888888;
     bool abort_due_to_time = false;
+    int nodes = 0;
     Reader::Book book;
     TranspositionTable table; // TODO: add tests fr this
     std::optional<TimeManagement::TimeManager> manager; // TODO: add tests fr this
@@ -74,6 +75,7 @@ namespace engine // TODO: add iterative deepening tests
 
     int QuiescenceSearch(int alpha, int beta, chess::Board& board, int ply)
     {
+        nodes++;
         if (manager.has_value() && !manager->time_remaining())
         {
             abort_due_to_time = true;
@@ -140,6 +142,7 @@ namespace engine // TODO: add iterative deepening tests
                                          const chess::Move& last_move,
                                          const int& depth, const int& ply)
     {
+        nodes++;
         // initialize variables
         if (manager.has_value() && !manager->time_remaining())
         {
@@ -236,6 +239,7 @@ namespace engine // TODO: add iterative deepening tests
     {
         int depth = 1;
         int eval = 0;
+        nodes = 0; // reset nodes every move
 
         abort_due_to_time = false;
         chess::Board board;
@@ -295,7 +299,7 @@ namespace engine // TODO: add iterative deepening tests
         }
 
         std::string move_uci = chess::uci::moveToUci(PV_Move);
-        std::cout << "info depth " << depth << " score cp " << eval << "\n";
+        std::cout << "info depth " << depth << " nodes " << nodes << " score cp " << eval << "\n";
 
         return move_uci;
     }
