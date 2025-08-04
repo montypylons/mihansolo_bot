@@ -12,6 +12,7 @@
 #include "gtest/gtest.h"
 #include "tt.hpp"
 #include <chrono>
+#include "timemanagement.hpp"
 
 // many thanks to https://lichess.org/training for providing puzzle FENs
 
@@ -94,4 +95,13 @@ TEST(SearchTestCrushingMove, BasicAssertions)
     const std::string search_result = engine::search(
         chess::Board("r1bqkb1r/pppp1ppp/2n2n2/4P3/8/5N2/PPP1PPPP/RNBQKB1R w KQkq - 3 4"));
     ASSERT_EQ(search_result, "e5f6");
+}
+
+TEST(TimeManagementTest, BasicAssertions)
+
+{
+    auto manager = TimeManagement::TimeManager(true);
+    manager.go(36'300, 2'800, 1'000, 1'000);
+    std::this_thread::sleep_for(std::chrono::milliseconds(2315));
+    ASSERT_FALSE(manager.time_remaining());
 }
