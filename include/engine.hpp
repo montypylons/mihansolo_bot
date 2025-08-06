@@ -10,7 +10,9 @@ namespace engine
 {
     int MVV_LAA_helper(const chess::Board& board, const chess::Move& move);
 
-    chess::Movelist MVV_LAA(const chess::Move& PV_Move, chess::Movelist& moves, const chess::Board& board);
+    inline int history_heuristic_helper(const chess::Board& board, const chess::Move& move);
+
+    chess::Movelist order_moves(const chess::Move& PV_Move, chess::Movelist& moves, const chess::Board& board);
 
     // Book initialization
     void init_book();

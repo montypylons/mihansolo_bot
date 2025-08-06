@@ -17,6 +17,8 @@
 namespace engine // TODO: add iterative deepening tests
 {
     constexpr int TIME_RAN_OUT_EVAL = -88888888;
+
+    int history[2][64][64];
     bool abort_due_to_time = false;
     int nodes = 0;
     Reader::Book book;
@@ -47,22 +49,33 @@ namespace engine // TODO: add iterative deepening tests
 
     {
         // TODO: Add tests
-        if (board.isCapture(move) && move.typeOf() != chess::Move::ENPASSANT && move.typeOf() !=
-            chess::Move::CASTLING) // do not use move ordering this for castling or en-passant
-        {
-            const int from_score = utils::piece_values[board.at(move.from()).type()];
-            const int to_score = utils::piece_values[board.at(move.to()).type()];
-            const int move_score = to_score - from_score;
-            return move_score;
-        }
+
+        const int from_score = utils::piece_values[board.at(move.from()).type()];
+        const int to_score = utils::piece_values[board.at(move.to()).type()];
+        const int move_score = to_score - from_score;
+        return move_score;
+
         return 0; // not a capture
     }
 
-    chess::Movelist MVV_LAA(const chess::Move& PV_Move, chess::Movelist& moves, const chess::Board& board)
+    inline int history_heuristic_helper(const chess::Board& board, const chess::Move& move)
+    {
+        return history[board.sideToMove()][move.from().index()][move.to().index()];
+    }
+
+    chess::Movelist order_moves(const chess::Move& PV_Move, chess::Movelist& moves, const chess::Board& board)
     {
         std::sort(moves.begin(), moves.end(), [board](const chess::Move& m1, const chess::Move& m2)-> bool
         {
-            return MVV_LAA_helper(board, m1) > MVV_LAA_helper(board, m2);
+            if (m1.typeOf() != chess::Move::ENPASSANT && m1.typeOf() !=
+                chess::Move::CASTLING)
+            {
+                if (board.isCapture(m1)) // do not use move ordering this for castling or en-passant
+                {
+                    return MVV_LAA_helper(board, m1) > MVV_LAA_helper(board, m2);
+                }
+                return history_heuristic_helper(board, m1);
+            }
         });
 
         if (const auto PV_pos = moves.find(PV_Move); PV_pos > 0) // NOLINT
@@ -181,7 +194,7 @@ namespace engine // TODO: add iterative deepening tests
         int best_eval = std::numeric_limits<int>::min();
         chess::Movelist legal_moves;
         chess::movegen::legalmoves(legal_moves, board);
-        legal_moves = MVV_LAA(PV_Move, legal_moves, board);
+        legal_moves = order_moves(PV_Move, legal_moves, board);
 
         for (const auto& move : legal_moves)
         {
@@ -210,6 +223,10 @@ namespace engine // TODO: add iterative deepening tests
             }
             if (score >= beta)
             {
+                if (!board.isCapture(move))
+                {
+                    history[board.sideToMove()][move.from().index()][move.to().index()] += depth * depth;
+                }
                 table.put(zobrist_key, best_move, depth, best_eval, NodeType::LOWERBOUND);
                 return std::make_tuple(best_eval, best_move);
             }
@@ -238,7 +255,7 @@ namespace engine // TODO: add iterative deepening tests
     std::string search(const std::optional<chess::Board>& fen)
     {
         int depth = 1;
-        int eval = 0;
+        int previous_eval = 0;
         nodes = 0; // reset nodes every move
 
         abort_due_to_time = false;
@@ -257,6 +274,7 @@ namespace engine // TODO: add iterative deepening tests
         }
         if (manager_exists)
         {
+            int eval = 0;
             while (manager->time_remaining()) // Iterative deepening
             {
                 auto result = negamax(PV_Move, table, board, initial_alpha, initial_beta,
@@ -266,13 +284,11 @@ namespace engine // TODO: add iterative deepening tests
                 returned_move = std::get<1>(result);
                 eval = std::get<0>(result);
 
-                /* if (const int eval = std::get<0>(result); eval > 9995 || eval < -9995)
-                {
-                    break;
-                } */
+
                 if (!abort_due_to_time) // prevents using corrupted moves
                 {
                     PV_Move = returned_move;
+                    previous_eval = eval;
                 }
 
                 depth++;
@@ -299,7 +315,7 @@ namespace engine // TODO: add iterative deepening tests
         }
 
         std::string move_uci = chess::uci::moveToUci(PV_Move);
-        std::cout << "info depth " << depth << " nodes " << nodes << " score cp " << eval << "\n";
+        std::cout << "info depth " << depth << " nodes " << nodes << " score cp " << previous_eval << "\n";
 
         return move_uci;
     }
