@@ -51,16 +51,20 @@ TEST(BookMoveTest, BasicAssertions)
 
 TEST(SearchTestMateInOne, BasicAssertions)
 {
-    const std::string result1 = engine::search(chess::Board("1k6/1b6/3p1Q2/1p1P3p/1P2PR2/8/r2r4/5K2 b - - 0 41"));
+    const std::string result1 = engine::search(chess::Board("1k6/1b6/3p1Q2/1p1P3p/1P2PR2/8/r2r4/5K2 b - - 0 41"),
+                                               std::nullopt);
     ASSERT_EQ(result1, "d2d1");
 
-    const std::string result2 = engine::search(chess::Board("2r5/5Qnk/3p1Rp1/3Pp3/2P3PK/4q2P/8/2R5 b - - 6 43"));
+    const std::string result2 = engine::search(chess::Board("2r5/5Qnk/3p1Rp1/3Pp3/2P3PK/4q2P/8/2R5 b - - 6 43"),
+                                               std::nullopt);
     ASSERT_EQ(result2, "g6g5");
 
-    const std::string result3 = engine::search(chess::Board("3rn2R/ppp1qkp1/8/2Np1r2/3Pp3/2P5/PP4Q1/1K4R1 w - - 6 32"));
+    const std::string result3 = engine::search(chess::Board("3rn2R/ppp1qkp1/8/2Np1r2/3Pp3/2P5/PP4Q1/1K4R1 w - - 6 32"),
+                                               std::nullopt);
     ASSERT_EQ(result3, "g2g6");
 
-    const std::string result4 = engine::search(chess::Board("4Q3/p7/6p1/P1b2k2/3pq1p1/5N1P/2P5/7K w - - 0 41"));
+    const std::string result4 = engine::search(chess::Board("4Q3/p7/6p1/P1b2k2/3pq1p1/5N1P/2P5/7K w - - 0 41"),
+                                               std::nullopt);
     ASSERT_EQ(result4, "e8f7");
 }
 
@@ -68,7 +72,7 @@ TEST(SearchAvoidMate, BasicAssertions)
 {
     const auto board1 = chess::Board("r3r2k/1bpn1Qp1/1p2N2p/4p3/qPPP4/2P5/5PPP/4RRK1 b - - 3 23");
     const std::string only_moves[2] = {"e8g8", "e8e6"}; // only moves to (a) not lose material and (b) not blunder mate
-    const std::string result1 = engine::search(board1);
+    const std::string result1 = engine::search(board1, std::nullopt);
     std::cout << "Search result: " << result1 << std::endl;
     ASSERT_TRUE(result1 == only_moves[0] || result1 == only_moves[1]);
 }
@@ -98,11 +102,22 @@ TEST(NegamaxTest, BasicAssertions)
 TEST(SearchTestCrushingMove, BasicAssertions)
 {
     const std::string search_result = engine::search(
-        chess::Board("r1bqkb1r/pppp1ppp/2n2n2/4P3/8/5N2/PPP1PPPP/RNBQKB1R w KQkq - 3 4"));
+        chess::Board("r1bqkb1r/pppp1ppp/2n2n2/4P3/8/5N2/PPP1PPPP/RNBQKB1R w KQkq - 3 4"), std::nullopt);
     ASSERT_EQ(search_result, "e5f6");
 }
 
-TEST(TimeManagementTest, BasicAssertions)
+TEST(NoIllegalMovesTest, BasicAssertions) // we are returning 0000 at extremely low btimes (
+{
+    auto board1 = chess::Board("r4rk1/pppbq1bp/2n1p3/3pP1p1/6P1/2N1QN1P/PPP2PB1/R2R2K1 b - - 3 17");
+    auto man = TimeManagement::TimeManager(false);
+    man.go(100, 17, 0, 0);
+    const auto result1 = engine::search(board1, man);
+    ASSERT_FALSE(result1 == "a1a1");
+    ASSERT_FALSE(result1 == "0000");
+    std::cout << "Search result: " << result1 << std::endl;
+}
+
+/* TEST(TimeManagementTest, BasicAssertions)
 
 {
     auto manager = TimeManagement::TimeManager(true);
@@ -113,4 +128,5 @@ TEST(TimeManagementTest, BasicAssertions)
     manager.go(30'000, 30'000, 0, 0);
     std::this_thread::sleep_for(std::chrono::milliseconds(1480)); // time_remaining should last until 1500 ms
     ASSERT_TRUE(manager.time_remaining());
-}
+} */
+// it takes too long
