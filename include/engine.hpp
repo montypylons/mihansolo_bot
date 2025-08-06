@@ -4,6 +4,8 @@
 #include <string>
 #include <tuple>
 #include <optional>
+
+#include "timemanagement.hpp"
 #include "tt.hpp"
 
 namespace engine
@@ -24,7 +26,7 @@ namespace engine
     std::string search(const std::optional<chess::Board>& fen);
 
     // Negamax search (returns eval and best move)
-    std::tuple<int, chess::Move> negamax(const chess::Move& PV_Move, TranspositionTable& table, chess::Board& board,
+    std::tuple<int, chess::Move> negamax(const chess::Move& PV_Move, TranspositionTable& table1, chess::Board& board,
                                          int alpha, int beta,
                                          const chess::Move& last_move,
                                          const int& depth, const int& ply);
