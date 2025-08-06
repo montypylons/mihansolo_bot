@@ -208,8 +208,9 @@ namespace engine // TODO: add iterative deepening tests
     }
 
 
-    std::string search(const std::optional<chess::Board>& fen)
+    std::string search(const std::optional<chess::Board>& fen, const std::optional<TimeManagement::TimeManager>& manager1)
     {
+        manager_exists = manager1.has_value();
         int depth = 1;
         int previous_eval = 0;
         nodes = 0; // reset nodes every move
@@ -231,7 +232,7 @@ namespace engine // TODO: add iterative deepening tests
         if (manager_exists)
         {
             int eval = 0;
-            while (manager->time_remaining()) // Iterative deepening
+            while (manager1->time_remaining()) // Iterative deepening
             {
                 auto result = negamax(PV_Move, table, board, initial_alpha, initial_beta,
                                       chess::Move::NO_MOVE, depth,
@@ -360,7 +361,7 @@ namespace engine // TODO: add iterative deepening tests
                     manager->go(wtime, btime, winc, binc);
                 }
 
-                std::string bestmove = search(board);
+                std::string bestmove = search(board, manager);
                 std::cout << "bestmove " << bestmove << "\n";
             }
             else if (token == "quit")
