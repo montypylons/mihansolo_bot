@@ -17,17 +17,21 @@
 namespace engine // TODO: add iterative deepening tests
 {
     constexpr int TIME_RAN_OUT_EVAL = -88888888;
+    constexpr int NULL_MOVE_REDUCTION = 3;
+
 
     int history[2][64][64];
-    bool abort_due_to_time = false;
     int nodes = 0;
+
+
+    bool abort_due_to_time = false;
+    bool manager_exists = false;
+
     Reader::Book book;
     TranspositionTable table; // TODO: add tests fr this
     std::optional<TimeManagement::TimeManager> manager; // TODO: add tests fr this
-    bool manager_exists = false;
 
-    const int initial_alpha = std::numeric_limits<int>::min() + 1;
-    // to prevent integer overflow, since the min is 1 smaller than -(max)
+    const int initial_alpha = std::numeric_limits<int>::min() + 1; // to avoid wraparound bugs
     const int initial_beta = std::numeric_limits<int>::max();
 
     // NOLINTBEGIN
@@ -44,41 +48,6 @@ namespace engine // TODO: add iterative deepening tests
     }
 
     // NOLINTEND
-    int MVV_LAA_helper(const chess::Board& board, const chess::Move& move)
-    // Most Valuable Victim - Least Valuable Aggressor
-
-    {
-        // TODO: Add tests
-
-        const int from_score = utils::piece_values[board.at(move.from()).type()];
-        const int to_score = utils::piece_values[board.at(move.to()).type()];
-        const int move_score = to_score - from_score;
-        return move_score;
-    }
-
-    inline int history_heuristic_helper(const chess::Board& board, const chess::Move& move)
-    {
-        return history[board.sideToMove()][move.from().index()][move.to().index()];
-    }
-
-    chess::Movelist order_moves(const chess::Move& PV_Move, chess::Movelist& moves, const chess::Board& board)
-    {
-        std::sort(moves.begin(), moves.end(), [board](const chess::Move& m1, const chess::Move& m2)-> bool
-        {
-            if (board.isCapture(m1)) // do not use move ordering this for castling or en-passant
-            {
-                return MVV_LAA_helper(board, m1) > MVV_LAA_helper(board, m2);
-            }
-            return history_heuristic_helper(board, m1) < history_heuristic_helper(board, m2);
-        });
-
-        if (const auto PV_pos = moves.find(PV_Move); PV_pos > 0) // NOLINT
-        {
-            std::swap(moves[0], moves[PV_pos]);
-        }
-
-        return moves;
-    }
 
     int QuiescenceSearch(int alpha, int beta, chess::Board& board, int ply)
     {
@@ -142,39 +111,36 @@ namespace engine // TODO: add iterative deepening tests
         return std::nullopt;
     }
 
+    inline bool can_NMP(const chess::Board& board, const int depth)
+    {
+        // cannot null move prune when it is a zugzwang-ish position, side to move is in check, or the reduction factor (NULL_MOVE_REDUCTION)
+        // would cause a depth < 1
+        return depth > NULL_MOVE_REDUCTION && board.hasNonPawnMaterial(board.sideToMove()) && !board.inCheck();
+    }
+
 
     std::tuple<int, chess::Move> negamax(const chess::Move& PV_Move, TranspositionTable& table1, chess::Board& board,
                                          int alpha,
-                                         int beta,
+                                         const int beta,
                                          const chess::Move& last_move,
                                          const int& depth, const int& ply)
     {
         nodes++;
-        // initialize variables
+        // time management
         if (manager.has_value() && !manager->time_remaining())
         {
             abort_due_to_time = true;
             return std::make_tuple(0, chess::Move::NO_MOVE);
         }
-
+        // transposition table stuff starts
         const int alpha_original = alpha;
-        auto zobrist_key = board.zobrist();
+        const auto zobrist_key = board.zobrist();
 
-        if (auto ttEntry = table1.get(zobrist_key); ttEntry.has_value() && ttEntry->depth >= depth)
+        if (auto TTResult = table1.find_usable_entry(alpha_original, beta, depth, zobrist_key); TTResult.has_value())
         {
-            if (ttEntry->node_type == NodeType::EXACT)
-            {
-                return std::make_tuple(ttEntry->score, ttEntry->best_move);
-            }
-            if (ttEntry->node_type == NodeType::LOWERBOUND && ttEntry->score >= beta)
-            {
-                return std::make_tuple(ttEntry->score, ttEntry->best_move);
-            }
-            if (ttEntry->node_type == NodeType::UPPERBOUND && ttEntry->score <= alpha)
-            {
-                return std::make_tuple(ttEntry->score, ttEntry->best_move);
-            }
+            return TTResult.value();
         }
+        // transposition stuff ends
 
         if (depth == 0 || game_over(board)) // NOLINT
         {
@@ -188,21 +154,16 @@ namespace engine // TODO: add iterative deepening tests
         int best_eval = std::numeric_limits<int>::min();
         chess::Movelist legal_moves;
         chess::movegen::legalmoves(legal_moves, board);
-        legal_moves = order_moves(PV_Move, legal_moves, board);
+        legal_moves = utils::order_moves(history, PV_Move, legal_moves, board);
 
         for (const auto& move : legal_moves)
         {
             board.makeMove(move);
 
-
             int score;
             chess::Move dummy_move{};
-
-
             std::tie(score, dummy_move) = negamax(PV_Move, table1, board, -beta, -alpha, move, depth - 1, ply + 1);
-
             score = -score;
-
 
             board.unmakeMove(move);
 
@@ -245,6 +206,7 @@ namespace engine // TODO: add iterative deepening tests
         return std::make_tuple(best_eval, best_move);
         // NOLINTEND
     }
+
 
     std::string search(const std::optional<chess::Board>& fen)
     {

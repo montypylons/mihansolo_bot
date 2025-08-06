@@ -24,13 +24,14 @@ void TranspositionTable::put(const uint64_t zobrist_key,
 
 [[nodiscard]] std::optional<TTEntry> TranspositionTable::get(const uint64_t zobrist_key) const
 {
-    auto found_entry = table[address_calc(zobrist_key)];
-    if (found_entry.zobrist_key == zobrist_key)
+    if (auto found_entry = table[address_calc(zobrist_key)]; found_entry.zobrist_key == zobrist_key)
     {
         return found_entry;
     }
     return std::nullopt;
 }
+
+
 
 [[nodiscard]] bool TranspositionTable::find(const uint64_t zobrist_key) const
 {
