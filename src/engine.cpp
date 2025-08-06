@@ -17,7 +17,6 @@
 namespace engine // TODO: add iterative deepening tests
 {
     constexpr int TIME_RAN_OUT_EVAL = -88888888;
-    constexpr int NULL_MOVE_REDUCTION = 3;
 
 
     int history[2][64][64];
@@ -111,11 +110,18 @@ namespace engine // TODO: add iterative deepening tests
         return std::nullopt;
     }
 
+    inline int reduction_for(const int depth)
+    {
+        return depth >= 6 ? 3 : 2;
+    }
+
     inline bool can_NMP(const chess::Board& board, const int depth)
     {
-        // cannot null move prune when it is a zugzwang-ish position, side to move is in check, or the reduction factor (NULL_MOVE_REDUCTION)
-        // would cause a depth < 1
-        return depth > NULL_MOVE_REDUCTION && board.hasNonPawnMaterial(board.sideToMove()) && !board.inCheck();
+        const int R = reduction_for(depth);
+        return depth >= R
+            && depth > R + 1 // need at least one more ply than R
+            && board.hasNonPawnMaterial(board.sideToMove())
+            && !board.inCheck();
     }
 
 
@@ -145,7 +151,6 @@ namespace engine // TODO: add iterative deepening tests
         if (depth == 0 || game_over(board)) // NOLINT
         {
             int leaf_eval{QuiescenceSearch(alpha, beta, board, ply)};
-            // int leaf_eval{evaluation::main_eval(board, ply)};
             return std::make_tuple(leaf_eval, last_move);
         }
 
@@ -162,11 +167,19 @@ namespace engine // TODO: add iterative deepening tests
             chess::Move dummy{};
             board.makeNullMove();
             std::tie(score, dummy) = negamax(PV_Move, table1, board, -beta, -(beta - 1), last_move,
-                                             depth - NULL_MOVE_REDUCTION, ply + 1);
+                                             depth - reduction_for(depth), ply + 1);
             score = -score;
             board.unmakeNullMove();
             if (score >= beta)
+            {
+                table1.put(zobrist_key,
+                           chess::Move::NO_MOVE, // no preferred move
+                           depth,
+                           score,
+                           NodeType::LOWERBOUND); // record that this node is ≥score
+
                 return std::make_tuple(score, last_move);
+            }
         }
 
         for (const auto& move : legal_moves)
