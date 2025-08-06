@@ -54,8 +54,6 @@ namespace engine // TODO: add iterative deepening tests
         const int to_score = utils::piece_values[board.at(move.to()).type()];
         const int move_score = to_score - from_score;
         return move_score;
-
-        return 0; // not a capture
     }
 
     inline int history_heuristic_helper(const chess::Board& board, const chess::Move& move)
@@ -67,15 +65,11 @@ namespace engine // TODO: add iterative deepening tests
     {
         std::sort(moves.begin(), moves.end(), [board](const chess::Move& m1, const chess::Move& m2)-> bool
         {
-            if (m1.typeOf() != chess::Move::ENPASSANT && m1.typeOf() !=
-                chess::Move::CASTLING)
+            if (board.isCapture(m1)) // do not use move ordering this for castling or en-passant
             {
-                if (board.isCapture(m1)) // do not use move ordering this for castling or en-passant
-                {
-                    return MVV_LAA_helper(board, m1) > MVV_LAA_helper(board, m2);
-                }
-                return history_heuristic_helper(board, m1);
+                return MVV_LAA_helper(board, m1) > MVV_LAA_helper(board, m2);
             }
+            return history_heuristic_helper(board, m1) < history_heuristic_helper(board, m2);
         });
 
         if (const auto PV_pos = moves.find(PV_Move); PV_pos > 0) // NOLINT
