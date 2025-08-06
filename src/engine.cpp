@@ -156,6 +156,19 @@ namespace engine // TODO: add iterative deepening tests
         chess::movegen::legalmoves(legal_moves, board);
         legal_moves = utils::order_moves(history, PV_Move, legal_moves, board);
 
+        if (can_NMP(board, depth)) // NMP Conditions
+        {
+            int score = 0;
+            chess::Move dummy{};
+            board.makeNullMove();
+            std::tie(score, dummy) = negamax(PV_Move, table1, board, -beta, -(beta - 1), last_move,
+                                             depth - NULL_MOVE_REDUCTION, ply + 1);
+            score = -score;
+            board.unmakeNullMove();
+            if (score >= beta)
+                return std::make_tuple(score, last_move);
+        }
+
         for (const auto& move : legal_moves)
         {
             board.makeMove(move);
