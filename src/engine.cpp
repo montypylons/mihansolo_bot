@@ -208,7 +208,8 @@ namespace engine // TODO: add iterative deepening tests
     }
 
 
-    std::string search(const std::optional<chess::Board>& fen, const std::optional<TimeManagement::TimeManager>& manager1)
+    std::string search(const std::optional<chess::Board>& fen,
+                       const std::optional<TimeManagement::TimeManager>& manager1)
     {
         manager_exists = manager1.has_value();
         int depth = 1;
