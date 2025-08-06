@@ -5,7 +5,8 @@
 
 namespace utils
 {
-     int piece_values[7] = { // TODO: update piece values later
+    int piece_values[7] = {
+        // TODO: update piece values later
         100, // PAWN
         300, // KNIGHT
         300, // BISHOP
@@ -15,7 +16,7 @@ namespace utils
         0 // NONE
     };
 
-     int piece_square[7][64] = {
+    int piece_square[7][64] = {
         // piece_square[piece][square] (piece -> 0,1,2,3,4)
 
         {
@@ -120,5 +121,43 @@ namespace utils
             std::array<chess::Bitboard, 6>{
                 enemy_pawns, enemy_knights, enemy_bishops, enemy_rooks, enemy_queens, enemy_kings
             });
+    }
+
+    int MVV_LAA_helper(const chess::Board& board, const chess::Move& move)
+    // Most Valuable Victim - Least Valuable Aggressor
+
+    {
+        // TODO: Add tests
+
+        const int from_score = utils::piece_values[board.at(move.from()).type()];
+        const int to_score = utils::piece_values[board.at(move.to()).type()];
+        const int move_score = to_score - from_score;
+        return move_score;
+    }
+
+    inline int history_heuristic_helper(const int (&history)[2][64][64], const chess::Board& board,
+                                        const chess::Move& move)
+    {
+        return history[board.sideToMove()][move.from().index()][move.to().index()];
+    }
+
+    chess::Movelist order_moves(const int (&history)[2][64][64], const chess::Move& PV_Move, chess::Movelist& moves,
+                                const chess::Board& board)
+    {
+        std::sort(moves.begin(), moves.end(), [board, &history](const chess::Move& m1, const chess::Move& m2)-> bool
+        {
+            if (board.isCapture(m1)) // do not use move ordering this for castling or en-passant
+            {
+                return MVV_LAA_helper(board, m1) > MVV_LAA_helper(board, m2);
+            }
+            return history_heuristic_helper(history, board, m1) < history_heuristic_helper(history, board, m2);
+        });
+
+        if (const auto PV_pos = moves.find(PV_Move); PV_pos > 0) // NOLINT
+        {
+            std::swap(moves[0], moves[PV_pos]);
+        }
+
+        return moves;
     }
 }

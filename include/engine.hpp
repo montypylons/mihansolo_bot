@@ -10,11 +10,7 @@
 
 namespace engine
 {
-    int MVV_LAA_helper(const chess::Board& board, const chess::Move& move);
-
-    inline int history_heuristic_helper(const chess::Board& board, const chess::Move& move);
-
-    chess::Movelist order_moves(const chess::Move& PV_Move, chess::Movelist& moves, const chess::Board& board);
+    inline bool can_NMP(const chess::Board& board, int depth);
 
     // Book initialization
     void init_book();
@@ -32,9 +28,6 @@ namespace engine
                                          const int& depth, const int& ply);
     // Game over detection
     bool game_over(const chess::Board& board);
-
-    // Move ordering heuristic
-    int move_ordering(const chess::Board& board, const std::string& move_uci);
 
     // UCI protocol loop
     void start_uci();

@@ -27,6 +27,21 @@ public:
              int score,
              NodeType node_type);
 
+    std::optional<std::tuple<int, chess::Move>> find_usable_entry(
+        const int original_alpha,
+        const int beta, const int depth,
+        const uint64_t zobrist_key) const
+    {
+        if (auto ttEntry = get(zobrist_key); ttEntry.has_value() && ttEntry->depth >= depth)
+        {
+            if (ttEntry->node_type == NodeType::EXACT || (ttEntry->node_type == NodeType::LOWERBOUND && ttEntry->score
+                >= beta) || (ttEntry->node_type == NodeType::UPPERBOUND && ttEntry->score <= original_alpha))
+            {
+                return std::make_tuple(ttEntry->score, ttEntry->best_move);
+            }
+        }
+        return std::nullopt;
+    }
 
     [[nodiscard]] std::optional<TTEntry> get(uint64_t zobrist_key) const;
     [[nodiscard]] bool find(uint64_t zobrist_key) const;
