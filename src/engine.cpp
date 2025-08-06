@@ -143,7 +143,7 @@ namespace engine // TODO: add iterative deepening tests
     }
 
 
-    std::tuple<int, chess::Move> negamax(const chess::Move& PV_Move, TranspositionTable& table, chess::Board& board,
+    std::tuple<int, chess::Move> negamax(const chess::Move& PV_Move, TranspositionTable& table1, chess::Board& board,
                                          int alpha,
                                          int beta,
                                          const chess::Move& last_move,
@@ -160,7 +160,7 @@ namespace engine // TODO: add iterative deepening tests
         const int alpha_original = alpha;
         auto zobrist_key = board.zobrist();
 
-        if (auto ttEntry = table.get(zobrist_key); ttEntry.has_value() && ttEntry->depth >= depth)
+        if (auto ttEntry = table1.get(zobrist_key); ttEntry.has_value() && ttEntry->depth >= depth)
         {
             if (ttEntry->node_type == NodeType::EXACT)
             {
@@ -199,7 +199,7 @@ namespace engine // TODO: add iterative deepening tests
             chess::Move dummy_move{};
 
 
-            std::tie(score, dummy_move) = negamax(PV_Move, table, board, -beta, -alpha, move, depth - 1, ply + 1);
+            std::tie(score, dummy_move) = negamax(PV_Move, table1, board, -beta, -alpha, move, depth - 1, ply + 1);
 
             score = -score;
 
@@ -221,7 +221,7 @@ namespace engine // TODO: add iterative deepening tests
                 {
                     history[board.sideToMove()][move.from().index()][move.to().index()] += depth * depth;
                 }
-                table.put(zobrist_key, best_move, depth, best_eval, NodeType::LOWERBOUND);
+                table1.put(zobrist_key, best_move, depth, best_eval, NodeType::LOWERBOUND);
                 return std::make_tuple(best_eval, best_move);
             }
         }
@@ -239,7 +239,7 @@ namespace engine // TODO: add iterative deepening tests
         {
             node_type = NodeType::EXACT;
         }
-        table.put(zobrist_key, best_move, depth, best_eval, node_type);
+        table1.put(zobrist_key, best_move, depth, best_eval, node_type);
         // End transposition table stuff
 
         return std::make_tuple(best_eval, best_move);
@@ -292,7 +292,7 @@ namespace engine // TODO: add iterative deepening tests
         // TODO: add UCI E2E tests as part of CTest suite, since there are none currently
         {
             constexpr int default_depth = 5;
-            for (int _i; _i < default_depth; _i++)
+            for (int _i = 1; _i < default_depth; _i++)
             {
                 auto result = negamax(PV_Move, table, board, initial_alpha, initial_beta,
                                       chess::Move::NO_MOVE, _i,

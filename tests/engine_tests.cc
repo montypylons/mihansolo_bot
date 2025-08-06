@@ -66,9 +66,10 @@ TEST(SearchTestMateInOne, BasicAssertions)
 
 TEST(SearchAvoidMate, BasicAssertions)
 {
-    const auto board1 = chess::Board("2r1r2k/1bpn1Qp1/1p2N2p/4p3/qPPP4/2P5/5PPP/4RRK1 w - - 4 24");
-    const std::string only_moves[2] = {"e8g8","e8e6"}; // only moves to (a) not lose material and (b) not blunder mate
+    const auto board1 = chess::Board("r3r2k/1bpn1Qp1/1p2N2p/4p3/qPPP4/2P5/5PPP/4RRK1 b - - 3 23");
+    const std::string only_moves[2] = {"e8g8", "e8e6"}; // only moves to (a) not lose material and (b) not blunder mate
     const std::string result1 = engine::search(board1);
+    std::cout << "Search result: " << result1 << std::endl;
     ASSERT_TRUE(result1 == only_moves[0] || result1 == only_moves[1]);
 }
 
@@ -109,7 +110,7 @@ TEST(TimeManagementTest, BasicAssertions)
     std::this_thread::sleep_for(std::chrono::milliseconds(2315));
     ASSERT_FALSE(manager.time_remaining());
     manager = TimeManagement::TimeManager(false);
-    manager.go(30'000,30'000,0,0);
+    manager.go(30'000, 30'000, 0, 0);
     std::this_thread::sleep_for(std::chrono::milliseconds(1480)); // time_remaining should last until 1500 ms
     ASSERT_TRUE(manager.time_remaining());
 }
