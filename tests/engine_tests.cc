@@ -117,16 +117,17 @@ TEST(NoIllegalMovesTest, BasicAssertions) // we are returning 0000 at extremely 
     std::cout << "Search result: " << result1 << std::endl;
 }
 
-/* TEST(TimeManagementTest, BasicAssertions)
+TEST(TimeManagementTest, BasicAssertions)
 
 {
     auto manager = TimeManagement::TimeManager(true);
-    manager.go(36'300, 2'800, 1'000, 1'000);
-    std::this_thread::sleep_for(std::chrono::milliseconds(2315));
+    manager.go(3'000, 2'800, 2'000, 2'000);
+    std::this_thread::sleep_for(std::chrono::milliseconds(1151)); // manager should last for 1150 ms
     ASSERT_FALSE(manager.time_remaining());
     manager = TimeManagement::TimeManager(false);
     manager.go(30'000, 30'000, 0, 0);
     std::this_thread::sleep_for(std::chrono::milliseconds(1480)); // time_remaining should last until 1500 ms
     ASSERT_TRUE(manager.time_remaining());
-} */
+}
+
 // it takes too long
