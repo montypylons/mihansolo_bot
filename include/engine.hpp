@@ -10,7 +10,7 @@
 
 namespace engine
 {
-    inline bool can_NMP(const chess::Board& board, int depth);
+    /* inline bool can_NMP(const chess::Board& board, int depth); */
 
     // Book initialization
     void init_book();

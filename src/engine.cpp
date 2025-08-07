@@ -115,14 +115,14 @@ namespace engine // TODO: add iterative deepening tests
         return depth >= 6 ? 3 : 2;
     }
 
-    inline bool can_NMP(const chess::Board& board, const int depth)
+    /* inline bool can_NMP(const chess::Board& board, const int depth)
     {
         const int R = reduction_for(depth);
         return depth >= R
             && depth > R + 1 // need at least one more ply than R
             && board.hasNonPawnMaterial(board.sideToMove())
             && !board.inCheck();
-    }
+    } */
 
 
     std::tuple<int, chess::Move> negamax(const chess::Move& PV_Move, TranspositionTable& table1, chess::Board& board,
@@ -161,7 +161,7 @@ namespace engine // TODO: add iterative deepening tests
         chess::movegen::legalmoves(legal_moves, board);
         legal_moves = utils::order_moves(history, PV_Move, legal_moves, board);
 
-        if (can_NMP(board, depth)) // NMP Conditions
+        /* if (can_NMP(board, depth)) // NMP Conditions
         {
             int score = 0;
             chess::Move dummy{};
@@ -180,7 +180,7 @@ namespace engine // TODO: add iterative deepening tests
 
                 return std::make_tuple(score, last_move);
             }
-        }
+        } */
 
         for (const auto& move : legal_moves)
         {
