@@ -110,10 +110,10 @@ namespace engine // TODO: add iterative deepening tests
         return std::nullopt;
     }
 
-    inline int reduction_for(const int depth)
+    /*inline int reduction_for(const int depth)
     {
         return depth >= 6 ? 3 : 2;
-    }
+    }*/
 
     /* inline bool can_NMP(const chess::Board& board, const int depth)
     {
