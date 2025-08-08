@@ -9,9 +9,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 if (MSVC AND CMAKE_BUILD_TYPE STREQUAL "Release")
+
     # Compile-time optimizations for speed
     add_compile_options(
-            /Ox        # Full optimization (includes /Ot, /Og, etc.)
+            /Ox        # Full optimization
             /Ot        # Favor fast code
             /Ob2       # Inline anything suitable
             /Oi        # Use intrinsics
@@ -19,7 +20,6 @@ if (MSVC AND CMAKE_BUILD_TYPE STREQUAL "Release")
             /GL        # Whole program optimization
             /fp:fast   # Fast floating-point math
             /Gy        # Function-level linking
-
     )
 
     # Link-time optimizations
@@ -86,3 +86,4 @@ add_executable(engine_tests tests/engine_tests.cc
 target_include_directories(engine_tests PRIVATE include)
 target_link_libraries(engine_tests PRIVATE engine_lib GTest::gtest_main)
 add_test(NAME engine_tests COMMAND engine_tests)
+
