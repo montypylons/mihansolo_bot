@@ -310,7 +310,7 @@ namespace engine // TODO: add iterative deepening tests
                 {
                     history[board.sideToMove()][move.from().index()][move.to().index()] += depth * depth;
                 }
-                table1.put(zobrist_key, move, depth, best_eval, NodeType::LOWERBOUND);
+                table1.put(zobrist_key, chess::Move::NO_MOVE, depth, best_eval, NodeType::LOWERBOUND);
                 return best_eval;
             }
         }
@@ -328,10 +328,10 @@ namespace engine // TODO: add iterative deepening tests
         {
             node_type = NodeType::EXACT;
         }
-        table1.put(zobrist_key, best_move, depth, best_eval, node_type);
+        table1.put(zobrist_key, chess::Move::NO_MOVE, depth, best_eval, node_type);
         // End transposition table stuff
 
-        return std::make_tuple(best_eval, best_move);
+        return best_eval;
         // NOLINTEND
     }
 
