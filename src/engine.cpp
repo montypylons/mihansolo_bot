@@ -161,7 +161,7 @@ namespace engine // TODO: add iterative deepening tests
         chess::movegen::legalmoves(legal_moves, board);
         legal_moves = utils::order_moves(history, PV_Move, legal_moves, board);
 
-        if (can_NMP(board, depth)) // NMP Conditions
+        /*if (can_NMP(board, depth)) // NMP Conditions
         {
             int score = 0;
             chess::Move dummy{};
@@ -180,9 +180,8 @@ namespace engine // TODO: add iterative deepening tests
 
                 return std::make_tuple(score, chess::Move::NO_MOVE);
             }
-        }
-        // SPRT shows NMP is -37.6 elo,
-        // BUG: find why random queen blunders due to NMP
+        }*/
+        // SPRT shows NMP is -37.6 elo, so commented out for now
 
         for (const auto& move : legal_moves)
         {
@@ -340,7 +339,7 @@ namespace engine // TODO: add iterative deepening tests
 
 
     std::string search(const std::optional<chess::Board>& fen,
-                       const std::optional<TimeManagement::TimeManager>& manager1)
+                       const std::optional<TimeManagement::TimeManager>& manager1, const int default_depth)
     {
         manager_exists = manager1.has_value();
         int depth = 1;
@@ -386,7 +385,6 @@ namespace engine // TODO: add iterative deepening tests
         else // in testing time management is often not tested
         // TODO: add UCI E2E tests as part of CTest suite, since there are none currently
         {
-            constexpr int default_depth = 5;
             for (int _i = 1; _i < default_depth; _i++)
             {
                 auto result = negamax(PV_Move, table, board, initial_alpha, initial_beta,

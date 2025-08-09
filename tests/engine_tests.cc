@@ -130,4 +130,37 @@ TEST(TimeManagementTest, BasicAssertions)
     ASSERT_TRUE(manager.time_remaining());
 }
 
-// it takes too long
+
+/* TEST(NoQueenBlundersTest, BasicAssertions)
+{
+    // does it on every depth up to 8 since weird errors sometimes happen at one depth but not the other
+    for (int i = 1; i < 8; i++)
+    {
+        const auto result = engine::search(chess::Board("r1b1k2r/ppp2ppp/3bpq2/1P6/3Pp3/5N2/P1PQPPPP/R3KB1R w - - 0 1"),
+                                           std::nullopt, i);
+        std::cout << "Result for fen r1b1k2r/ppp2ppp/3bpq2/1P6/3Pp3/5N2/P1PQPPPP/R3KB1R w - - 0 1 at depth" << i <<
+            " is " <<
+            result <<
+            "\n";
+        ASSERT_FALSE(result == "d2b4");
+    }
+    std::cout << "================ STARTING TEST 2 ========================" <<
+        "\n";
+    // * This part is for debugging what happened in this game: https://lichess.org/rXNQ5IJM/black#59
+    // * Incident time: around 5:00 PM EST on 8/9/2025
+    // * Interface: lichess-bot
+    // * Relevant logs (from lichess-bot):
+    // INFO     move: 30                                                                              lichess_bot.py:818
+    // INFO     Searching for wtime 1837880 btime 518209 for game rXNQ5IJM                         engine_wrapper.py:722
+    // INFO     Source: Engine                                                                     engine_wrapper.py:332
+    // INFO     Evaluation: 0.0                                                                    engine_wrapper.py:332
+    // INFO     Depth: 9                                                                           engine_wrapper.py:332
+    // INFO     Nodes: 42.9M
+
+
+    auto manager = TimeManagement::TimeManager(false);
+    manager.go(1837880, 518209, 3000, 3000);
+    const auto result2 = engine::search(chess::Board("5r2/1pp4k/2nq3p/3pp3/4p1bB/pNP1P1P1/Rb1K1Q1P/1N4R1 b - - 0 30"),
+                                        std::nullopt, 9);
+    ASSERT_EQ(result2, "f8f2");
+} */
