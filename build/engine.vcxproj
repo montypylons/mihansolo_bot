@@ -382,6 +382,9 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="C:\Users\DELL\Documents\mihansolo_bot\src\main.cpp" />
+    <ClCompile Include="C:\Users\DELL\Documents\mihansolo_bot\src\tt.cpp" />
+    <ClCompile Include="C:\Users\DELL\Documents\mihansolo_bot\src\timemanagement.cpp" />
+    <ClInclude Include="C:\Users\DELL\Documents\mihansolo_bot\include\timemanagement.hpp" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

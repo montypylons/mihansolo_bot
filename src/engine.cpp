@@ -161,7 +161,7 @@ namespace engine // TODO: add iterative deepening tests
         chess::movegen::legalmoves(legal_moves, board);
         legal_moves = utils::order_moves(history, PV_Move, legal_moves, board);
 
-         if (can_NMP(board, depth)) // NMP Conditions
+        if (can_NMP(board, depth)) // NMP Conditions
         {
             int score = 0;
             chess::Move dummy{};
@@ -180,9 +180,9 @@ namespace engine // TODO: add iterative deepening tests
 
                 return std::make_tuple(score, chess::Move::NO_MOVE);
             }
-        } 
-       // SPRT shows NMP is -37.6 elo,
-       // BUG: find why random queen blunders due to NMP
+        }
+        // SPRT shows NMP is -37.6 elo,
+        // BUG: find why random queen blunders due to NMP
 
         for (const auto& move : legal_moves)
         {
@@ -234,11 +234,12 @@ namespace engine // TODO: add iterative deepening tests
         return std::make_tuple(best_eval, best_move);
         // NOLINTEND
     }
-        int _negamax(const chess::Move& PV_Move, TranspositionTable& table1, chess::Board& board, // still working on this
-                                         int alpha,
-                                         const int beta,
-                                         const chess::Move& last_move,
-                                         const int& depth, const int& ply)
+
+    int _negamax(const chess::Move& PV_Move, TranspositionTable& table1, chess::Board& board, // still working on this
+                 int alpha,
+                 const int beta,
+                 const chess::Move& last_move,
+                 const int& depth, const int& ply)
     {
         nodes++;
         // time management
@@ -274,7 +275,7 @@ namespace engine // TODO: add iterative deepening tests
             int score = 0;
             board.makeNullMove();
             score = -_negamax(PV_Move, table1, board, -beta, -(beta - 1), last_move,
-                                             depth - reduction_for(depth) - 1, ply + 1);
+                              depth - reduction_for(depth) - 1, ply + 1);
             board.unmakeNullMove();
             if (score >= beta)
             {
