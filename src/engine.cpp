@@ -110,19 +110,19 @@ namespace engine // TODO: add iterative deepening tests
         return std::nullopt;
     }
 
-    /*inline int reduction_for(const int depth)
+    inline int reduction_for(const int depth)
     {
         return depth >= 6 ? 3 : 2;
-    }*/
+    }
 
-    /* inline bool can_NMP(const chess::Board& board, const int depth)
+    inline bool can_NMP(const chess::Board& board, const int depth)
     {
         const int R = reduction_for(depth);
         return depth >= R
             && depth > R + 1 // need at least one more ply than R
             && board.hasNonPawnMaterial(board.sideToMove())
             && !board.inCheck();
-    } */
+    }
 
 
     std::tuple<int, chess::Move> negamax(const chess::Move& PV_Move, TranspositionTable& table1, chess::Board& board,
@@ -161,13 +161,13 @@ namespace engine // TODO: add iterative deepening tests
         chess::movegen::legalmoves(legal_moves, board);
         legal_moves = utils::order_moves(history, PV_Move, legal_moves, board);
 
-        /* if (can_NMP(board, depth)) // NMP Conditions
+        if (can_NMP(board, depth)) // NMP Conditions
         {
             int score = 0;
             chess::Move dummy{};
             board.makeNullMove();
             std::tie(score, dummy) = negamax(PV_Move, table1, board, -beta, -(beta - 1), last_move,
-                                             depth - reduction_for(depth), ply + 1);
+                                             depth - reduction_for(depth) - 1, ply + 1);
             score = -score;
             board.unmakeNullMove();
             if (score >= beta)
@@ -176,11 +176,11 @@ namespace engine // TODO: add iterative deepening tests
                            chess::Move::NO_MOVE, // no preferred move
                            depth,
                            score,
-                           NodeType::LOWERBOUND); // record that this node is ≥score
+                           NodeType::LOWERBOUND); // record that this node is ≥ score
 
-                return std::make_tuple(score, last_move);
+                return std::make_tuple(score, chess::Move::NO_MOVE);
             }
-        } */
+        }
 
         for (const auto& move : legal_moves)
         {
@@ -232,7 +232,6 @@ namespace engine // TODO: add iterative deepening tests
         return std::make_tuple(best_eval, best_move);
         // NOLINTEND
     }
-
 
     std::string search(const std::optional<chess::Board>& fen,
                        const std::optional<TimeManagement::TimeManager>& manager1)
