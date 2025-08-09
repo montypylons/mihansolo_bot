@@ -161,7 +161,7 @@ namespace engine // TODO: add iterative deepening tests
         chess::movegen::legalmoves(legal_moves, board);
         legal_moves = utils::order_moves(history, PV_Move, legal_moves, board);
 
-        /* if (can_NMP(board, depth)) // NMP Conditions
+         if (can_NMP(board, depth)) // NMP Conditions
         {
             int score = 0;
             chess::Move dummy{};
@@ -180,8 +180,9 @@ namespace engine // TODO: add iterative deepening tests
 
                 return std::make_tuple(score, chess::Move::NO_MOVE);
             }
-        } */ 
-       // SPRT shows this is -37 elo, so removed for now
+        } 
+       // SPRT shows NMP is -37.6 elo,
+       // BUG: find why random queen blunders due to NMP
 
         for (const auto& move : legal_moves)
         {
