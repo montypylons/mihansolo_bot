@@ -232,6 +232,109 @@ namespace engine // TODO: add iterative deepening tests
         return std::make_tuple(best_eval, best_move);
         // NOLINTEND
     }
+        int _negamax(const chess::Move& PV_Move, TranspositionTable& table1, chess::Board& board, // still working on this
+                                         int alpha,
+                                         const int beta,
+                                         const chess::Move& last_move,
+                                         const int& depth, const int& ply)
+    {
+        nodes++;
+        // time management
+        if (manager.has_value() && !manager->time_remaining())
+        {
+            abort_due_to_time = true;
+            return 0;
+        }
+        // transposition table stuff starts
+        const int alpha_original = alpha;
+        const auto zobrist_key = board.zobrist();
+
+        if (auto TTResult = table1.find_usable_entry(alpha_original, beta, depth, zobrist_key); TTResult.has_value())
+        {
+            return std::get<0>(TTResult.value());
+        }
+        // transposition stuff ends
+
+        if (depth == 0 || game_over(board)) // NOLINT
+        {
+            int leaf_eval{QuiescenceSearch(alpha, beta, board, ply)};
+            return leaf_eval;
+        }
+
+        // NOLINTBEGIN (linter says this is unreachable for some reason)
+        int best_eval = std::numeric_limits<int>::min();
+        chess::Movelist legal_moves;
+        chess::movegen::legalmoves(legal_moves, board);
+        legal_moves = utils::order_moves(history, PV_Move, legal_moves, board);
+
+        if (can_NMP(board, depth)) // NMP Conditions
+        {
+            int score = 0;
+            board.makeNullMove();
+            score = -_negamax(PV_Move, table1, board, -beta, -(beta - 1), last_move,
+                                             depth - reduction_for(depth) - 1, ply + 1);
+            board.unmakeNullMove();
+            if (score >= beta)
+            {
+                table1.put(zobrist_key,
+                           chess::Move::NO_MOVE, // no preferred move
+                           depth,
+                           score,
+                           NodeType::LOWERBOUND); // record that this node is ≥ score
+
+                return score;
+            }
+        }
+
+        for (const auto& move : legal_moves)
+        {
+            board.makeMove(move);
+
+            int score;
+            chess::Move dummy_move{};
+            score = -_negamax(PV_Move, table1, board, -beta, -alpha, move, depth - 1, ply + 1);
+
+            board.unmakeMove(move);
+
+
+            if (score > best_eval)
+            {
+                best_eval = int{score};
+
+                if (score > alpha)
+                    alpha = score;
+            }
+            if (score >= beta)
+            {
+                if (!board.isCapture(move))
+                {
+                    history[board.sideToMove()][move.from().index()][move.to().index()] += depth * depth;
+                }
+                table1.put(zobrist_key, move, depth, best_eval, NodeType::LOWERBOUND);
+                return best_eval;
+            }
+        }
+        // Start transposition table stuff
+        NodeType node_type;
+        if (best_eval <= alpha_original)
+        {
+            node_type = NodeType::UPPERBOUND;
+        }
+        else if (best_eval >= beta)
+        {
+            node_type = NodeType::LOWERBOUND;
+        }
+        else
+        {
+            node_type = NodeType::EXACT;
+        }
+        table1.put(zobrist_key, best_move, depth, best_eval, node_type);
+        // End transposition table stuff
+
+        return std::make_tuple(best_eval, best_move);
+        // NOLINTEND
+    }
+
 
     std::string search(const std::optional<chess::Board>& fen,
                        const std::optional<TimeManagement::TimeManager>& manager1)
