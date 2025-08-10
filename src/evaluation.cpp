@@ -178,8 +178,38 @@ namespace evaluation
         return std::nullopt;
     }
 
+    int mobility_eval(chess::Board& board)
+    {
+        int mobility_eval = 0;
+        chess::Movelist moves_for_piece;
 
-    int main_eval(const chess::Board& board, const int& ply)
+        chess::movegen::legalmoves(moves_for_piece, board, chess::PieceGenType::BISHOP);
+        mobility_eval += moves_for_piece.size() * utils::BISHOP_MOBILITY_FACTOR;
+        chess::movegen::legalmoves(moves_for_piece, board, chess::PieceGenType::KNIGHT);
+        mobility_eval += moves_for_piece.size() * utils::KNIGHT_MOBILITY_FACTOR;
+        chess::movegen::legalmoves(moves_for_piece, board, chess::PieceGenType::ROOK);
+        mobility_eval += moves_for_piece.size() * utils::ROOK_MOBILITY_FACTOR;
+        chess::movegen::legalmoves(moves_for_piece, board, chess::PieceGenType::QUEEN);
+        mobility_eval += moves_for_piece.size() * utils::QUEEN_MOBILITY_FACTOR;
+
+        board.makeNullMove();
+
+        chess::movegen::legalmoves(moves_for_piece, board, chess::PieceGenType::BISHOP);
+        mobility_eval -= moves_for_piece.size() * utils::BISHOP_MOBILITY_FACTOR;
+        chess::movegen::legalmoves(moves_for_piece, board, chess::PieceGenType::KNIGHT);
+        mobility_eval -= moves_for_piece.size() * utils::KNIGHT_MOBILITY_FACTOR;
+        chess::movegen::legalmoves(moves_for_piece, board, chess::PieceGenType::ROOK);
+        mobility_eval -= moves_for_piece.size() * utils::ROOK_MOBILITY_FACTOR;
+        chess::movegen::legalmoves(moves_for_piece, board, chess::PieceGenType::QUEEN);
+        mobility_eval -= moves_for_piece.size() * utils::QUEEN_MOBILITY_FACTOR;
+
+        board.unmakeNullMove();
+
+        return mobility_eval;
+    }
+
+
+    int main_eval(chess::Board& board, const int& ply)
     {
         int score = 0;
 
@@ -193,20 +223,12 @@ namespace evaluation
         const auto& our_pieces = std::get<0>(generated_bitboards);
         const auto& enemy_pieces = std::get<1>(generated_bitboards);
 
-        const auto& pawns = our_pieces[0];
-        const auto& knights = our_pieces[1];
-        const auto& bishops = our_pieces[2];
-        const auto& rooks = our_pieces[3];
-        const auto& queens = our_pieces[4];
-        const auto& black_pawns = enemy_pieces[0];
-        const auto& black_knights = enemy_pieces[1];
-        const auto& black_bishops = enemy_pieces[2];
-        const auto& black_rooks = enemy_pieces[3];
-        const auto& black_queens = enemy_pieces[4];
-
-        score += material_eval(pawns, knights, bishops, rooks, queens, black_pawns, black_knights, black_bishops,
-                               black_rooks, black_queens);
+        score += material_eval(our_pieces[0], our_pieces[1], our_pieces[2], our_pieces[3], our_pieces[4],
+                               enemy_pieces[0], enemy_pieces[1], enemy_pieces[2],
+                               enemy_pieces[3], enemy_pieces[4]);
+        // pawns, knights, bishops, rooks, queens
         score += piece_square_eval(board, our_pieces, enemy_pieces);
+        score += mobility_eval(board);
 
         return score;
     }
