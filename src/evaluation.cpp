@@ -228,6 +228,7 @@ namespace evaluation
                                enemy_pieces[3], enemy_pieces[4]);
         // pawns, knights, bishops, rooks, queens
         score += piece_square_eval(board, our_pieces, enemy_pieces);
+
         score += mobility_eval(board);
 
         return score;

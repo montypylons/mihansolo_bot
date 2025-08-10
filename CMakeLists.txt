@@ -107,3 +107,8 @@ target_include_directories(engine_tests PRIVATE include)
 target_link_libraries(engine_tests PRIVATE engine_lib GTest::gtest_main)
 add_test(NAME engine_tests COMMAND engine_tests)
 
+add_executable(experiments src/experiments.cpp)
+target_include_directories(experiments PRIVATE include)
+target_link_libraries(experiments PRIVATE engine_lib)
+
+
