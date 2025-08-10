@@ -6,8 +6,8 @@
 
 namespace evaluation
 {
-    int king_psqt_eval(const chess::Board& board, const std::array<chess::Bitboard,6>& pieces,
-                       const std::array<chess::Bitboard,6>& enemy_pieces);
+    int king_psqt_eval(const chess::Board& board, const std::array<chess::Bitboard, 6>& pieces,
+                       const std::array<chess::Bitboard, 6>& enemy_pieces);
 
     bool is_endgame(const chess::Board& board);
 
@@ -20,10 +20,10 @@ namespace evaluation
                       const chess::Bitboard& black_bishops,
                       const chess::Bitboard& black_rooks, const chess::Bitboard& black_queens);
 
-    int piece_square_eval(const chess::Board& board, const std::array<chess::Bitboard,6>& pieces,
-                          const std::array<chess::Bitboard,6>& enemy_pieces);
+    int piece_square_eval(const chess::Board& board, const std::array<chess::Bitboard, 6>& pieces,
+                          const std::array<chess::Bitboard, 6>& enemy_pieces);
 
     std::optional<int> game_over_eval(const chess::Board& board, const int& ply = 0);
 
-    int main_eval(const chess::Board& board, const int& ply = 0);
+    int main_eval(chess::Board& board, const int& ply = 0);
 }

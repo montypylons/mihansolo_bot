@@ -1878,11 +1878,10 @@ class Board {
         int hm = 0;
         int fm = 1;
 
-        if (auto it = std::find(parts.begin(), parts.end(), "hmvc"); it != parts.end()) {
+        if (const auto it = std::find(parts.begin(), parts.end(), "hmvc"); it != parts.end()) {
             if (std::distance(it, parts.end()) > 1) {
-                auto num    = *(it + 1);
-                auto parsed = detail::parseStringViewToInt(num);
-                if (parsed) hm = *parsed;
+                const auto num    = *(it + 1);
+                if (auto parsed = detail::parseStringViewToInt(num)) hm = *parsed;
             } else {
                 return false;
             }
@@ -2679,8 +2678,8 @@ class Board {
             for (char i : castling) {
                 if (i == '-') break;
 
-                const auto king_side  = CastlingRights::Side::KING_SIDE;
-                const auto queen_side = CastlingRights::Side::QUEEN_SIDE;
+                constexpr auto king_side  = CastlingRights::Side::KING_SIDE;
+                constexpr auto queen_side = CastlingRights::Side::QUEEN_SIDE;
 
                 if (i == 'K') cr.setCastlingRight(Color::WHITE, king_side, File::FILE_H);
                 if (i == 'Q') cr.setCastlingRight(Color::WHITE, queen_side, File::FILE_A);
@@ -2987,7 +2986,7 @@ class Board {
         }
 
         static const auto find_rook = [](const Board &board, CastlingRights::Side side, Color color) -> File {
-            const auto king_side = CastlingRights::Side::KING_SIDE;
+            constexpr auto king_side = CastlingRights::Side::KING_SIDE;
             const auto king_sq   = board.kingSq(color);
             const auto sq_corner = Square(side == king_side ? Square::SQ_H1 : Square::SQ_A1).relative_square(color);
 
@@ -3007,8 +3006,8 @@ class Board {
         for (char i : castling) {
             if (i == '-') break;
 
-            const auto king_side  = CastlingRights::Side::KING_SIDE;
-            const auto queen_side = CastlingRights::Side::QUEEN_SIDE;
+            constexpr auto king_side  = CastlingRights::Side::KING_SIDE;
+            constexpr auto queen_side = CastlingRights::Side::QUEEN_SIDE;
 
             if (!chess960_) {
                 if (i == 'K')
@@ -4061,7 +4060,7 @@ class Visitor {
      * @param skip
      */
     void skipPgn(bool skip) { skip_ = skip; }
-    bool skip() { return skip_; }
+    bool skip() const { return skip_; }
 
     /**
      * @brief Called when a new PGN starts
@@ -4588,7 +4587,7 @@ class StreamParser {
         pgn_end = true;
     }
 
-    bool is_space(const char c) noexcept {
+    static bool is_space(const char c) noexcept {
         switch (c) {
             case ' ':
             case '\t':
@@ -4600,7 +4599,7 @@ class StreamParser {
         }
     }
 
-    bool is_digit(const char c) noexcept {
+    static bool is_digit(const char c) noexcept {
         switch (c) {
             case '0':
             case '1':
@@ -5116,7 +5115,7 @@ class uci {
         str += std::toupper(static_cast<std::string>(move.promotionType())[0]);
     }
 
-    static void appendCheckSymbol(Board &board, std::string &str) {
+    static void appendCheckSymbol(const Board &board, std::string &str) {
         const auto gameState = board.isGameOver().second;
         str += (gameState == GameResult::LOSE) ? '#' : '+';
     }

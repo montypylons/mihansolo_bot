@@ -178,7 +178,7 @@ namespace evaluation
         return std::nullopt;
     }
 
-    int mobility_eval(chess::Board& board)
+    int mobility_eval(chess::Board& board) // TODO: optimize this
     {
         int mobility_eval = 0;
         chess::Movelist moves_for_piece;
@@ -193,8 +193,9 @@ namespace evaluation
         mobility_eval += moves_for_piece.size() * utils::QUEEN_MOBILITY_FACTOR;
 
         board.makeNullMove();
+        // chess::movegen::legalmoves<chess::Color::WHITE,chess::movegen::MoveGenType::ALL>(moves_for_piece, board, chess::PieceGenType::BISHOP);
+        // chess::movegen::legalmoves(moves_for_piece, board, chess::PieceGenType::BISHOP);
 
-        chess::movegen::legalmoves(moves_for_piece, board, chess::PieceGenType::BISHOP);
         mobility_eval -= moves_for_piece.size() * utils::BISHOP_MOBILITY_FACTOR;
         chess::movegen::legalmoves(moves_for_piece, board, chess::PieceGenType::KNIGHT);
         mobility_eval -= moves_for_piece.size() * utils::KNIGHT_MOBILITY_FACTOR;
@@ -202,7 +203,6 @@ namespace evaluation
         mobility_eval -= moves_for_piece.size() * utils::ROOK_MOBILITY_FACTOR;
         chess::movegen::legalmoves(moves_for_piece, board, chess::PieceGenType::QUEEN);
         mobility_eval -= moves_for_piece.size() * utils::QUEEN_MOBILITY_FACTOR;
-
         board.unmakeNullMove();
 
         return mobility_eval;

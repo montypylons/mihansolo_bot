@@ -26,6 +26,26 @@ if (MSVC AND CMAKE_BUILD_TYPE STREQUAL "Release")
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /LTCG /OPT:REF /OPT:ICF")
 endif ()
 
+if (MSVC AND CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+
+    # Compile-time optimizations for speed
+    add_compile_options(
+            /Ox        # Full optimization
+            /Ot        # Favor fast code
+            /Ob2       # Inline anything suitable
+            /Oi        # Use intrinsics
+            /Oy        # Omit frame pointer
+            /GL        # Whole program optimization
+            /fp:fast   # Fast floating-point math
+            /Gy        # Function-level linking
+            /Zi
+    )
+
+    # Link-time optimizations
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /PROFILE /LTCG /OPT:REF /OPT:ICF")
+endif ()
+
+
 # -------------------------------
 # Dependencies
 # -------------------------------
