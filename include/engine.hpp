@@ -35,4 +35,5 @@ namespace engine
 
     const extern int initial_alpha;
     const extern int initial_beta;
+    extern TranspositionTable table;
 }
