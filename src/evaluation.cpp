@@ -3,7 +3,6 @@
 #include "evaluation.hpp"
 #include "engine.hpp"
 #include <array>
-#include <future>
 
 
 namespace evaluation
@@ -179,7 +178,6 @@ namespace evaluation
         }
         return std::nullopt;
     }
-
 
 
     int mobility_eval(const chess::Board& board)
