@@ -1447,6 +1447,8 @@ class movegen {
     void static legalmoves(Movelist &movelist, const Board &board,
                            int pieces = PieceGenType::PAWN | PieceGenType::KNIGHT | PieceGenType::BISHOP |
                                         PieceGenType::ROOK | PieceGenType::QUEEN | PieceGenType::KING);
+    template <Color::underlying c, MoveGenType mt>
+    static void legalmoves(Movelist &movelist, const Board &board, int pieces); // do not question this ok
 
    private:
     static auto init_squares_between();
@@ -1490,8 +1492,6 @@ class movegen {
     template <typename T>
     static void whileBitboardAdd(Movelist &movelist, Bitboard mask, T func);
 
-    template <Color::underlying c, MoveGenType mt>
-    static void legalmoves(Movelist &movelist, const Board &board, int pieces);
 
     template <Color::underlying c>
     static bool isEpSquareValid(const Board &board, Square ep);
