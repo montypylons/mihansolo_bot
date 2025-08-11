@@ -10,6 +10,12 @@ namespace utils
     constexpr int ROOK_MOBILITY_FACTOR = 5;
     constexpr int QUEEN_MOBILITY_FACTOR = 7;
 
+    constexpr int MOBILITY_FACTORS[17] = {
+        0, 0, KNIGHT_MOBILITY_FACTOR, 0, BISHOP_MOBILITY_FACTOR, 0, 0, 0, ROOK_MOBILITY_FACTOR, 0, 0, 0, 0, 0, 0, 0,
+        QUEEN_MOBILITY_FACTOR
+    };
+
+
     constexpr int piece_square[7][64] = {
         // piece_square[piece][square] (piece -> 0,1,2,3,4)
 

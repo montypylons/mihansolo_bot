@@ -4,6 +4,9 @@
 
 #include "evaluation.hpp"
 
+/**
+ * 100 middlegame puzzle FENs scraped from https://database.lichess.org
+ */
 std::vector boards = {
     chess::Board("r6k/pp2r2p/4Rp1Q/3p4/8/1N1P2R1/PqP2bPP/7K b - - 0 24"),
     chess::Board("r2qr1k1/b1p2ppp/pp4n1/P1P1p3/4P1n1/B2P2Pb/3NBP1P/RN1QR1K1 b - - 1 16"),
@@ -109,7 +112,7 @@ std::vector boards = {
 
 int main()
 {
-    constexpr double ITERATIONS = 100.0;
+    constexpr double ITERATIONS = 100;
 
     const auto start1 = std::chrono::high_resolution_clock::now();
     for (int i = 0; i < ITERATIONS; i++)
@@ -121,6 +124,5 @@ int main()
         ITERATIONS * 1'000'000.0);
 
     std::cout << "Estimated mobility_eval cost:  " << time_per_split_ms * 23'858'041 / 1'000
-
         << " s" << std::endl;
 }
