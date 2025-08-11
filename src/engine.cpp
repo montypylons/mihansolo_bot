@@ -17,7 +17,7 @@
 namespace engine // TODO: add iterative deepening tests
 {
     constexpr int TIME_RAN_OUT_EVAL = -88888888;
-
+    constexpr int QUIESCENCE_DEPTH = 0;
 
     int history[2][64][64];
     int nodes = 0;
@@ -48,25 +48,32 @@ namespace engine // TODO: add iterative deepening tests
 
     // NOLINTEND
 
-    int QuiescenceSearch(int alpha, int beta, chess::Board& board, int ply)
+    int QuiescenceSearch(int alpha, const int beta, chess::Board& board, const int ply)
     {
-        nodes++;
         if (manager.has_value() && !manager->time_remaining())
         {
             abort_due_to_time = true;
             return 0;
         }
-        const int static_eval = evaluation::main_eval(board, ply);
-        int best_value = static_eval;
-        // UPDATE: using native capture move generator now
+        nodes++;
+
+        const uint64_t zobrist = board.zobrist();
+        if (const auto ttEntry = table.find_usable_entry(alpha, beta, QUIESCENCE_DEPTH, zobrist); ttEntry.has_value())
+        {
+            return std::get<0>(ttEntry.value());
+        }
+        int original_alpha = alpha;
+
+        int best_value = evaluation::main_eval(board, ply);
+
         chess::Movelist capture_moves;
         chess::movegen::legalmoves<chess::movegen::MoveGenType::CAPTURE>(capture_moves, board);
-
 
         if (best_value >= beta)
         {
             return best_value;
         }
+
         if (best_value > alpha)
         {
             alpha = best_value;
@@ -80,6 +87,8 @@ namespace engine // TODO: add iterative deepening tests
 
             if (score >= beta)
             {
+                table.put(zobrist, chess::Move::NO_MOVE, QUIESCENCE_DEPTH, score, NodeType::LOWERBOUND);
+
                 return score;
             }
             if (score > best_value)
@@ -91,6 +100,22 @@ namespace engine // TODO: add iterative deepening tests
                 alpha = score;
             }
         }
+        NodeType node_type;
+        if (best_value <= original_alpha)
+        {
+            node_type = NodeType::UPPERBOUND;
+        }
+        else if (best_value >= beta)
+        {
+            node_type = NodeType::LOWERBOUND;
+        }
+        else
+        {
+            node_type = NodeType::EXACT;
+        }
+        table.put(zobrist, chess::Move::NO_MOVE, QUIESCENCE_DEPTH, best_value, node_type);
+
+
         return best_value;
     }
 
@@ -197,7 +222,7 @@ namespace engine // TODO: add iterative deepening tests
 
             if (score > best_eval)
             {
-                best_eval = int{score};
+                best_eval = score;
                 best_move = move;
 
                 if (score > alpha)
