@@ -3,6 +3,9 @@
 #include "evaluation.hpp"
 #include "engine.hpp"
 #include <array>
+#include <thread>
+#include <future>
+
 
 namespace evaluation
 {
@@ -178,51 +181,188 @@ namespace evaluation
         return std::nullopt;
     }
 
-    int mobility_eval(chess::Board& board) // TODO: parallelize this
+
+    int mobility_eval_threaded(const chess::Board& board)
+    {
+        auto calculate_mobility = [](std::promise<int>& eval, const chess::Board& board1,
+                                     const chess::PieceGenType gen_type,
+                                     const int mobility_factor) -> void
+        {
+            int mobility_eval = 0;
+
+            chess::Movelist moves_for_piece;
+
+            chess::movegen::legalmoves(moves_for_piece, board1, gen_type);
+            mobility_eval -= moves_for_piece.size() * mobility_factor;
+
+            eval.set_value(mobility_eval);
+        };
+        auto calculate_mobility_enemy = [](std::promise<int>& eval, const chess::Board& board1,
+                                           const chess::PieceGenType gen_type,
+                                           const int mobility_factor) -> void
+        {
+            chess::Board temp_board = board1;
+            int mobility_eval = 0;
+            chess::Movelist moves_for_piece;
+
+            temp_board.makeNullMove();
+            chess::movegen::legalmoves(moves_for_piece, temp_board, gen_type);
+            mobility_eval -= moves_for_piece.size() * mobility_factor;
+            temp_board.unmakeNullMove();
+
+            eval.set_value(mobility_eval);
+        };
+
+        std::promise<int> eval_our_bishops;
+        std::promise<int> eval_our_knights;
+        std::promise<int> eval_our_rooks;
+        std::promise<int> eval_our_queens;
+        std::promise<int> eval_their_bishops;
+        std::promise<int> eval_their_knights;
+        std::promise<int> eval_their_rooks;
+        std::promise<int> eval_their_queens;
+
+
+        auto t1 = std::thread(calculate_mobility, std::ref(eval_our_bishops), std::cref(board),
+                              chess::PieceGenType::BISHOP,
+                              utils::BISHOP_MOBILITY_FACTOR);
+        auto t2 = std::thread(calculate_mobility, std::ref(eval_our_knights), std::cref(board),
+                              chess::PieceGenType::KNIGHT,
+                              utils::KNIGHT_MOBILITY_FACTOR);
+        auto t3 = std::thread(calculate_mobility, std::ref(eval_our_rooks), std::cref(board),
+                              chess::PieceGenType::ROOK,
+                              utils::ROOK_MOBILITY_FACTOR);
+        auto t4 = std::thread(calculate_mobility, std::ref(eval_our_queens), std::cref(board),
+                              chess::PieceGenType::QUEEN,
+                              utils::QUEEN_MOBILITY_FACTOR);
+
+        auto t5 = std::thread(calculate_mobility_enemy, std::ref(eval_their_bishops), std::cref(board),
+                              chess::PieceGenType::BISHOP,
+                              utils::BISHOP_MOBILITY_FACTOR);
+        auto t6 = std::thread(calculate_mobility_enemy, std::ref(eval_their_knights), std::cref(board),
+                              chess::PieceGenType::KNIGHT,
+                              utils::KNIGHT_MOBILITY_FACTOR);
+        auto t7 = std::thread(calculate_mobility_enemy, std::ref(eval_their_rooks), std::cref(board),
+                              chess::PieceGenType::ROOK,
+                              utils::ROOK_MOBILITY_FACTOR);
+        auto t8 = std::thread(calculate_mobility_enemy, std::ref(eval_their_queens), std::cref(board),
+                              chess::PieceGenType::QUEEN,
+                              utils::QUEEN_MOBILITY_FACTOR);
+
+        t1.join();
+        t2.join();
+        t3.join();
+        t4.join();
+        t5.join();
+        t6.join();
+        t7.join();
+        t8.join();
+
+        return eval_our_bishops.get_future().get() + eval_our_knights.get_future().get() + eval_our_rooks.get_future().
+            get() + eval_our_queens.get_future().get() + eval_their_bishops.get_future().get() + eval_their_knights.
+            get_future().get() + eval_their_rooks.get_future().get() +
+            eval_their_queens.get_future().get();
+    }
+
+    int mobility_eval(const chess::Board& board)
     {
         int mobility_eval = 0;
 
+        const chess::Color side_to_move = board.sideToMove();
         chess::Movelist moves_for_piece;
 
-        chess::movegen::legalmoves(moves_for_piece, board, chess::PieceGenType::BISHOP);
+        if (side_to_move)
+        {
+            chess::movegen::legalmoves(
+                moves_for_piece, board, chess::PieceGenType::BISHOP);
+            mobility_eval += moves_for_piece.size() * utils::BISHOP_MOBILITY_FACTOR;
+            moves_for_piece.clear();
+
+            chess::movegen::legalmoves(
+                moves_for_piece, board, chess::PieceGenType::KNIGHT);
+            mobility_eval += moves_for_piece.size() * utils::KNIGHT_MOBILITY_FACTOR;
+            moves_for_piece.clear();
+
+            chess::movegen::legalmoves(
+                moves_for_piece, board, chess::PieceGenType::ROOK);
+            mobility_eval += moves_for_piece.size() * utils::ROOK_MOBILITY_FACTOR;
+            moves_for_piece.clear();
+
+            chess::movegen::legalmoves(
+                moves_for_piece, board, chess::PieceGenType::QUEEN);
+            mobility_eval += moves_for_piece.size() * utils::QUEEN_MOBILITY_FACTOR;
+            moves_for_piece.clear();
+
+
+            chess::movegen::legalmoves<chess::Color::BLACK, chess::movegen::MoveGenType::ALL>(
+                moves_for_piece, board, chess::PieceGenType::BISHOP);
+            mobility_eval -= moves_for_piece.size() * utils::BISHOP_MOBILITY_FACTOR;
+            moves_for_piece.clear();
+
+            chess::movegen::legalmoves<chess::Color::BLACK, chess::movegen::MoveGenType::ALL>(
+                moves_for_piece, board, chess::PieceGenType::KNIGHT);
+            mobility_eval -= moves_for_piece.size() * utils::KNIGHT_MOBILITY_FACTOR;
+            moves_for_piece.clear();
+
+            chess::movegen::legalmoves<chess::Color::BLACK, chess::movegen::MoveGenType::ALL>(
+                moves_for_piece, board, chess::PieceGenType::ROOK);
+            mobility_eval -= moves_for_piece.size() * utils::ROOK_MOBILITY_FACTOR;
+            moves_for_piece.clear();
+
+            chess::movegen::legalmoves<chess::Color::BLACK, chess::movegen::MoveGenType::ALL>(
+                moves_for_piece, board, chess::PieceGenType::QUEEN);
+            mobility_eval -= moves_for_piece.size() * utils::QUEEN_MOBILITY_FACTOR;
+
+
+            return mobility_eval;
+        }
+
+        chess::movegen::legalmoves(
+            moves_for_piece, board, chess::PieceGenType::BISHOP);
         mobility_eval += moves_for_piece.size() * utils::BISHOP_MOBILITY_FACTOR;
         moves_for_piece.clear();
 
-        chess::movegen::legalmoves(moves_for_piece, board, chess::PieceGenType::KNIGHT);
+        chess::movegen::legalmoves(
+            moves_for_piece, board, chess::PieceGenType::KNIGHT);
         mobility_eval += moves_for_piece.size() * utils::KNIGHT_MOBILITY_FACTOR;
         moves_for_piece.clear();
 
-        chess::movegen::legalmoves(moves_for_piece, board, chess::PieceGenType::ROOK);
+        chess::movegen::legalmoves(
+            moves_for_piece, board, chess::PieceGenType::ROOK);
         mobility_eval += moves_for_piece.size() * utils::ROOK_MOBILITY_FACTOR;
         moves_for_piece.clear();
 
-        chess::movegen::legalmoves(moves_for_piece, board, chess::PieceGenType::QUEEN);
+        chess::movegen::legalmoves(
+            moves_for_piece, board, chess::PieceGenType::QUEEN);
         mobility_eval += moves_for_piece.size() * utils::QUEEN_MOBILITY_FACTOR;
         moves_for_piece.clear();
 
-        board.makeNullMove();
 
-        // chess::movegen::legalmoves<chess::Color::WHITE,chess::movegen::MoveGenType::ALL>(moves_for_piece, board, chess::PieceGenType::BISHOP);
-
-        chess::movegen::legalmoves(moves_for_piece, board, chess::PieceGenType::BISHOP);
+        chess::movegen::legalmoves<chess::Color::WHITE, chess::movegen::MoveGenType::ALL>(
+            moves_for_piece, board, chess::PieceGenType::BISHOP);
         mobility_eval -= moves_for_piece.size() * utils::BISHOP_MOBILITY_FACTOR;
         moves_for_piece.clear();
-        chess::movegen::legalmoves(moves_for_piece, board, chess::PieceGenType::KNIGHT);
+
+        chess::movegen::legalmoves<chess::Color::WHITE, chess::movegen::MoveGenType::ALL>(
+            moves_for_piece, board, chess::PieceGenType::KNIGHT);
         mobility_eval -= moves_for_piece.size() * utils::KNIGHT_MOBILITY_FACTOR;
         moves_for_piece.clear();
-        chess::movegen::legalmoves(moves_for_piece, board, chess::PieceGenType::ROOK);
+
+        chess::movegen::legalmoves<chess::Color::WHITE, chess::movegen::MoveGenType::ALL>(
+            moves_for_piece, board, chess::PieceGenType::ROOK);
         mobility_eval -= moves_for_piece.size() * utils::ROOK_MOBILITY_FACTOR;
         moves_for_piece.clear();
-        chess::movegen::legalmoves(moves_for_piece, board, chess::PieceGenType::QUEEN);
+
+        chess::movegen::legalmoves<chess::Color::WHITE, chess::movegen::MoveGenType::ALL>(
+            moves_for_piece, board, chess::PieceGenType::QUEEN);
         mobility_eval -= moves_for_piece.size() * utils::QUEEN_MOBILITY_FACTOR;
 
-        board.unmakeNullMove();
 
         return mobility_eval;
     }
 
 
-    int main_eval(chess::Board& board, const int& ply)
+    int main_eval(const chess::Board& board, const int& ply)
     {
         int score = 0;
 

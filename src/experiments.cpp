@@ -2,7 +2,9 @@
 #include <chrono>
 #include <iostream>
 
-const std::vector boards = {
+#include "evaluation.hpp"
+
+std::vector boards = {
     chess::Board("r6k/pp2r2p/4Rp1Q/3p4/8/1N1P2R1/PqP2bPP/7K b - - 0 24"),
     chess::Board("r2qr1k1/b1p2ppp/pp4n1/P1P1p3/4P1n1/B2P2Pb/3NBP1P/RN1QR1K1 b - - 1 16"),
     chess::Board("r4rk1/pp3ppp/2n1b3/q1pp2B1/8/P1Q2NP1/1PP1PP1P/2KR3R w - - 0 15"),
@@ -108,41 +110,17 @@ const std::vector boards = {
 int main()
 {
     constexpr double ITERATIONS = 100.0;
-    chess::Movelist moves;
-
-    const auto start = std::chrono::high_resolution_clock::now();
-    for (int i = 0; i < ITERATIONS; i++)
-    {
-        auto board = boards[i];
-        moves.clear();
-
-        chess::movegen::legalmoves(moves, board);
-    }
-    const auto end = std::chrono::high_resolution_clock::now();
-    const double time_per_all = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count() / (ITERATIONS
-        * 1'000'000.0);
-
-    std::cout << "Time taken for ALL: " << time_per_all << " ms" << std::endl;
 
     const auto start1 = std::chrono::high_resolution_clock::now();
     for (int i = 0; i < ITERATIONS; i++)
     {
-        auto board = boards[i];
-        moves.clear();
-
-        chess::movegen::legalmoves(moves, board, chess::PieceGenType::BISHOP);
-        chess::movegen::legalmoves(moves, board, chess::PieceGenType::KNIGHT);
-        chess::movegen::legalmoves(moves, board, chess::PieceGenType::KING);
-        chess::movegen::legalmoves(moves, board, chess::PieceGenType::ROOK);
-        chess::movegen::legalmoves(moves, board, chess::PieceGenType::QUEEN);
-        chess::movegen::legalmoves(moves, board, chess::PieceGenType::PAWN);
+        evaluation::mobility_eval(boards[i]);
     }
     const auto end1 = std::chrono::high_resolution_clock::now();
     const double time_per_split_ms = std::chrono::duration_cast<std::chrono::nanoseconds>(end1 - start1).count() / (
         ITERATIONS * 1'000'000.0);
-    std::cout << "Time taken for doing piece types individually : " << time_per_split_ms << " ms" << std::endl;
 
-    std::cout << "Time increase by doing individual PieceGenType vs all: " << (time_per_split_ms - time_per_all) *
-        23'858'041 / 1'000
+    std::cout << "Estimated mobility_eval cost:  " << time_per_split_ms * 23'858'041 / 1'000
+
         << " s" << std::endl;
 }
