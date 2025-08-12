@@ -17,7 +17,6 @@
 
 namespace engine // TODO: add iterative deepening tests
 {
-    constexpr int TIME_RAN_OUT_EVAL = -88888888;
     constexpr int QUIESCENCE_DEPTH = 0;
 
     int history[2][64][64];
