@@ -6,7 +6,6 @@
 struct TTEntry; // TODO: get tests for TT
 
 
-
 void TranspositionTable::put(const uint64_t zobrist_key,
                              const chess::Move& best_move,
                              const int depth,
@@ -33,7 +32,6 @@ void TranspositionTable::put(const uint64_t zobrist_key,
 }
 
 
-
 [[nodiscard]] bool TranspositionTable::find(const uint64_t zobrist_key) const
 {
     return table[address_calc(zobrist_key)].zobrist_key == zobrist_key;
@@ -41,5 +39,5 @@ void TranspositionTable::put(const uint64_t zobrist_key,
 
 [[nodiscard]] int TranspositionTable::address_calc(const uint64_t key)
 {
-    return key & TT_MASK;
+    return key % 1'000'000;
 }
