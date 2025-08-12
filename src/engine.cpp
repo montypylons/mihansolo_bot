@@ -18,6 +18,7 @@
 namespace engine // TODO: add iterative deepening tests
 {
     constexpr int QUIESCENCE_DEPTH = 0;
+    constexpr int DELTA = 200;
 
     int history[2][64][64];
     int nodes = 0;
@@ -33,8 +34,13 @@ namespace engine // TODO: add iterative deepening tests
     const int initial_alpha = std::numeric_limits<int>::min() + 1; // to avoid wraparound bugs
     const int initial_beta = std::numeric_limits<int>::max();
 
+    inline bool is_promotion(const chess::Move& move)
+    {
+        return move.typeOf() == chess::Move::PROMOTION;
+    }
+
     // NOLINTBEGIN
-    bool game_over(const chess::Board& board)
+    inline bool game_over(const chess::Board& board)
     {
         chess::Movelist moves;
         chess::movegen::legalmoves(moves, board);
@@ -81,21 +87,25 @@ namespace engine // TODO: add iterative deepening tests
 
         for (const auto& move : capture_moves)
         {
+            if (!evaluation::is_endgame(board) && !is_promotion(move) && (best_value + utils::piece_values[board.
+                at(move.to()).type()] + DELTA < alpha))
+                continue; // This capture isn't worth searching
+
             board.makeMove(move);
             const int score = -QuiescenceSearch(-beta, -alpha, board, ply + 1);
             board.unmakeMove(move);
 
+
             if (score >= beta)
             {
                 table.put(zobrist, chess::Move::NO_MOVE, QUIESCENCE_DEPTH, score, NodeType::LOWERBOUND);
-
                 return score;
             }
             if (score > best_value)
             {
                 best_value = score;
             }
-            if (score > alpha)
+            if (alpha < score)
             {
                 alpha = score;
             }
@@ -113,8 +123,8 @@ namespace engine // TODO: add iterative deepening tests
         {
             node_type = NodeType::EXACT;
         }
-        table.put(zobrist, chess::Move::NO_MOVE, QUIESCENCE_DEPTH, best_value, node_type);
 
+        table.put(zobrist, chess::Move::NO_MOVE, QUIESCENCE_DEPTH, best_value, node_type);
 
         return best_value;
     }

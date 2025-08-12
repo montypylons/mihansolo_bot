@@ -304,8 +304,6 @@ namespace evaluation
         score += piece_square_eval(board, our_pieces, enemy_pieces);
 
         score += mobility_eval(board);
-        // [4.72 s with]
-        // [4.44 s without]
 
         return score;
     }
