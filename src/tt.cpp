@@ -39,5 +39,6 @@ void TranspositionTable::put(const uint64_t zobrist_key,
 
 [[nodiscard]] int TranspositionTable::address_calc(const uint64_t key)
 {
-    return key % 1'000'000;
+    return key % 1'000'000; // NOLINT(*-narrowing-conversions)
+    // we're trying to narrow lol
 }
