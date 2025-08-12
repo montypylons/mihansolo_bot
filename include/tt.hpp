@@ -50,6 +50,4 @@ private:
     [[nodiscard]] int address_calc(uint64_t key) const;
 
     std::vector<TTEntry> table = std::vector<TTEntry>(1'000'000); // TODO: add tests for this stuff
-    // im so behind on tests
-    // if this stuff keeps failing i will ...
 };
