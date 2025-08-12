@@ -16,8 +16,8 @@ struct TTEntry // TODO: get tests for TT
     NodeType node_type;
 };
 
-constexpr size_t TT_SIZE = 1048576; // 2^20
-constexpr size_t TT_MASK = 1048575; // 2^20 - 1
+// constexpr size_t TT_SIZE = 1048576; // 2^20
+// constexpr size_t TT_MASK = 1048575; // 2^20 - 1
 
 class TranspositionTable
 {
@@ -50,7 +50,7 @@ public:
     [[nodiscard]] bool find(uint64_t zobrist_key) const;
 
 private:
-    static int address_calc(uint64_t key) ;
+    static int address_calc(uint64_t key);
 
     std::vector<TTEntry> table = std::vector<TTEntry>(1'000'000); // TODO: add tests for this stuff
 };
