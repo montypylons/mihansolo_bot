@@ -1070,7 +1070,7 @@ namespace chess
     private:
         underlying piece;
 
-        [[nodiscard]] constexpr static underlying convertCharToUnderlying(char c)
+        [[nodiscard]] constexpr static underlying convertCharToUnderlying(const char c)
         {
             switch (c)
             {
@@ -1591,7 +1591,7 @@ namespace chess
          * @return
          */
         [[nodiscard]] [[deprecated("Use std::find() instead.")]] constexpr size_type find(
-            value_type move) const noexcept
+            const value_type move) const noexcept
         {
             for (size_type i = 0; i < size_; ++i)
             {
@@ -4218,7 +4218,7 @@ namespace chess
     }
 
     template <typename T>
-    inline void movegen::whileBitboardAdd(Movelist& movelist, Bitboard mask, T func)
+    void movegen::whileBitboardAdd(Movelist& movelist, Bitboard mask, T func)
     {
         while (mask)
         {

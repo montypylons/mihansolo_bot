@@ -63,7 +63,7 @@ namespace engine // TODO: add iterative deepening tests
         {
             return std::get<0>(ttEntry.value());
         }
-        int original_alpha = alpha;
+        const int original_alpha = alpha;
 
         int best_value = evaluation::main_eval(board, ply);
 
@@ -277,7 +277,8 @@ namespace engine // TODO: add iterative deepening tests
         const int alpha_original = alpha;
         const auto zobrist_key = board.zobrist();
 
-        if (auto TTResult = table1.find_usable_entry(alpha_original, beta, depth, zobrist_key); TTResult.has_value())
+        if (const auto TTResult = table1.find_usable_entry(alpha_original, beta, depth, zobrist_key); TTResult.
+            has_value())
         {
             return std::get<0>(TTResult.value());
         }
@@ -285,8 +286,7 @@ namespace engine // TODO: add iterative deepening tests
 
         if (depth == 0 || game_over(board)) // NOLINT
         {
-            int leaf_eval{QuiescenceSearch(alpha, beta, board, ply)};
-            return leaf_eval;
+            return QuiescenceSearch(alpha, beta, board, ply);
         }
 
         // NOLINTBEGIN (linter says this is unreachable for some reason)

@@ -182,6 +182,12 @@ namespace evaluation
 
     int mobility_eval(const chess::Board& board)
     {
+        if (engine::manager.has_value() && !engine::manager->time_remaining())
+        {
+            engine::abort_due_to_time = true;
+            return 0;
+        }
+
         int mobility_eval = 0;
 
         const chess::Color side_to_move = board.sideToMove();
@@ -297,7 +303,7 @@ namespace evaluation
         // pawns, knights, bishops, rooks, queens
         score += piece_square_eval(board, our_pieces, enemy_pieces);
 
-        score += mobility_eval(board);
+        // score += mobility_eval(board);
 
         return score;
     }

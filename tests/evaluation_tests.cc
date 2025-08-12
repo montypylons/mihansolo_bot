@@ -106,8 +106,8 @@ TEST(GameOverTest, BasicAssertions)
 
 TEST(NoEarlyKingMovesTest, BasicAssertions)
 {
-    auto board1 = chess::Board("r1bqkb1r/pppp1ppp/2n2P2/8/8/5N2/PPP1PPPP/RNBQKB1R b KQkq - 0 4");
-    auto board2 = chess::Board("r1bqkb1r/pppp1ppp/2n2n2/4P3/8/5N2/PPPKPPPP/RNBQ1B1R b kq - 4 4");
+    const auto board1 = chess::Board("r1bqkb1r/pppp1ppp/2n2P2/8/8/5N2/PPP1PPPP/RNBQKB1R b KQkq - 0 4");
+    const auto board2 = chess::Board("r1bqkb1r/pppp1ppp/2n2n2/4P3/8/5N2/PPPKPPPP/RNBQ1B1R b kq - 4 4");
     const auto result1 = evaluation::main_eval(board1, 0);
     const auto result2 = evaluation::main_eval(board2, 0);
     ASSERT_GT(-result1, -result2);
