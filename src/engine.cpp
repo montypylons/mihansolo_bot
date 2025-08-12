@@ -87,9 +87,9 @@ namespace engine // TODO: add iterative deepening tests
 
         for (const auto& move : capture_moves)
         {
-            if (!evaluation::is_endgame(board) && !is_promotion(move) && (best_value + utils::piece_values[board.
-                at(move.to()).type()] + DELTA < alpha))
-                continue; // This capture isn't worth searching
+            if (!evaluation::is_endgame(board) && !is_promotion(move) && best_value + utils::piece_values[board.
+                at(move.to()).type()] + DELTA < alpha)
+                continue; // This capture isn't worth searching, it can't raise alpha
 
             board.makeMove(move);
             const int score = -QuiescenceSearch(-beta, -alpha, board, ply + 1);
