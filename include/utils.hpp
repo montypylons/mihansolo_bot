@@ -95,7 +95,6 @@ namespace utils
         },
     };
     constexpr int piece_values[7] = {
-        // TODO: update piece values later
         100, // PAWN
         300, // KNIGHT
         300, // BISHOP

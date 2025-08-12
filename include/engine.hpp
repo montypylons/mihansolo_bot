@@ -28,10 +28,12 @@ namespace engine
                                          const chess::Move& last_move,
                                          const int& depth, const int& ply);
     // Game over detection
-    bool game_over(const chess::Board& board);
+    inline bool game_over(const chess::Board& board);
 
     // UCI protocol loop
     void start_uci();
+
+    inline bool is_promotion(const chess::Move& move);
 
     const extern int initial_alpha;
     const extern int initial_beta;
