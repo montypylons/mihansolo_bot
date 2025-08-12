@@ -39,5 +39,6 @@ void TranspositionTable::put(const uint64_t zobrist_key,
 
 [[nodiscard]] int TranspositionTable::address_calc(const uint64_t key)
 {
-    return key & 1'048'575;
+    // return key & 1'048'575;
+    return key & 4'194'303;
 }
