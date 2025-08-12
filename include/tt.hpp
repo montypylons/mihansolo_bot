@@ -53,5 +53,6 @@ private:
     static int address_calc(uint64_t key);
 
     // std::vector<TTEntry> table = std::vector<TTEntry>(1'048'576); // TODO: add tests for this stuff
-    std::vector<TTEntry> table = std::vector<TTEntry>(4'194'304); // TODO: add tests for this stuff
+    // std::vector<TTEntry> table = std::vector<TTEntry>(4'194'304); // TODO: add tests for this stuff
+    std::vector<TTEntry> table = std::vector<TTEntry>(8'388'608); // TODO: add tests for this stuff
 };
