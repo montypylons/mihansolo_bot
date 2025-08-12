@@ -9,6 +9,7 @@ namespace utils
     constexpr int KNIGHT_MOBILITY_FACTOR = 3;
     constexpr int ROOK_MOBILITY_FACTOR = 5;
     constexpr int QUEEN_MOBILITY_FACTOR = 7;
+    constexpr int GENERAL_MOBILITY_FACTOR = 5;
 
     constexpr int MOBILITY_FACTORS[17] = {
         0, 0, KNIGHT_MOBILITY_FACTOR, 0, BISHOP_MOBILITY_FACTOR, 0, 0, 0, ROOK_MOBILITY_FACTOR, 0, 0, 0, 0, 0, 0, 0,
