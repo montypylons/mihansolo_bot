@@ -205,16 +205,16 @@ void experiments()
 void debugGame()
 {
     auto manager = TimeManagement::TimeManager(false);
-    auto board1 = chess::Board("8/p4rP1/1p2p2n/8/8/4k1P1/4p1K1/R7 b - - 4 49");
+    auto board1 = chess::Board("8/3r2p1/1k2K1Pp/8/5P1P/8/8/8 b - - 1 48");
     const std::vector<std::string> moves = {
         "Rxg7", "Ra3+", "Kd2", "Ra2+", "Kd3", "Ra3+", "Kd2", "Ra2+", "Kd3", "Ra3+"
     };
-    for (const auto& move : moves)
+    /*for (const auto& move : moves)
     {
         std::cout << move << std::endl;
         board1.makeMove(chess::uci::parseSan(board1, move));
-    }
-    manager.go(100'000, 17'000, 0, 0);
+    }*/
+    manager.go(100'000, 44'900, 3'000, 3'000);
     std::cout << chess::uci::moveToSan(board1, chess::uci::uciToMove(board1, engine::search(board1, manager, 100)))
         << std::endl << std::endl;
     std::cout << "board1.isRepetition(1)" << std::endl;
