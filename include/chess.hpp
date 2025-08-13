@@ -2704,7 +2704,7 @@ namespace chess
          * @param count
          * @return
          */
-        [[nodiscard]] bool isRepetition(int count = 2) const noexcept
+        [[nodiscard]] bool isRepetition(const int count = 2) const noexcept
         {
             std::uint8_t c = 0;
 

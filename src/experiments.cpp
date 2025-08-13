@@ -2,6 +2,7 @@
 #include <chrono>
 #include <iostream>
 
+#include "engine.hpp"
 #include "evaluation.hpp"
 
 /**
@@ -110,7 +111,7 @@ std::vector boards = {
     chess::Board("1R6/6pk/2p4p/3bP2r/5B1P/2P2qP1/P4P1Q/4R1K1 w - - 2 40"),
 };
 
-int main()
+void bench()
 {
     constexpr double ITERATIONS = 100;
 
@@ -120,9 +121,110 @@ int main()
         evaluation::mobility_eval(boards[i]);
     }
     const auto end1 = std::chrono::high_resolution_clock::now();
-    const double time_per_split_ms = std::chrono::duration_cast<std::chrono::nanoseconds>(end1 - start1).count() / (
+    const auto time_per_split_ms = std::chrono::duration_cast<std::chrono::nanoseconds>(end1 - start1).count() / (
         ITERATIONS * 1'000'000.0);
 
     std::cout << "Estimated mobility_eval cost:  " << time_per_split_ms * 23'858'041 / 1'000
         << " s" << std::endl;
+}
+
+void experiments()
+{
+    auto board = chess::Board("k7/2q5/8/8/8/4Q3/8/1K6 w - - 0 1");
+    std::cout << "auto board = chess::Board(\"k7/2q5/8/8/8/4Q3/8/1K6 w - - 0 1\");" << std::endl;
+    std::cout << "board.isRepetition(1)" << std::endl;
+    std::cout << board.isRepetition(1) << std::endl;
+    std::cout << "board.isRepetition(2)" << std::endl;
+    std::cout << board.isRepetition(2) << std::endl;
+
+    board.makeMove(chess::uci::parseSan(board, "Qa3"));
+    std::cout << board.getFen() << std::endl << std::endl;
+    std::cout << "board.isRepetition(1)" << std::endl;
+    std::cout << board.isRepetition(1) << std::endl;
+    std::cout << "board.isRepetition(2)" << std::endl;
+    std::cout << board.isRepetition(2) << std::endl;
+
+    board.makeMove(chess::uci::parseSan(board, "Kb8"));
+    std::cout << board.getFen() << std::endl << std::endl;
+    std::cout << "board.isRepetition(1)" << std::endl;
+    std::cout << board.isRepetition(1) << std::endl;
+    std::cout << "board.isRepetition(2)" << std::endl;
+    std::cout << board.isRepetition(2) << std::endl;
+
+    board.makeMove(chess::uci::parseSan(board, "Qb3"));
+    std::cout << board.getFen() << std::endl << std::endl;
+    std::cout << "board.isRepetition(1)" << std::endl;
+    std::cout << board.isRepetition(1) << std::endl;
+    std::cout << "board.isRepetition(2)" << std::endl;
+    std::cout << board.isRepetition(2) << std::endl;
+
+    board.makeMove(chess::uci::parseSan(board, "Ka8"));
+    std::cout << board.getFen() << std::endl << std::endl;
+    std::cout << "board.isRepetition(1)" << std::endl;
+    std::cout << board.isRepetition(1) << std::endl;
+    std::cout << "board.isRepetition(2)" << std::endl;
+    std::cout << board.isRepetition(2) << std::endl;
+
+    board.makeMove(chess::uci::parseSan(board, "Qa3"));
+    std::cout << board.getFen() << std::endl << std::endl;
+    std::cout << "board.isRepetition(1)" << std::endl;
+    std::cout << board.isRepetition(1) << std::endl;
+    std::cout << "board.isRepetition(2)" << std::endl;
+    std::cout << board.isRepetition(2) << std::endl;
+
+    board.makeMove(chess::uci::parseSan(board, "Kb8"));
+    std::cout << board.getFen() << std::endl << std::endl;
+    std::cout << "board.isRepetition(1)" << std::endl;
+    std::cout << board.isRepetition(1) << std::endl;
+    std::cout << "board.isRepetition(2)" << std::endl;
+    std::cout << board.isRepetition(2) << std::endl;
+
+    board.makeMove(chess::uci::parseSan(board, "Qb3"));
+    std::cout << board.getFen() << std::endl << std::endl;
+    std::cout << "board.isRepetition(1)" << std::endl;
+    std::cout << board.isRepetition(1) << std::endl;
+    std::cout << "board.isRepetition(2)" << std::endl;
+    std::cout << board.isRepetition(2) << std::endl;
+
+    board.makeMove(chess::uci::parseSan(board, "Ka8"));
+    std::cout << board.getFen() << std::endl << std::endl;
+    std::cout << "board.isRepetition(1)" << std::endl;
+    std::cout << board.isRepetition(1) << std::endl;
+    std::cout << "board.isRepetition(2)" << std::endl;
+    std::cout << board.isRepetition(2) << std::endl;
+
+    board.makeMove(chess::uci::parseSan(board, "Qa3"));
+    std::cout << board.getFen() << std::endl << std::endl;
+    std::cout << "board.isRepetition(1)" << std::endl;
+    std::cout << board.isRepetition(1) << std::endl;
+    std::cout << "board.isRepetition(2)" << std::endl;
+    std::cout << board.isRepetition(2) << std::endl;
+}
+
+
+void debugGame()
+{
+    auto manager = TimeManagement::TimeManager(false);
+    auto board1 = chess::Board("8/p4rP1/1p2p2n/8/8/4k1P1/4p1K1/R7 b - - 4 49");
+    const std::vector<std::string> moves = {
+        "Rxg7", "Ra3+", "Kd2", "Ra2+", "Kd3", "Ra3+", "Kd2", "Ra2+", "Kd3", "Ra3+"
+    };
+    for (const auto& move : moves)
+    {
+        std::cout << move << std::endl;
+        board1.makeMove(chess::uci::parseSan(board1, move));
+    }
+    manager.go(100'000, 17'000, 0, 0);
+    std::cout << chess::uci::moveToSan(board1, chess::uci::uciToMove(board1, engine::search(board1, manager, 100)))
+        << std::endl << std::endl;
+    std::cout << "board1.isRepetition(1)" << std::endl;
+    std::cout << board1.isRepetition(1) << std::endl;
+    std::cout << "board1.isRepetition(2)" << std::endl;
+    std::cout << board1.isRepetition(2) << std::endl;
+}
+
+int main()
+{
+    debugGame();
+    return 0;
 }

@@ -18,19 +18,10 @@ namespace evaluation
 
     bool is_endgame(const chess::Board& board)
     {
-        bool queens = false;
-        bool under_seven_men = false;
-
-        if (board.pieces(chess::PieceType::KING).count() + board.pieces(chess::PieceType::KNIGHT).count() + board.
-            pieces(chess::PieceType::BISHOP).count() + board.pieces(chess::PieceType::ROOK).count() < 8)
-        {
-            under_seven_men = true;
-        }
-        if (board.pieces(chess::PieceType::QUEEN).count() == 0)
-        {
-            queens = true;
-        }
-        return under_seven_men && queens;
+        return board.pieces(chess::PieceType::KNIGHT).count()
+            + board.pieces(chess::PieceType::BISHOP).count()
+            + board.pieces(chess::PieceType::ROOK).count() < 8
+            && board.pieces(chess::PieceType::QUEEN).count() == 0;
     }
 
     int material_eval(const chess::Bitboard& pawns, const chess::Bitboard& knights,
@@ -161,21 +152,24 @@ namespace evaluation
 
     std::optional<int> game_over_eval(const chess::Board& board, const int& ply)
     {
-        const bool check = board.inCheck();
+        if (board.isInsufficientMaterial() || board.isHalfMoveDraw() || board.isRepetition(1))
+        {
+            return 0;
+        }
 
         chess::Movelist moves;
         chess::movegen::legalmoves(moves, board);
 
-        const bool no_moves = moves.empty();
-
-        if (check && no_moves)
+        if (moves.empty())
         {
-            return -10000 + ply;
-        }
-        if (board.isInsufficientMaterial() || board.isRepetition() || (!check && no_moves))
-        {
+            if (const bool check = board.inCheck();
+                check)
+            {
+                return -10000 + ply;
+            }
             return 0;
         }
+
         return std::nullopt;
     }
 
