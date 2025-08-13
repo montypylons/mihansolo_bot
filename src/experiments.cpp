@@ -206,21 +206,25 @@ void debugGame()
 {
     auto manager = TimeManagement::TimeManager(false);
     auto board1 = chess::Board("8/3r2p1/1k2K1Pp/8/5P1P/8/8/8 b - - 1 48");
-    const std::vector<std::string> moves = {
-        "Rxg7", "Ra3+", "Kd2", "Ra2+", "Kd3", "Ra3+", "Kd2", "Ra2+", "Kd3", "Ra3+"
-    };
-    /*for (const auto& move : moves)
-    {
-        std::cout << move << std::endl;
-        board1.makeMove(chess::uci::parseSan(board1, move));
-    }*/
     manager.go(100'000, 44'900, 3'000, 3'000);
-    std::cout << chess::uci::moveToSan(board1, chess::uci::uciToMove(board1, engine::search(board1, manager, 100)))
-        << std::endl << std::endl;
-    std::cout << "board1.isRepetition(1)" << std::endl;
-    std::cout << board1.isRepetition(1) << std::endl;
-    std::cout << "board1.isRepetition(2)" << std::endl;
-    std::cout << board1.isRepetition(2) << std::endl;
+    // setup over
+
+    std::cout << "Board FEN: " << board1.getFen() << std::endl;
+
+    const auto searched_move = engine::search(board1, manager, 100);
+
+    std::cout << "Engine made move: " << chess::uci::moveToSan(
+            board1, chess::uci::uciToMove(board1, searched_move))
+        << std::endl;
+
+    std::cout << "Evaluating board after move " << chess::uci::moveToSan(
+            board1, chess::uci::uciToMove(board1, searched_move))
+        << ": " << board1.getFen() << std::endl;
+
+    board1.makeMove(chess::uci::uciToMove(board1, searched_move));
+
+    std::cout << "This should return a drawn eval ";
+    engine::search(board1, std::nullopt, 12); // same depth as we usually get with the previous call
 }
 
 int main()
