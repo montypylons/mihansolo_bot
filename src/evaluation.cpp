@@ -7,6 +7,8 @@
 
 namespace evaluation
 {
+    constexpr uint64_t RANKS_2_AND_7 = 0x00FF00000000FF00ULL;
+
     std::tuple<std::array<chess::Bitboard, 6>, std::array<chess::Bitboard, 6>> initialize_bitboards(
         const chess::Board& board)
     {
@@ -14,6 +16,11 @@ namespace evaluation
         // pawns, knights, bishops, rooks, queens, then same but black_pawns, etc.
         auto generated_bitboards = utils::generate_bitboards(board);
         return generated_bitboards;
+    }
+
+    bool is_pawns_near_promotion(const chess::Board& board)
+    {
+        return RANKS_2_AND_7 & board.pieces(chess::PieceType::PAWN).getBits();
     }
 
     bool is_endgame(const chess::Board& board)
