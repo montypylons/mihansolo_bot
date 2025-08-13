@@ -118,7 +118,7 @@ namespace evaluation
 
                 const int piece_index = piece.type();
 
-                square = board.at(chess::Square(square)).color() == chess::Color::WHITE ? square : square ^ 56;
+                square = piece.color() == chess::Color::WHITE ? square : square ^ 56;
 
                 const int psqt_value = utils::piece_square[piece_index][square];
 
