@@ -34,6 +34,7 @@ namespace engine
     void start_uci();
 
     inline bool is_promotion(const chess::Move& move);
+    inline bool is_pawns_near_promotion(const chess::Board& board);
 
     const extern int initial_alpha;
     const extern int initial_beta;

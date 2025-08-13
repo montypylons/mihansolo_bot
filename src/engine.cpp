@@ -34,6 +34,21 @@ namespace engine // TODO: add iterative deepening tests
     const int initial_alpha = std::numeric_limits<int>::min() + 1; // to avoid wraparound bugs
     const int initial_beta = std::numeric_limits<int>::max();
 
+    /**
+ *
+ * @param board
+ * @return whether any White pawns are on 7th rank OR any Black pawns on 2nd rank,
+ * i.e. they are one move away from promoting.
+ * The main use is for passed pawn search extensions.
+ */
+    inline bool is_pawns_near_promotion(const chess::Board& board)
+    {
+        return
+            0x00FF000000000000ULL & board.pieces(chess::PieceType::PAWN, chess::Color::BLACK).getBits() ||
+            0x000000000000FF00ULL & board.pieces(chess::PieceType::PAWN, chess::Color::WHITE).getBits();
+    }
+
+
     inline bool is_promotion(const chess::Move& move)
     {
         return move.typeOf() == chess::Move::PROMOTION;
@@ -220,11 +235,14 @@ namespace engine // TODO: add iterative deepening tests
 
         for (const auto& move : legal_moves)
         {
-            board.makeMove(move);
-
             int score;
             chess::Move dummy_move{};
-            std::tie(score, dummy_move) = negamax(PV_Move, table1, board, -beta, -alpha, move, depth - 1, ply + 1);
+
+            board.makeMove(move);
+            int passed_pawn_extension = is_pawns_near_promotion(board);
+
+            std::tie(score, dummy_move) = negamax(PV_Move, table1, board, -beta, -alpha, move,
+                                                  (depth + passed_pawn_extension) - 1, ply + 1);
             score = -score;
 
             board.unmakeMove(move);
