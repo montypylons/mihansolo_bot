@@ -209,21 +209,22 @@ void debugGame()
     manager.go(100'000, 44'900, 3'000, 3'000);
     // setup over
 
-    const auto searched_move = engine::search(board1, manager, 100);
+    const auto searched_move = chess::uci::uciToMove(board1, engine::search(board1, manager, 100));
+    const auto searched_move_SAN = chess::uci::moveToSan(board1, searched_move);
     std::cout << "Board FEN: " << board1.getFen() << std::endl;
 
-    std::cout << "Engine made move: " << chess::uci::moveToSan(
-            board1, chess::uci::uciToMove(board1, searched_move))
+    std::cout << "Engine made move: " << searched_move_SAN
         << std::endl;
 
-    std::cout << "Evaluating board after move " << chess::uci::moveToSan(
-            board1, chess::uci::uciToMove(board1, searched_move))
+
+    board1.makeMove(searched_move);
+
+    std::cout << "Evaluating board after move " << searched_move_SAN
         << ": " << board1.getFen() << std::endl;
 
-    board1.makeMove(chess::uci::uciToMove(board1, searched_move));
-
-    std::cout << "This should return a drawn eval ";
-    engine::search(board1, std::nullopt, 12); // same depth as we usually get with the previous call
+    std::cout << "This should return a non-drawn eval: " << std::endl;
+    std::cout << "Engine output: ";
+    engine::search(board1, std::nullopt, 12);
 }
 
 int main()
