@@ -17,7 +17,7 @@
 
 namespace engine // TODO: add iterative deepening tests
 {
-    constexpr int MAX_EXTENSIONS = 2;
+    constexpr int MAX_EXTENSIONS = 2; // BUG: extensions cause node explosion
     constexpr int QUIESCENCE_DEPTH = 0;
     constexpr int DELTA = 200;
 
