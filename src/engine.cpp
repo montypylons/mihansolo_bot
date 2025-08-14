@@ -124,7 +124,7 @@ namespace engine // TODO: add iterative deepening tests
         {
             if (!board.inCheck() && !evaluation::is_endgame(board) && !is_promotion(move) &&
                 best_value + utils::piece_values[board.at(move.to()).type()] + DELTA < alpha)
-                continue; // This capture isn't worth searching, it can't raise alpha
+                continue;
 
             board.makeMove(move);
             const int score = -QuiescenceSearch(-beta, -alpha, board, ply + 1);
@@ -166,11 +166,12 @@ namespace engine // TODO: add iterative deepening tests
 
 
     /**
+     * @param book_path The path to load a Polyglot-format opening book from
      * Load the book (pretty obvious)
      */
-    void init_book()
+    void init_book(const std::string& book_path)
     {
-        book.Load("C:/Users/DELL/Documents/mihansolo_bot/gm2600.bin");
+        book.Load(book_path.c_str());
     }
 
     /**
@@ -259,11 +260,13 @@ namespace engine // TODO: add iterative deepening tests
         // NOLINTBEGIN (linter says this is unreachable for some reason)
         chess::Move best_move = chess::Move::NO_MOVE;
         int best_eval = std::numeric_limits<int>::min();
+
         chess::Movelist legal_moves;
         chess::movegen::legalmoves(legal_moves, board);
-        utils::order_moves(history, PV_Move, legal_moves, board);
 
-        /*if (can_NMP(board, depth)) // NMP Conditions
+        utils::order_moves(history, PV_Move, legal_moves, board);
+        /*
+        if (can_NMP(board, depth)) // NMP Conditions
         {
             int score = 0;
             chess::Move dummy{};
@@ -282,7 +285,9 @@ namespace engine // TODO: add iterative deepening tests
 
                 return std::make_tuple(score, chess::Move::NO_MOVE);
             }
-        }*/
+        }
+        */
+
         // SPRT shows NMP is -37.6 elo, so commented out for now
 
         for (const auto& move : legal_moves)
@@ -292,8 +297,6 @@ namespace engine // TODO: add iterative deepening tests
 
             board.makeMove(move);
             int passed_pawn_extension = (is_pawns_near_promotion(board) && numExtensions < MAX_EXTENSIONS) ? 1 : 0;
-
-            // int passed_pawn_extension = 0;
 
             std::tie(score, dummy_move) = negamax(PV_Move, table1, board, -beta, -alpha, move,
                                                   (depth + passed_pawn_extension) - 1, ply + 1,
@@ -342,6 +345,13 @@ namespace engine // TODO: add iterative deepening tests
     }
 
 
+    /**
+     *
+     * @param fen Fen for testing, not required
+     * @param manager1 The time manager, also not required
+     * @param default_depth Depth to use if there is no time manager
+     * @return The believed best move in the position as a UCI-formatted string
+     */
     std::string search(const std::optional<chess::Board>& fen,
                        const std::optional<TimeManagement::TimeManager>& manager1, const int default_depth)
     {
@@ -411,6 +421,9 @@ namespace engine // TODO: add iterative deepening tests
         return move_uci;
     }
 
+    /**
+     * Start the UCI input/output loop, doesn't have all the options yet but working on it :D
+     */
     void start_uci()
     {
         chess::Board board;

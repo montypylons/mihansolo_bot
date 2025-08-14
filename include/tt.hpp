@@ -16,8 +16,11 @@ struct TTEntry // TODO: get tests for TT
     NodeType node_type;
 };
 
-// constexpr size_t TT_SIZE = 1048576; // 2^20
-// constexpr size_t TT_MASK = 1048575; // 2^20 - 1
+struct TTEntry_eval
+{
+    uint64_t zobrist_key;
+    int score;
+};
 
 class TranspositionTable
 {
@@ -52,5 +55,21 @@ public:
 private:
     static int address_calc(uint64_t key);
 
-    std::vector<TTEntry> table = std::vector<TTEntry>(8'388'608); // TODO: add tests for this stuff
+    std::vector<TTEntry> table = std::vector<TTEntry>(8'388'608);
+};
+
+class EvaluationHashTable
+{
+public:
+    EvaluationHashTable() = default;
+
+    void put(uint64_t zobrist_key, int score);
+
+    [[nodiscard]] std::optional<int> find_usable_entry(uint64_t zobrist_key) const;
+    [[nodiscard]] std::optional<TTEntry> get(uint64_t zobrist_key) const;
+    [[nodiscard]] bool find(uint64_t zobrist_key) const;
+
+private:
+    static int address_calc(uint64_t key);
+    std::vector<TTEntry_eval> table = std::vector<TTEntry_eval>(8'388'608);
 };
