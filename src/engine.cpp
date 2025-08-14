@@ -17,6 +17,7 @@
 
 namespace engine // TODO: add iterative deepening tests
 {
+    constexpr int MAX_EXTENSIONS = 2;
     constexpr int QUIESCENCE_DEPTH = 0;
     constexpr int DELTA = 200;
 
@@ -179,7 +180,7 @@ namespace engine // TODO: add iterative deepening tests
                                          int alpha,
                                          const int beta,
                                          const chess::Move& last_move,
-                                         const int& depth, const int& ply)
+                                         const int& depth, const int& ply, int numExtensions)
     {
         nodes++;
         // time management
@@ -239,14 +240,16 @@ namespace engine // TODO: add iterative deepening tests
             chess::Move dummy_move{};
 
             board.makeMove(move);
-            int passed_pawn_extension = is_pawns_near_promotion(board);
+            int passed_pawn_extension = (is_pawns_near_promotion(board) && numExtensions < MAX_EXTENSIONS) ? 1 : 0;
+
+            // int passed_pawn_extension = 0;
 
             std::tie(score, dummy_move) = negamax(PV_Move, table1, board, -beta, -alpha, move,
-                                                  (depth + passed_pawn_extension) - 1, ply + 1);
+                                                  (depth + passed_pawn_extension) - 1, ply + 1,
+                                                  numExtensions + passed_pawn_extension);
             score = -score;
 
             board.unmakeMove(move);
-
 
             if (score > best_eval)
             {

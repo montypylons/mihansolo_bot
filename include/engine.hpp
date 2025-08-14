@@ -26,7 +26,7 @@ namespace engine
     std::tuple<int, chess::Move> negamax(const chess::Move& PV_Move, TranspositionTable& table1, chess::Board& board,
                                          int alpha, int beta,
                                          const chess::Move& last_move,
-                                         const int& depth, const int& ply);
+                                         const int& depth, const int& ply, int numExtensions = 0);
     // Game over detection
     inline bool game_over(const chess::Board& board);
 

@@ -209,9 +209,8 @@ void debugGame()
     manager.go(100'000, 44'900, 3'000, 3'000);
     // setup over
 
-    std::cout << "Board FEN: " << board1.getFen() << std::endl;
-
     const auto searched_move = engine::search(board1, manager, 100);
+    std::cout << "Board FEN: " << board1.getFen() << std::endl;
 
     std::cout << "Engine made move: " << chess::uci::moveToSan(
             board1, chess::uci::uciToMove(board1, searched_move))
