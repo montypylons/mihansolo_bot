@@ -3,10 +3,17 @@
 #include <vector>
 #include <array>
 
+/**
+ * Contains various helper functions
+ */
 namespace utils
 {
-    // should all return from POV of side to move & int
-
+    /**
+     *
+     * @param board The board to generate bitboards for
+     * @return This is very convoluted ... but it returns a tuple of two arrays (one for us, one for the enemy)
+     * which contain 6 bitboards each, one for each piece type
+     */
     std::tuple<std::array<chess::Bitboard, 6>, std::array<chess::Bitboard, 6>> generate_bitboards(
         const chess::Board& board)
     {
@@ -33,12 +40,18 @@ namespace utils
             });
     }
 
+    /**
+     *
+     * @param board Current board state
+     * @param move Move to be evaluated in the context of board
+     * @return The MVV-LAA (Most Valuable Victim - Least Valuble Aggressor)
+     * value for that move, used as a key for ordering capture moves. For example,
+     * it would reward PxQ over QxQ or QxP since you would lose less material to a
+     * recapture then.
+     */
     int MVV_LAA_helper(const chess::Board& board, const chess::Move& move)
-    // Most Valuable Victim - Least Valuable Aggressor
-
     {
         // TODO: Add tests
-
         const int from_score = piece_values[board.at(move.from()).type()];
         const int to_score = piece_values[board.at(move.to()).type()];
         const int move_score = to_score - from_score;
@@ -63,7 +76,7 @@ namespace utils
     {
         std::sort(moves.begin(), moves.end(), [board, &history](const chess::Move& m1, const chess::Move& m2)-> bool
         {
-            if (board.isCapture(m1)) // do not use move ordering this for castling or en-passant
+            if (board.isCapture(m1))
             {
                 return MVV_LAA_helper(board, m1) > MVV_LAA_helper(board, m2);
             }

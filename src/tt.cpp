@@ -6,6 +6,14 @@
 struct TTEntry; // TODO: get tests for TT
 
 
+/**
+ *
+ * @param zobrist_key Zobrist hash of current board
+ * @param best_move Believed best move for the current board
+ * @param depth Current search depth
+ * @param score Believed score of current board (from the side-to-move's POV)
+ * @param node_type What type of node this is - NodeType::LOWERBOUND, NodeType::UPPERBOUND, or NodeType::EXACT
+ */
 void TranspositionTable::put(const uint64_t zobrist_key,
                              const chess::Move& best_move,
                              const int depth,
@@ -15,10 +23,6 @@ void TranspositionTable::put(const uint64_t zobrist_key,
     if (const int index = address_calc(zobrist_key); !find(zobrist_key) || depth >= table[index].depth)
     {
         table[index] = TTEntry{zobrist_key, best_move, depth, score, node_type};
-    }
-    else
-    {
-        // Do nothing, leave the existing entry as it is
     }
 }
 
@@ -39,5 +43,5 @@ void TranspositionTable::put(const uint64_t zobrist_key,
 
 [[nodiscard]] int TranspositionTable::address_calc(const uint64_t key)
 {
-    return key & 8'388'607;
+    return key & 8'388'607; // NOLINT
 }
