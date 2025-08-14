@@ -65,8 +65,7 @@ public:
 
     void put(uint64_t zobrist_key, int score);
 
-    [[nodiscard]] std::optional<int> find_usable_entry(uint64_t zobrist_key) const;
-    [[nodiscard]] std::optional<TTEntry> get(uint64_t zobrist_key) const;
+    [[nodiscard]] std::optional<TTEntry_eval> get(uint64_t zobrist_key) const;
     [[nodiscard]] bool find(uint64_t zobrist_key) const;
 
 private:

@@ -38,6 +38,8 @@ namespace engine
 
     const extern int initial_alpha;
     const extern int initial_beta;
+    extern int eval_hash_hits;
+
     extern TranspositionTable table;
     extern std::optional<TimeManagement::TimeManager> manager;
     extern bool abort_due_to_time;

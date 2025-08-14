@@ -45,3 +45,29 @@ void TranspositionTable::put(const uint64_t zobrist_key,
 {
     return key & 8'388'607; // NOLINT
 }
+
+void EvaluationHashTable::put(const uint64_t zobrist_key,
+                              const int score)
+{
+    table[address_calc(zobrist_key)] = TTEntry_eval{zobrist_key, score};
+}
+
+[[nodiscard]] std::optional<TTEntry_eval> EvaluationHashTable::get(const uint64_t zobrist_key) const
+{
+    if (auto found_entry = table[address_calc(zobrist_key)]; found_entry.zobrist_key == zobrist_key)
+    {
+        return found_entry;
+    }
+    return std::nullopt;
+}
+
+
+[[nodiscard]] bool EvaluationHashTable::find(const uint64_t zobrist_key) const
+{
+    return table[address_calc(zobrist_key)].zobrist_key == zobrist_key;
+}
+
+[[nodiscard]] int EvaluationHashTable::address_calc(const uint64_t key)
+{
+    return key & 8'388'607; // NOLINT
+}
