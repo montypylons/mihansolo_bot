@@ -102,8 +102,8 @@ namespace engine // TODO: add iterative deepening tests
         {
             return std::get<0>(ttEntry.value());
         }
-        const int original_alpha = alpha;
 
+        const int original_alpha = alpha;
         int best_value = evaluation::main_eval(board, ply);
 
         if (best_value >= beta)
@@ -122,9 +122,8 @@ namespace engine // TODO: add iterative deepening tests
 
         for (const auto& move : capture_moves)
         {
-            if (!board.inCheck() && !evaluation::is_endgame(board) && !is_promotion(move) && best_value +
-                utils::piece_values[board.
-                                    at(move.to()).type()] + DELTA < alpha)
+            if (!board.inCheck() && !evaluation::is_endgame(board) && !is_promotion(move) &&
+                best_value + utils::piece_values[board.at(move.to()).type()] + DELTA < alpha)
                 continue; // This capture isn't worth searching, it can't raise alpha
 
             board.makeMove(move);
