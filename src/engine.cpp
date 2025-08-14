@@ -165,11 +165,19 @@ namespace engine // TODO: add iterative deepening tests
     }
 
 
+    /**
+     * Load the book (pretty obvious)
+     */
     void init_book()
     {
         book.Load("C:/Users/DELL/Documents/mihansolo_bot/gm2600.bin");
     }
 
+    /**
+     *
+     * @param board Board to find book move for
+     * @return A random book move if multiple found, if only one found return that, if none found return std::nullopt
+     */
     std::optional<std::string> book_move(const chess::Board& board)
     {
         if (const Reader::BookMoves book_moves = book.GetBookMoves(board.zobrist()); !book_moves.empty())
@@ -180,11 +188,22 @@ namespace engine // TODO: add iterative deepening tests
         return std::nullopt;
     }
 
+    /**
+     *
+     * @param depth Current search depth
+     * @return The null move reduction R for that depth
+     */
     inline int reduction_for(const int depth)
     {
         return depth >= 6 ? 3 : 2;
     }
 
+    /**
+     *
+     * @param board Board to check for
+     * @param depth Current search depth
+     * @return Whether we can use null move pruning without adverse side effects
+     */
     inline bool can_NMP(const chess::Board& board, const int depth)
     {
         const int R = reduction_for(depth);
@@ -195,6 +214,19 @@ namespace engine // TODO: add iterative deepening tests
     }
 
 
+    /**
+     *
+     * @param PV_Move Current principal variation move; for move ordering
+     * @param table1 Transposition table
+     * @param board Board to search for
+     * @param alpha Alpha (for a/b pruning) - initially set to a very low value
+     * @param beta Beta (for a/b pruning) - intially set to a very high value
+     * @param last_move The last move made on the board
+     * @param depth Current depth - start at 0
+     * @param ply Current ply - start at 0
+     * @param numExtensions Number of search extensions applied so far
+     * @return A tuple of the believed evaluation and best move in the position
+     */
     std::tuple<int, chess::Move> negamax(const chess::Move& PV_Move, TranspositionTable& table1, chess::Board& board,
                                          int alpha,
                                          const int beta,
