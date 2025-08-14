@@ -23,6 +23,7 @@ namespace engine // TODO: add iterative deepening tests
 
     int history[2][64][64];
     int nodes = 0;
+    int eval_hash_hits = 0;
 
 
     bool abort_due_to_time = false;
@@ -417,6 +418,7 @@ namespace engine // TODO: add iterative deepening tests
 
         std::string move_uci = chess::uci::moveToUci(PV_Move);
         std::cout << "info depth " << depth << " nodes " << nodes << " score cp " << previous_eval << "\n";
+        std::cout << "eval hash hits" << eval_hash_hits << "\n";
 
         return move_uci;
     }

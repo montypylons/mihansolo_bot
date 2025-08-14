@@ -7,6 +7,8 @@
 
 namespace evaluation
 {
+    EvaluationHashTable hash_table;
+
     std::tuple<std::array<chess::Bitboard, 6>, std::array<chess::Bitboard, 6>> initialize_bitboards(
         const chess::Board& board)
     {
@@ -176,12 +178,6 @@ namespace evaluation
 
     int mobility_eval(const chess::Board& board)
     {
-        if (engine::manager.has_value() && !engine::manager->time_remaining())
-        {
-            engine::abort_due_to_time = true;
-            return 0;
-        }
-
         int mobility_eval = 0;
 
         const chess::Color side_to_move = board.sideToMove();
@@ -279,12 +275,19 @@ namespace evaluation
 
     int main_eval(const chess::Board& board, const int& ply)
     {
-        int score = 0;
+        const auto zobrist = board.hash();
+        if (const auto hash_entry = hash_table.get(zobrist); hash_entry.has_value())
+        {
+            engine::eval_hash_hits++;
+            return hash_entry.value().score;
+        }
 
         if (const std::optional<int> result = game_over_eval(board, ply); result != std::nullopt)
         {
             return result.value();
         }
+
+        int score = 0;
 
         const auto& generated_bitboards = initialize_bitboards(board);
 
@@ -299,6 +302,7 @@ namespace evaluation
 
         score += mobility_eval(board);
 
+        hash_table.put(zobrist, score); //this  put here to clear cache
         return score;
     }
 } // namespace evaluation
