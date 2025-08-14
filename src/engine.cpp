@@ -17,7 +17,7 @@
 
 namespace engine // TODO: add iterative deepening tests
 {
-    constexpr int MAX_EXTENSIONS = 2; // BUG: extensions cause node explosion
+    constexpr int MAX_EXTENSIONS = 0; // BUG: extensions cause node explosion
     constexpr int QUIESCENCE_DEPTH = 0;
     constexpr int DELTA = 200;
 
@@ -50,12 +50,22 @@ namespace engine // TODO: add iterative deepening tests
     }
 
 
+    /**
+     *
+     * @param move
+     * @return Whether it is a promotion or not
+     */
     inline bool is_promotion(const chess::Move& move)
     {
         return move.typeOf() == chess::Move::PROMOTION;
     }
 
     // NOLINTBEGIN
+    /**
+     *
+     * @param board The current game state
+     * @return If current node is terminal, i.e. the game has ended
+     */
     inline bool game_over(const chess::Board& board)
     {
         chess::Movelist moves;
@@ -70,6 +80,14 @@ namespace engine // TODO: add iterative deepening tests
 
     // NOLINTEND
 
+    /**
+     *
+     * @param alpha Alpha, start with initial_alpha if not using aspiration windows
+     * @param beta Beta, start with initial_beta if not using aspiration windows
+     * @param board Board to evaluate
+     * @param ply Current ply, used for mate evals. (default is 0)
+     * @return The score of the position after evaluating to a quiescent position (no captures).
+     */
     int QuiescenceSearch(int alpha, const int beta, chess::Board& board, const int ply)
     {
         if (manager.has_value() && !manager->time_remaining())
@@ -88,9 +106,6 @@ namespace engine // TODO: add iterative deepening tests
 
         int best_value = evaluation::main_eval(board, ply);
 
-        chess::Movelist capture_moves;
-        chess::movegen::legalmoves<chess::movegen::MoveGenType::CAPTURE>(capture_moves, board);
-
         if (best_value >= beta)
         {
             return best_value;
@@ -101,10 +116,15 @@ namespace engine // TODO: add iterative deepening tests
             alpha = best_value;
         }
 
+        chess::Movelist capture_moves;
+        chess::movegen::legalmoves<chess::movegen::MoveGenType::CAPTURE>(capture_moves, board);
+        utils::order_capture_moves(capture_moves, board);
+
         for (const auto& move : capture_moves)
         {
-            if (!evaluation::is_endgame(board) && !is_promotion(move) && best_value + utils::piece_values[board.
-                at(move.to()).type()] + DELTA < alpha)
+            if (!board.inCheck() && !evaluation::is_endgame(board) && !is_promotion(move) && best_value +
+                utils::piece_values[board.
+                                    at(move.to()).type()] + DELTA < alpha)
                 continue; // This capture isn't worth searching, it can't raise alpha
 
             board.makeMove(move);
@@ -210,7 +230,7 @@ namespace engine // TODO: add iterative deepening tests
         int best_eval = std::numeric_limits<int>::min();
         chess::Movelist legal_moves;
         chess::movegen::legalmoves(legal_moves, board);
-        legal_moves = utils::order_moves(history, PV_Move, legal_moves, board);
+        utils::order_moves(history, PV_Move, legal_moves, board);
 
         /*if (can_NMP(board, depth)) // NMP Conditions
         {
@@ -287,109 +307,6 @@ namespace engine // TODO: add iterative deepening tests
         // End transposition table stuff
 
         return std::make_tuple(best_eval, best_move);
-        // NOLINTEND
-    }
-
-    int _negamax(const chess::Move& PV_Move, TranspositionTable& table1, chess::Board& board, // still working on this
-                 int alpha,
-                 const int beta,
-                 const chess::Move& last_move,
-                 const int& depth, const int& ply)
-    {
-        nodes++;
-        // time management
-        if (manager.has_value() && !manager->time_remaining())
-        {
-            abort_due_to_time = true;
-            return 0;
-        }
-        // transposition table stuff starts
-        const int alpha_original = alpha;
-        const auto zobrist_key = board.zobrist();
-
-        if (const auto TTResult = table1.find_usable_entry(alpha_original, beta, depth, zobrist_key); TTResult.
-            has_value())
-        {
-            return std::get<0>(TTResult.value());
-        }
-        // transposition stuff ends
-
-        if (depth == 0 || game_over(board)) // NOLINT
-        {
-            return QuiescenceSearch(alpha, beta, board, ply);
-        }
-
-        // NOLINTBEGIN (linter says this is unreachable for some reason)
-        int best_eval = std::numeric_limits<int>::min();
-        chess::Movelist legal_moves;
-        chess::movegen::legalmoves(legal_moves, board);
-        legal_moves = utils::order_moves(history, PV_Move, legal_moves, board);
-
-        if (can_NMP(board, depth)) // NMP Conditions
-        {
-            int score = 0;
-            board.makeNullMove();
-            score = -_negamax(PV_Move, table1, board, -beta, -(beta - 1), last_move,
-                              depth - reduction_for(depth) - 1, ply + 1);
-            board.unmakeNullMove();
-            if (score >= beta)
-            {
-                table1.put(zobrist_key,
-                           chess::Move::NO_MOVE, // no preferred move
-                           depth,
-                           score,
-                           NodeType::LOWERBOUND); // record that this node is ≥ score
-
-                return score;
-            }
-        }
-
-        for (const auto& move : legal_moves)
-        {
-            board.makeMove(move);
-
-            int score;
-            chess::Move dummy_move{};
-            score = -_negamax(PV_Move, table1, board, -beta, -alpha, move, depth - 1, ply + 1);
-
-            board.unmakeMove(move);
-
-
-            if (score > best_eval)
-            {
-                best_eval = int{score};
-
-                if (score > alpha)
-                    alpha = score;
-            }
-            if (score >= beta)
-            {
-                if (!board.isCapture(move))
-                {
-                    history[board.sideToMove()][move.from().index()][move.to().index()] += depth * depth;
-                }
-                table1.put(zobrist_key, chess::Move::NO_MOVE, depth, best_eval, NodeType::LOWERBOUND);
-                return best_eval;
-            }
-        }
-        // Start transposition table stuff
-        NodeType node_type;
-        if (best_eval <= alpha_original)
-        {
-            node_type = NodeType::UPPERBOUND;
-        }
-        else if (best_eval >= beta)
-        {
-            node_type = NodeType::LOWERBOUND;
-        }
-        else
-        {
-            node_type = NodeType::EXACT;
-        }
-        table1.put(zobrist_key, chess::Move::NO_MOVE, depth, best_eval, node_type);
-        // End transposition table stuff
-
-        return best_eval;
         // NOLINTEND
     }
 

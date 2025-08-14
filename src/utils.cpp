@@ -51,8 +51,15 @@ namespace utils
         return history[board.sideToMove()][move.from().index()][move.to().index()];
     }
 
-    chess::Movelist order_moves(const int (&history)[2][64][64], const chess::Move& PV_Move, chess::Movelist& moves,
-                                const chess::Board& board)
+    /**
+     *
+     * @param history The history heuristic array, indexed by [color (2)][from_square (64)][to_square (64)]
+     * @param PV_Move Current principal variation move, to be placed first in the sorted list
+     * @param moves The list of moves to sort
+     * @param board The board BEFORE any of the aforementioned moved are made on it
+     */
+    void order_moves(const int (&history)[2][64][64], const chess::Move& PV_Move, chess::Movelist& moves,
+                     const chess::Board& board)
     {
         std::sort(moves.begin(), moves.end(), [board, &history](const chess::Move& m1, const chess::Move& m2)-> bool
         {
@@ -67,7 +74,18 @@ namespace utils
         {
             std::swap(moves[0], moves[PV_pos]);
         }
+    }
 
-        return moves;
+    /**
+     *
+     * @param moves A list of capture moves to be sorted
+     * @param board The board BEFORE any of the aforementioned moves are made
+     */
+    void order_capture_moves(chess::Movelist& moves, const chess::Board& board)
+    {
+        std::sort(moves.begin(), moves.end(), [board](const chess::Move& m1, const chess::Move& m2)-> bool
+        {
+            return MVV_LAA_helper(board, m1) > MVV_LAA_helper(board, m2);
+        });
     }
 }

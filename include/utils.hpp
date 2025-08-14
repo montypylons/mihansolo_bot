@@ -110,6 +110,7 @@ namespace utils
     int MVV_LAA_helper(const chess::Board& board, const chess::Move& move);
     inline int history_heuristic_helper(const int (&history)[2][64][64], const chess::Board& board,
                                         const chess::Move& move);
-    chess::Movelist order_moves(const int (&history)[2][64][64], const chess::Move& PV_Move, chess::Movelist& moves,
-                                const chess::Board& board);
+    void order_moves(const int (&history)[2][64][64], const chess::Move& PV_Move, chess::Movelist& moves,
+                     const chess::Board& board);
+    void order_capture_moves(chess::Movelist& moves, const chess::Board& board);
 }
