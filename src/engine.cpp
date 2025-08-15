@@ -25,7 +25,6 @@ namespace engine // TODO: add iterative deepening tests
     int nodes = 0;
     int eval_hash_hits = 0;
 
-
     bool abort_due_to_time = false;
     bool manager_exists = false;
 
@@ -98,7 +97,7 @@ namespace engine // TODO: add iterative deepening tests
         }
         nodes++;
 
-        const uint64_t zobrist = board.zobrist();
+        const uint64_t zobrist = board.hash();
         if (const auto ttEntry = table.find_usable_entry(alpha, beta, QUIESCENCE_DEPTH, zobrist); ttEntry.has_value())
         {
             return std::get<0>(ttEntry.value());
@@ -182,7 +181,7 @@ namespace engine // TODO: add iterative deepening tests
      */
     std::optional<std::string> book_move(const chess::Board& board)
     {
-        if (const Reader::BookMoves book_moves = book.GetBookMoves(board.zobrist()); !book_moves.empty())
+        if (const Reader::BookMoves book_moves = book.GetBookMoves(board.hash()); !book_moves.empty())
         {
             std::string found_move = Reader::ConvertBookMoveToUci(Reader::RandomBookMove(book_moves));
             return found_move;
@@ -244,7 +243,7 @@ namespace engine // TODO: add iterative deepening tests
         }
         // transposition table stuff starts
         const int alpha_original = alpha;
-        const auto zobrist_key = board.zobrist();
+        const auto zobrist_key = board.hash();
 
         if (auto TTResult = table1.find_usable_entry(alpha_original, beta, depth, zobrist_key); TTResult.has_value())
         {
@@ -360,6 +359,7 @@ namespace engine // TODO: add iterative deepening tests
         int depth = 1;
         int previous_eval = 0;
         nodes = 0; // reset nodes every move
+        eval_hash_hits = 0;
 
         abort_due_to_time = false;
         chess::Board board;
@@ -416,9 +416,8 @@ namespace engine // TODO: add iterative deepening tests
             return "0000";
         }
 
-        std::string move_uci = chess::uci::moveToUci(PV_Move);
+        const std::string move_uci = chess::uci::moveToUci(PV_Move);
         std::cout << "info depth " << depth << " nodes " << nodes << " score cp " << previous_eval << "\n";
-        std::cout << "eval hash hits" << eval_hash_hits << "\n";
 
         return move_uci;
     }
