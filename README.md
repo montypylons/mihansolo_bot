@@ -21,19 +21,18 @@
 
 ## Features
 
-- Written in pure C++
-  # Evaluation
+# Evaluation
 - Piece-square tables
 - Material eval
 - Middlegame/endgame eval changes (currently only for kings and pawns)
-  # Search
+# Search
 - Quiescence search
 - Delta pruning
 - Alpha/beta pruning
 - Stand pat pruning
 - Transposition table (currently hard-set at 2^23 entries)
 - Evaluation hash table (also hard coded at 2^23 entries)
-  # UCI
+# UCI
 - Partial UCI support, just enough to get it working on Lichess. :D
   
 
