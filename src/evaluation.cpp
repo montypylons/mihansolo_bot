@@ -225,7 +225,6 @@ namespace evaluation
                 moves_for_piece, board, chess::PieceGenType::QUEEN);
             mobility_eval -= moves_for_piece.size() * utils::QUEEN_MOBILITY_FACTOR;
 
-
             return mobility_eval;
         }
 
@@ -269,7 +268,6 @@ namespace evaluation
             moves_for_piece, board, chess::PieceGenType::QUEEN);
         mobility_eval -= moves_for_piece.size() * utils::QUEEN_MOBILITY_FACTOR;
 
-
         return mobility_eval;
     }
 
@@ -302,7 +300,7 @@ namespace evaluation
 
         score += mobility_eval(board);
 
-        hash_table.put(zobrist, score); //this  put here to clear cache
+        hash_table.put(zobrist, score); // this put here to clear cache
         return score;
     }
 } // namespace evaluation
