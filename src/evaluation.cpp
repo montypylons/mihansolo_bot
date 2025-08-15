@@ -276,7 +276,6 @@ namespace evaluation
         const auto zobrist = board.hash();
         if (const auto hash_entry = hash_table.get(zobrist); hash_entry.has_value())
         {
-            engine::eval_hash_hits++;
             return hash_entry.value().score;
         }
 
