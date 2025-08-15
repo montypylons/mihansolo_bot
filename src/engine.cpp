@@ -490,24 +490,27 @@ namespace engine // TODO: add iterative deepening tests
             }
             else if (token == "go")
             {
-                int wtime = 0, btime = 0, winc = 0, binc = 0;
+                int wtime = 0, btime = 0, winc = 0, binc = 0, movetime = -1;
 
                 std::string param;
                 while (iss >> param)
                 {
+                    if (param == "movetime")
+                    {
+                        iss >> movetime;
+                        break;
+                    }
                     if (param == "wtime") iss >> wtime;
                     else if (param == "btime") iss >> btime;
                     else if (param == "winc") iss >> winc;
                     else if (param == "binc") iss >> binc;
                 }
-
                 if (manager.has_value())
                 {
-                    manager->go(wtime, btime, winc, binc);
+                    manager->go(wtime, btime, winc, binc, movetime);
                 }
 
-                std::string bestmove = search(board, manager);
-                std::cout << "bestmove " << bestmove << "\n";
+                std::cout << "bestmove " << search(board, manager) << "\n";
             }
             else if (token == "quit")
             {
