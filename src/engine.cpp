@@ -69,7 +69,7 @@ namespace engine // TODO: add iterative deepening tests
     {
         chess::Movelist moves;
         chess::movegen::legalmoves(moves, board);
-        if (moves.empty() || board.isHalfMoveDraw() || board.isInsufficientMaterial() || board.isRepetition())
+        if (moves.empty() || board.isHalfMoveDraw() || board.isInsufficientMaterial() || board.isRepetition(1))
         {
             return true;
         }
@@ -165,12 +165,10 @@ namespace engine // TODO: add iterative deepening tests
 
 
     /**
-     * @param book_path The path to load a Polyglot-format opening book from
-     * Load the book (pretty obvious)
      */
-    void init_book(const std::string& book_path)
+    void init_book()
     {
-        book.Load(book_path.c_str());
+        book.Load("C:/Users/DELL/Documents/mihansolo_bot/gm2600.bin");
     }
 
     /**
@@ -231,7 +229,7 @@ namespace engine // TODO: add iterative deepening tests
                                          int alpha,
                                          const int beta,
                                          const chess::Move& last_move,
-                                         const int& depth, const int& ply, int numExtensions)
+                                         const int& depth, const int& ply, const int numExtensions)
     {
         nodes++;
         // time management
@@ -510,7 +508,8 @@ namespace engine // TODO: add iterative deepening tests
                     manager->go(wtime, btime, winc, binc, movetime);
                 }
 
-                std::cout << "bestmove " << search(board, manager) << "\n";
+                auto bestmove = search(board, manager);
+                std::cout << "bestmove " << bestmove << "\n";
             }
             else if (token == "quit")
             {

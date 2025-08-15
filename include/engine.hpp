@@ -13,7 +13,7 @@ namespace engine
     /* inline bool can_NMP(const chess::Board& board, int depth); */
 
     // Book initialization
-    void init_book(const std::string& book_path = "../gm2600.bin");
+    void init_book();
 
     // Book move lookup
     std::optional<std::string> book_move(const chess::Board& board);
