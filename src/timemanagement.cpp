@@ -20,7 +20,21 @@ namespace TimeManagement
     void TimeManager::go(const int wtime, const int btime, const int winc, const int binc,
                          const int movetime)
     {
-        last_move_time = std::chrono::steady_clock::now();
-        time_remaining_for_move = movetime > 0 ? movetime : white ? wtime / 20 + winc / 2 : btime / 20 + binc / 2;
+        if (movetime > 0)
+        {
+            last_move_time = std::chrono::steady_clock::now();
+            time_remaining_for_move = movetime;
+            return;
+        }
+        if (white)
+        {
+            last_move_time = std::chrono::steady_clock::now();
+            time_remaining_for_move = wtime / 20 + winc / 2;
+        }
+        if (!white)
+        {
+            last_move_time = std::chrono::steady_clock::now();
+            time_remaining_for_move = btime / 20 + binc / 2;
+        }
     }
 }

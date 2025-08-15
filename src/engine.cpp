@@ -13,6 +13,7 @@
 #include "utils.hpp"
 #include "tt.hpp"
 #include "timemanagement.hpp"
+#include <iomanip>
 // TODO: SPRT this build against current production build.
 
 namespace engine // TODO: add iterative deepening tests
@@ -454,11 +455,10 @@ namespace engine // TODO: add iterative deepening tests
                 std::string pos_type;
                 iss >> pos_type;
 
-
                 if (pos_type == "startpos")
                 {
                     board.setFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-                    manager = TimeManagement::TimeManager(board.sideToMove());
+                    manager = TimeManagement::TimeManager(true);
                     manager_exists = true;
                 }
                 else if (pos_type == "fen")
@@ -470,7 +470,7 @@ namespace engine // TODO: add iterative deepening tests
                     }
                     fen.pop_back(); // remove trailing space
                     board.setFen(fen);
-                    manager = TimeManagement::TimeManager(board.sideToMove());
+                    manager = TimeManagement::TimeManager(~board.sideToMove());
                     manager_exists = true;
                 }
 
@@ -484,6 +484,8 @@ namespace engine // TODO: add iterative deepening tests
                         chess::Move m = chess::uci::uciToMove(board, move_str);
                         board.makeMove(m);
                     }
+
+                    if (manager_exists) { manager->white = ~board.sideToMove(); }
                 }
             }
             else if (token == "go")
@@ -503,7 +505,7 @@ namespace engine // TODO: add iterative deepening tests
                     else if (param == "winc") iss >> winc;
                     else if (param == "binc") iss >> binc;
                 }
-                if (manager.has_value())
+                if (manager_exists)
                 {
                     manager->go(wtime, btime, winc, binc, movetime);
                 }
