@@ -1,5 +1,6 @@
 #pragma once
 #include <chrono>
+#include <optional>
 
 namespace TimeManagement
 {
@@ -13,7 +14,7 @@ namespace TimeManagement
         }
 
         [[nodiscard]] bool time_remaining() const; // have you outrun the time allowed for this move
-        void go(int wtime, int btime, int winc, int binc);
+        void go(int wtime, int btime, int winc, int binc, int movetime = -1);
 
     private:
         bool white; // true if bot is White, false if bot is Black
