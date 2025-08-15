@@ -15,9 +15,9 @@ namespace TimeManagement
 
         [[nodiscard]] bool time_remaining() const; // have you outrun the time allowed for this move
         void go(int wtime, int btime, int winc, int binc, int movetime = -1);
+        bool white; // true if bot is White, false if bot is Black
 
     private:
-        bool white; // true if bot is White, false if bot is Black
         int time_remaining_for_move = 0;
         std::chrono::steady_clock::time_point last_move_time;
     };
