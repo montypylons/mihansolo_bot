@@ -1,6 +1,6 @@
 # MihanSolo
 
-[![GitHub stars](https://img.shields.io/github/stars/montypylons/mihansolo_bot?style=social)](https://github.com/YOUR_USERNAME/mihansolo_bot)
+[![GitHub stars](https://img.shields.io/github/stars/montypylons/mihansolo_bot?style=social)](https://github.com/montypylons/mihansolo_bot)
 [![Lichess](https://img.shields.io/badge/Play%20on-Lichess-green?logo=lichess)](https://lichess.org/@/MihanSolo)
 
 ---
