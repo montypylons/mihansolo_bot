@@ -13,9 +13,8 @@
 
 ## Play 
 
-- [Play vs @MihanSolo (latest build)](https://lichess.org/@/MihanSolo)
-   [Play vs @MihanSolo2, which is a older version than MihanSolo, used for testing](https://lichess.org/@/MihanSolo2)
-- Use one of the releases, most contain prebuilt binaries and source code
+- [Play @ Lichess](https://lichess.org/@/MihanSolo)
+- Or Use one of the releases, most contain prebuilt binaries and source code
 
 ---
 
