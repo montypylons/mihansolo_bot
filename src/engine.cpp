@@ -421,12 +421,12 @@ namespace engine // TODO: add iterative deepening tests
     /**
      * Start the UCI input/output loop, doesn't have all the options yet but working on it :D
      */
-    void start_uci()
+    void start_uci(std::istream& in = std::cin)
     {
         chess::Board board;
         std::string line;
 
-        while (std::getline(std::cin, line))
+        while (std::getline(in, line))
         {
             std::istringstream iss(line);
             std::string token;
@@ -471,6 +471,8 @@ namespace engine // TODO: add iterative deepening tests
                     fen.pop_back(); // remove trailing space
                     board.setFen(fen);
                     manager = TimeManagement::TimeManager(~board.sideToMove());
+                    // chess::Color is defined as an enum with WHITE = 0 and BLACK = 1,
+                    // which is contradictory to how TimeManager is implemented, so we have to invert it using ~.
                     manager_exists = true;
                 }
 
