@@ -18,7 +18,7 @@ DEBUG    <UciProtocol (pid=21188)>: >> bestmove 0000
 
 ### What is the issue?
 
-- Engine returning bestmove 0000 and consequently timing out
+- Engine returning ```bestmove 0000``` and consequently timing out
 
 <details>
   <summary>How to reproduce</summary>
