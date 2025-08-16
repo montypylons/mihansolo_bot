@@ -14,7 +14,7 @@
 #include "tt.hpp"
 #include "timemanagement.hpp"
 
-namespace engine // TODO: add iterative deepening tests
+namespace engine
 {
     constexpr int MAX_EXTENSIONS = 0; // BUG: extensions cause node explosion
     constexpr int QUIESCENCE_DEPTH = 0;
@@ -90,7 +90,6 @@ namespace engine // TODO: add iterative deepening tests
     {
         if (manager.has_value() && !manager->time_remaining())
         {
-            puts("aborted [93]");
             abort_due_to_time = true;
             return 0;
         }
@@ -235,19 +234,9 @@ namespace engine // TODO: add iterative deepening tests
         // time management
         if (manager.has_value() && !manager->time_remaining())
         {
-            puts("aborted [238]");
             abort_due_to_time = true;
             return std::make_tuple(0, chess::Move::NO_MOVE);
         }
-        puts("nega started [242]");
-        std::cout << "nega parameters [243]" << std::endl;
-        std::cout << "alpha: " << alpha << std::endl;
-        std::cout << "beta: " << beta << std::endl;
-        std::cout << "depth: " << depth << std::endl;
-        std::cout << "ply: " << ply << std::endl;
-        std::cout << "board FEN: " << board.getFen() << std::endl;
-        std::cout << "last move: " << chess::uci::moveToUci(last_move) << std::endl;
-        std::cout << "PV Move: " << chess::uci::moveToUci(PV_Move) << std::endl;
 
         // transposition table stuff starts
         const int alpha_original = alpha;
@@ -262,18 +251,9 @@ namespace engine // TODO: add iterative deepening tests
         if (depth == 0 || game_over(board)) // NOLINT
         {
             int leaf_eval{QuiescenceSearch(alpha, beta, board, ply)};
-            std::cout << std::boolalpha;
-            std::cout << "Game over status: " << game_over(board) << std::endl;
-            std::cout << "Repetition: " << board.isRepetition() << std::endl;
-            std::cout << "Repetition (count = 1): " << board.isRepetition(1) << std::endl;
-
-            std::cout << "Depth " << depth << std::endl;
-            std::cout << "Returning move [351] " << chess::uci::moveToUci(last_move) <<
-                std::endl;
             return std::make_tuple(leaf_eval, last_move);
         }
-
-        // NOLINTBEGIN (linter says this is unreachable for some reason)
+        // NOLINTBEGIN
         chess::Move best_move = chess::Move::NO_MOVE;
         int best_eval = std::numeric_limits<int>::min();
 
@@ -356,10 +336,7 @@ namespace engine // TODO: add iterative deepening tests
         table1.put(zobrist_key, best_move, depth, best_eval, node_type);
         // End transposition table stuff
 
-        std::cout << "Returning move [351]: " << chess::uci::moveToUci(best_move) << std::endl;
-
         return std::make_tuple(best_eval, best_move);
-
         // NOLINTEND
     }
 
@@ -374,7 +351,6 @@ namespace engine // TODO: add iterative deepening tests
     std::string search(const std::optional<chess::Board>& fen,
                        const std::optional<TimeManagement::TimeManager>& manager1, const int default_depth)
     {
-        puts("search [354]");
         manager_exists = manager1.has_value();
         int depth = 1;
         int previous_eval = 0;
@@ -399,23 +375,15 @@ namespace engine // TODO: add iterative deepening tests
             int eval = 0;
             while (manager1->time_remaining()) // Iterative deepening
             {
-                puts("search [379]");
                 auto result = negamax(PV_Move, table, board, initial_alpha, initial_beta,
                                       chess::Move::NO_MOVE, depth,
                                       0);
-                puts("search [383]");
                 returned_move = std::get<1>(result);
-                std::cout << "negamax with depth " << depth << " board FEN " << board.getFen() << " PV Move: " <<
-                    chess::uci::moveToUci(PV_Move) << " alpha " << initial_alpha << " beta " << initial_beta
-                    << std::endl;
-                std::cout << "returned [389]: " << chess::uci::moveToUci(returned_move) << std::endl;
                 eval = std::get<0>(result);
 
 
                 if (!abort_due_to_time) // prevents using corrupted moves
                 {
-                    puts("no abort [393]");
-                    std::cout << "Setting PV Move to " << chess::uci::moveToUci(returned_move) << std::endl;
                     PV_Move = returned_move;
                     previous_eval = eval;
                 }
