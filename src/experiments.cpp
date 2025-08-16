@@ -168,15 +168,16 @@ void test()
 {
     auto table = TranspositionTable();
     auto board = chess::Board("8/5ppp/4n3/R3k3/6P1/2r4P/5PK1/8 b - - 15 49");
-    std::cout << chess::uci::moveToUci(std::get<1>(engine::negamax(chess::Move::NO_MOVE, table, board,
-                                                                   engine::initial_alpha, engine::initial_beta,
-                                                                   chess::Move::NO_MOVE, 1, 0))) << std::endl;
+    const auto result = engine::negamax(chess::Move::NO_MOVE, table, board,
+                                        engine::initial_alpha, engine::initial_beta,
+                                        chess::Move::NO_MOVE, 1, 0);
+    std::cout << chess::uci::moveToUci(std::get<1>(result)) << std::endl;
     // std::cout << "NULL_MOVE (UCI representation): " << chess::uci::moveToUci(chess::Move::NULL_MOVE) << std::endl;
     // std::cout << "NO_MOVE (UCI representation): " << chess::uci::moveToUci(chess::Move::NO_MOVE) << std::endl;
 }
 
 int main()
 {
-    test();
+    experiments();
     return 0;
 }
