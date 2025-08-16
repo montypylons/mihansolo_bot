@@ -13,7 +13,8 @@ a8d8 g2f3 e2d2 f1d1 c6e5 f3g2 d2d3 b2d4 e5f3 g2f3 d3f3 g1g2 f3a3 b4b5 f6e4 c5c6 
 a3a6 d1c1 a6a4 d4a7 a4a7 b1b7 a7a2 b7c7 a2a8 c7d7 e4g5 c6c7 d8c8 d7d5 g5e6 d5d7 a8a7 c1d1
 a7c7 d7c7 c8c7 d1d6 g8f8 d6a6 c7c3 a6a8 f8e7 a8a7 e7f6 a7a6 f6e5 a6a5 e5e4 a5a4 e4e5 a4a5
 go wtime 125250 btime 15019 winc 1000 binc 1000
-DEBUG    <UciProtocol (pid=21188)>: >> bestmove 0000 ```
+DEBUG    <UciProtocol (pid=21188)>: >> bestmove 0000 
+```
 
 ### What is the issue?
 
