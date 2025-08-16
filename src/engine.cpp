@@ -239,6 +239,16 @@ namespace engine // TODO: add iterative deepening tests
             abort_due_to_time = true;
             return std::make_tuple(0, chess::Move::NO_MOVE);
         }
+
+        std::cout << "nega parameters [242]" << std::endl;
+        std::cout << "alpha: " << alpha << std::endl;
+        std::cout << "beta: " << beta << std::endl;
+        std::cout << "depth: " << depth << std::endl;
+        std::cout << "ply: " << ply << std::endl;
+        std::cout << "board FEN: " << board.getFen() << std::endl;
+        std::cout << "last move: " << chess::uci::moveToUci(last_move) << std::endl;
+        std::cout << "PV Move: " << chess::uci::moveToUci(PV_Move) << std::endl;
+
         puts("nega started [241]");
         // transposition table stuff starts
         const int alpha_original = alpha;
@@ -386,7 +396,8 @@ namespace engine // TODO: add iterative deepening tests
                 puts("search [383]");
                 returned_move = std::get<1>(result);
                 std::cout << "negamax with depth " << depth << " board FEN " << board.getFen() << " PV Move: " <<
-                    chess::uci::moveToUci(PV_Move) << std::endl;
+                    chess::uci::moveToUci(PV_Move) << " alpha " << initial_alpha << " beta " << initial_beta
+                    << std::endl;
                 std::cout << "returned [389]: " << chess::uci::moveToUci(returned_move) << std::endl;
                 eval = std::get<0>(result);
 

@@ -171,13 +171,12 @@ void test()
     std::cout << chess::uci::moveToUci(std::get<1>(engine::negamax(chess::Move::NO_MOVE, table, board,
                                                                    engine::initial_alpha, engine::initial_beta,
                                                                    chess::Move::NO_MOVE, 1, 0))) << std::endl;
-    std::cout << "null move: " << chess::uci::moveToUci(chess::Move::NULL_MOVE) << std::endl;
-    std::cout << "NO_MOVE"
+    // std::cout << "NULL_MOVE (UCI representation): " << chess::uci::moveToUci(chess::Move::NULL_MOVE) << std::endl;
+    // std::cout << "NO_MOVE (UCI representation): " << chess::uci::moveToUci(chess::Move::NO_MOVE) << std::endl;
 }
 
 int main()
 {
-    experiments();
     test();
     return 0;
 }
