@@ -421,7 +421,7 @@ namespace engine // TODO: add iterative deepening tests
     /**
      * Start the UCI input/output loop, doesn't have all the options yet but working on it :D
      */
-    void start_uci(std::istream& in = std::cin)
+    void start_uci(std::istream& in)
     {
         chess::Board board;
         std::string line;
