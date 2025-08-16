@@ -20,7 +20,7 @@ DEBUG    <UciProtocol (pid=21188)>: >> bestmove 0000
 - Engine returning bestmove 0000 and consequently timing out
 
 <details>
-  <summary>### UCI commands needed to reproduce</summary>
+  <summary>How to reproduce</summary>
 
 ```ucinewgame
 isready
