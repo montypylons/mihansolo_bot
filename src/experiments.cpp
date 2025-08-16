@@ -130,75 +130,12 @@ void bench()
 
 void experiments()
 {
-    auto board = chess::Board("k7/2q5/8/8/8/4Q3/8/1K6 w - - 0 1");
-    std::cout << "auto board = chess::Board(\"k7/2q5/8/8/8/4Q3/8/1K6 w - - 0 1\");" << std::endl;
-    std::cout << "board.isRepetition(1)" << std::endl;
-    std::cout << board.isRepetition(1) << std::endl;
-    std::cout << "board.isRepetition(2)" << std::endl;
-    std::cout << board.isRepetition(2) << std::endl;
-
-    board.makeMove(chess::uci::parseSan(board, "Qa3"));
-    std::cout << board.getFen() << std::endl << std::endl;
-    std::cout << "board.isRepetition(1)" << std::endl;
-    std::cout << board.isRepetition(1) << std::endl;
-    std::cout << "board.isRepetition(2)" << std::endl;
-    std::cout << board.isRepetition(2) << std::endl;
-
-    board.makeMove(chess::uci::parseSan(board, "Kb8"));
-    std::cout << board.getFen() << std::endl << std::endl;
-    std::cout << "board.isRepetition(1)" << std::endl;
-    std::cout << board.isRepetition(1) << std::endl;
-    std::cout << "board.isRepetition(2)" << std::endl;
-    std::cout << board.isRepetition(2) << std::endl;
-
-    board.makeMove(chess::uci::parseSan(board, "Qb3"));
-    std::cout << board.getFen() << std::endl << std::endl;
-    std::cout << "board.isRepetition(1)" << std::endl;
-    std::cout << board.isRepetition(1) << std::endl;
-    std::cout << "board.isRepetition(2)" << std::endl;
-    std::cout << board.isRepetition(2) << std::endl;
-
-    board.makeMove(chess::uci::parseSan(board, "Ka8"));
-    std::cout << board.getFen() << std::endl << std::endl;
-    std::cout << "board.isRepetition(1)" << std::endl;
-    std::cout << board.isRepetition(1) << std::endl;
-    std::cout << "board.isRepetition(2)" << std::endl;
-    std::cout << board.isRepetition(2) << std::endl;
-
-    board.makeMove(chess::uci::parseSan(board, "Qa3"));
-    std::cout << board.getFen() << std::endl << std::endl;
-    std::cout << "board.isRepetition(1)" << std::endl;
-    std::cout << board.isRepetition(1) << std::endl;
-    std::cout << "board.isRepetition(2)" << std::endl;
-    std::cout << board.isRepetition(2) << std::endl;
-
-    board.makeMove(chess::uci::parseSan(board, "Kb8"));
-    std::cout << board.getFen() << std::endl << std::endl;
-    std::cout << "board.isRepetition(1)" << std::endl;
-    std::cout << board.isRepetition(1) << std::endl;
-    std::cout << "board.isRepetition(2)" << std::endl;
-    std::cout << board.isRepetition(2) << std::endl;
-
-    board.makeMove(chess::uci::parseSan(board, "Qb3"));
-    std::cout << board.getFen() << std::endl << std::endl;
-    std::cout << "board.isRepetition(1)" << std::endl;
-    std::cout << board.isRepetition(1) << std::endl;
-    std::cout << "board.isRepetition(2)" << std::endl;
-    std::cout << board.isRepetition(2) << std::endl;
-
-    board.makeMove(chess::uci::parseSan(board, "Ka8"));
-    std::cout << board.getFen() << std::endl << std::endl;
-    std::cout << "board.isRepetition(1)" << std::endl;
-    std::cout << board.isRepetition(1) << std::endl;
-    std::cout << "board.isRepetition(2)" << std::endl;
-    std::cout << board.isRepetition(2) << std::endl;
-
-    board.makeMove(chess::uci::parseSan(board, "Qa3"));
-    std::cout << board.getFen() << std::endl << std::endl;
-    std::cout << "board.isRepetition(1)" << std::endl;
-    std::cout << board.isRepetition(1) << std::endl;
-    std::cout << "board.isRepetition(2)" << std::endl;
-    std::cout << board.isRepetition(2) << std::endl;
+    const auto data =
+        "position startpos moves c2c4 e7e5 d2d3 b8c6 g1f3 g8f6 a2a3 f8c5 b2b4 c5d4 f3d4 e5d4 g2g3 d7d5 f1g2 c8f5 e1g1 e8g8 b1d2 f8e8 c1b2 f5g4 f1e1 d8d6 c4c5 d6e5 d2f3 g4f3 g2f3 e5f5 f3g2 f6g4 e1f1 f5h5 h2h3 g4f6 g3g4 h5e5 d1d2 e5e2 d2e2 e8e2 a1b1 a8d8 g2f3 e2d2 f1d1 c6e5 f3g2 d2d3 b2d4 e5f3 g2f3 d3f3 g1g2 f3a3 b4b5 f6e4 c5c6 b7c6 b5c6 a3a6 d1c1 a6a4 d4a7 a4a7 b1b7 a7a2 b7c7 a2a8 c7d7 e4g5 c6c7 d8c8 d7d5 g5e6 d5d7 a8a7 c1d1 a7c7 d7c7 c8c7 d1d6 g8f8 d6a6 c7c3 a6a8 f8e7 a8a7 e7f6 a7a6 f6e5 a6a5 e5e4 a5a4 e4e5 a4a5\ngo wtime 125250 btime 15019 winc 1000 binc 1000";
+    auto input = std::istringstream(data);
+    auto output = std::ostringstream();
+    engine::start_uci(input, output);
+    std::cout << output.str();
 }
 
 
@@ -227,8 +164,20 @@ void debugGame()
     engine::search(board1, std::nullopt, 12);
 }
 
+void test()
+{
+    auto table = TranspositionTable();
+    auto board = chess::Board("8/5ppp/4n3/R3k3/6P1/2r4P/5PK1/8 b - - 15 49");
+    std::cout << chess::uci::moveToUci(std::get<1>(engine::negamax(chess::Move::NO_MOVE, table, board,
+                                                                   engine::initial_alpha, engine::initial_beta,
+                                                                   chess::Move::NO_MOVE, 1, 0))) << std::endl;
+    std::cout << "null move: " << chess::uci::moveToUci(chess::Move::NULL_MOVE) << std::endl;
+    std::cout << "NO_MOVE"
+}
+
 int main()
 {
-    debugGame();
+    experiments();
+    test();
     return 0;
 }

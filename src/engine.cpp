@@ -13,8 +13,6 @@
 #include "utils.hpp"
 #include "tt.hpp"
 #include "timemanagement.hpp"
-#include <iomanip>
-// TODO: SPRT this build against current production build.
 
 namespace engine // TODO: add iterative deepening tests
 {
@@ -92,6 +90,7 @@ namespace engine // TODO: add iterative deepening tests
     {
         if (manager.has_value() && !manager->time_remaining())
         {
+            puts("aborted [93]");
             abort_due_to_time = true;
             return 0;
         }
@@ -236,9 +235,11 @@ namespace engine // TODO: add iterative deepening tests
         // time management
         if (manager.has_value() && !manager->time_remaining())
         {
+            puts("aborted [238]");
             abort_due_to_time = true;
             return std::make_tuple(0, chess::Move::NO_MOVE);
         }
+        puts("nega started [241]");
         // transposition table stuff starts
         const int alpha_original = alpha;
         const auto zobrist_key = board.hash();
@@ -353,6 +354,7 @@ namespace engine // TODO: add iterative deepening tests
     std::string search(const std::optional<chess::Board>& fen,
                        const std::optional<TimeManagement::TimeManager>& manager1, const int default_depth)
     {
+        puts("search [354]");
         manager_exists = manager1.has_value();
         int depth = 1;
         int previous_eval = 0;
@@ -361,7 +363,7 @@ namespace engine // TODO: add iterative deepening tests
         abort_due_to_time = false;
         chess::Board board;
         chess::Move PV_Move = chess::Move::NO_MOVE;
-        chess::Move returned_move{};
+        chess::Move returned_move = chess::Move::NO_MOVE;
 
         if (fen.has_value())
         {
@@ -377,16 +379,22 @@ namespace engine // TODO: add iterative deepening tests
             int eval = 0;
             while (manager1->time_remaining()) // Iterative deepening
             {
+                puts("search [379]");
                 auto result = negamax(PV_Move, table, board, initial_alpha, initial_beta,
                                       chess::Move::NO_MOVE, depth,
                                       0);
-
+                puts("search [383]");
                 returned_move = std::get<1>(result);
+                std::cout << "negamax with depth " << depth << " board FEN " << board.getFen() << " PV Move: " <<
+                    chess::uci::moveToUci(PV_Move) << std::endl;
+                std::cout << "returned [389]: " << chess::uci::moveToUci(returned_move) << std::endl;
                 eval = std::get<0>(result);
 
 
                 if (!abort_due_to_time) // prevents using corrupted moves
                 {
+                    puts("no abort [393]");
+                    std::cout << "Setting PV Move to " << chess::uci::moveToUci(returned_move) << std::endl;
                     PV_Move = returned_move;
                     previous_eval = eval;
                 }
@@ -408,7 +416,7 @@ namespace engine // TODO: add iterative deepening tests
             }
         }
 
-        if (returned_move == chess::Move::NO_MOVE)
+        if (PV_Move == chess::Move::NO_MOVE)
         {
             return "0000";
         }
@@ -421,7 +429,7 @@ namespace engine // TODO: add iterative deepening tests
     /**
      * Start the UCI input/output loop, doesn't have all the options yet but working on it :D
      */
-    void start_uci(std::istream& in)
+    void start_uci(std::istream& in, std::ostream& out)
     {
         chess::Board board;
         std::string line;
@@ -434,21 +442,21 @@ namespace engine // TODO: add iterative deepening tests
 
             if (token == "uci")
             {
-                std::cout << "id name MihanSolo\n";
-                std::cout << "id author Mihin Benaragama\n";
-                std::cout << "option name Hash type spin default 16 min 1 max 1024\n";
-                std::cout << "option name Threads type spin default 1 min 1 max 16\n";
-                std::cout << "option name Move Overhead type spin default 30 min 0 max 5000\n";
-                std::cout << "option name UCI_ShowWDL type check default false\n";
-                std::cout << "option name Ponder type check default false\n";
-                std::cout << "option name UCI_AnalyseMode type check default false\n";
-                std::cout << "option name UCI_LimitStrength type check default false\n";
-                std::cout << "option name UCI_Elo type spin default 1350 min 1350 max 2850\n";
-                std::cout << "uciok\n";
+                out << "id name MihanSolo\n";
+                out << "id author Mihin Benaragama\n";
+                out << "option name Hash type spin default 16 min 1 max 1024\n";
+                out << "option name Threads type spin default 1 min 1 max 16\n";
+                out << "option name Move Overhead type spin default 30 min 0 max 5000\n";
+                out << "option name UCI_ShowWDL type check default false\n";
+                out << "option name Ponder type check default false\n";
+                out << "option name UCI_AnalyseMode type check default false\n";
+                out << "option name UCI_LimitStrength type check default false\n";
+                out << "option name UCI_Elo type spin default 1350 min 1350 max 2850\n";
+                out << "uciok\n";
             }
             else if (token == "isready")
             {
-                std::cout << "readyok\n";
+                out << "readyok\n";
             }
             else if (token == "position")
             {
@@ -513,7 +521,7 @@ namespace engine // TODO: add iterative deepening tests
                 }
 
                 auto bestmove = search(board, manager);
-                std::cout << "bestmove " << bestmove << "\n";
+                out << "bestmove " << bestmove << "\n";
             }
             else if (token == "quit")
             {
@@ -525,7 +533,7 @@ namespace engine // TODO: add iterative deepening tests
             }
             else
             {
-                std::cout << "info string unknown command: " << line << "\n";
+                out << "info string unknown command: " << line << "\n";
             }
         }
     }
