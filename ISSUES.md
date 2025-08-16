@@ -1,6 +1,6 @@
 # Issues
 
-## [Game uPddlrCS](https://lichess.org/uPddlrCS)
+## [Game ```uPddlrCS```](https://lichess.org/uPddlrCS)
 
 ### Relevant section of lichess-bot logs
 
