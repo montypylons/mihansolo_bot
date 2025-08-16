@@ -68,7 +68,7 @@ namespace engine // TODO: add iterative deepening tests
     {
         chess::Movelist moves;
         chess::movegen::legalmoves(moves, board);
-        if (moves.empty() || board.isHalfMoveDraw() || board.isInsufficientMaterial() || board.isRepetition(1))
+        if (moves.empty() || board.isHalfMoveDraw() || board.isInsufficientMaterial() || board.isRepetition())
         {
             return true;
         }
@@ -239,8 +239,8 @@ namespace engine // TODO: add iterative deepening tests
             abort_due_to_time = true;
             return std::make_tuple(0, chess::Move::NO_MOVE);
         }
-
-        std::cout << "nega parameters [242]" << std::endl;
+        puts("nega started [242]");
+        std::cout << "nega parameters [243]" << std::endl;
         std::cout << "alpha: " << alpha << std::endl;
         std::cout << "beta: " << beta << std::endl;
         std::cout << "depth: " << depth << std::endl;
@@ -249,7 +249,6 @@ namespace engine // TODO: add iterative deepening tests
         std::cout << "last move: " << chess::uci::moveToUci(last_move) << std::endl;
         std::cout << "PV Move: " << chess::uci::moveToUci(PV_Move) << std::endl;
 
-        puts("nega started [241]");
         // transposition table stuff starts
         const int alpha_original = alpha;
         const auto zobrist_key = board.hash();
@@ -263,6 +262,14 @@ namespace engine // TODO: add iterative deepening tests
         if (depth == 0 || game_over(board)) // NOLINT
         {
             int leaf_eval{QuiescenceSearch(alpha, beta, board, ply)};
+            std::cout << std::boolalpha;
+            std::cout << "Game over status: " << game_over(board) << std::endl;
+            std::cout << "Repetition: " << board.isRepetition() << std::endl;
+            std::cout << "Repetition (count = 1): " << board.isRepetition(1) << std::endl;
+
+            std::cout << "Depth " << depth << std::endl;
+            std::cout << "Returning move [351] " << chess::uci::moveToUci(last_move) <<
+                std::endl;
             return std::make_tuple(leaf_eval, last_move);
         }
 
@@ -349,7 +356,10 @@ namespace engine // TODO: add iterative deepening tests
         table1.put(zobrist_key, best_move, depth, best_eval, node_type);
         // End transposition table stuff
 
+        std::cout << "Returning move [351]: " << chess::uci::moveToUci(best_move) << std::endl;
+
         return std::make_tuple(best_eval, best_move);
+
         // NOLINTEND
     }
 
