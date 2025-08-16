@@ -31,7 +31,7 @@ namespace engine
     inline bool game_over(const chess::Board& board);
 
     // UCI protocol loop
-    void start_uci();
+    void start_uci(std::istream& in = std::cin);
 
     inline bool is_promotion(const chess::Move& move);
     inline bool is_pawns_near_promotion(const chess::Board& board);
