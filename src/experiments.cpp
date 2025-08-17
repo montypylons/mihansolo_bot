@@ -130,38 +130,15 @@ void bench()
 
 void experiments()
 {
-    const auto data =
-        "position startpos moves c2c4 e7e5 d2d3 b8c6 g1f3 g8f6 a2a3 f8c5 b2b4 c5d4 f3d4 e5d4 g2g3 d7d5 f1g2 c8f5 e1g1 e8g8 b1d2 f8e8 c1b2 f5g4 f1e1 d8d6 c4c5 d6e5 d2f3 g4f3 g2f3 e5f5 f3g2 f6g4 e1f1 f5h5 h2h3 g4f6 g3g4 h5e5 d1d2 e5e2 d2e2 e8e2 a1b1 a8d8 g2f3 e2d2 f1d1 c6e5 f3g2 d2d3 b2d4 e5f3 g2f3 d3f3 g1g2 f3a3 b4b5 f6e4 c5c6 b7c6 b5c6 a3a6 d1c1 a6a4 d4a7 a4a7 b1b7 a7a2 b7c7 a2a8 c7d7 e4g5 c6c7 d8c8 d7d5 g5e6 d5d7 a8a7 c1d1 a7c7 d7c7 c8c7 d1d6 g8f8 d6a6 c7c3 a6a8 f8e7 a8a7 e7f6 a7a6 f6e5 a6a5 e5e4 a5a4 e4e5 a4a5\ngo wtime 125250 btime 15019 winc 1000 binc 1000";
-    auto input = std::istringstream(data);
+    const auto commands =
+        "position startpos moves e2e3\ngo movetime 10000\nsetoption name Ponder value true\nposition startpos moves e2e3 b8c6 b1c3\ngo wtime 60470 btime 57999 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4\ngo wtime 61290 btime 55489 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4\ngo wtime 62100 btime 53109 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4\ngo wtime 62910 btime 50849 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1\ngo wtime 63710 btime 48699 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3\ngo wtime 64520 btime 46659 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3\ngo wtime 65330 btime 44719 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3\ngo wtime 66130 btime 42879 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3 b4c2 e1e2\ngo wtime 66950 btime 41129 winc 1000 binc 1000";
+    auto input = std::istringstream(commands);
     auto output = std::ostringstream();
     engine::start_uci(input, output);
-    std::cout << output.str();
-}
+    std::cout << "Engine output (best moves): " << std::endl;
+    std::cout << output.str() << std::endl;
+    std::cout << "EXPECTED ON LAST LINE: d4d3" << std::endl;
 
-
-void debugGame()
-{
-    auto manager = TimeManagement::TimeManager(false);
-    auto board1 = chess::Board("8/3r2p1/1k2K1Pp/8/5P1P/8/8/8 b - - 1 48");
-    manager.go(100'000, 44'900, 3'000, 3'000);
-    // setup over
-
-    const auto searched_move = chess::uci::uciToMove(board1, engine::search(board1, manager, 100));
-    const auto searched_move_SAN = chess::uci::moveToSan(board1, searched_move);
-    std::cout << "Board FEN: " << board1.getFen() << std::endl;
-
-    std::cout << "Engine made move: " << searched_move_SAN
-        << std::endl;
-
-
-    board1.makeMove(searched_move);
-
-    std::cout << "Evaluating board after move " << searched_move_SAN
-        << ": " << board1.getFen() << std::endl;
-
-    std::cout << "This should return a non-drawn eval: " << std::endl;
-    std::cout << "Engine output: ";
-    engine::search(board1, std::nullopt, 12);
 }
 
 void test()
