@@ -5,6 +5,16 @@
 
 struct TTEntry; // TODO: get tests for TT
 
+int scoreFromTT(const int score, const int ply)
+{
+    return score > 10'000 ? score - ply : score < -10'000 ? score + ply : score;
+}
+
+int scoreToTT(const int score, const int ply)
+{
+    return score > 10'000 ? score + ply : score < -10'000 ? score - ply : score;
+}
+
 
 /**
  *
@@ -13,23 +23,25 @@ struct TTEntry; // TODO: get tests for TT
  * @param depth Current search depth
  * @param score Believed score of current board (from the side-to-move's POV)
  * @param node_type What type of node this is - NodeType::LOWERBOUND, NodeType::UPPERBOUND, or NodeType::EXACT
+ * @param ply
  */
 void TranspositionTable::put(const uint64_t zobrist_key,
                              const chess::Move& best_move,
                              const int depth,
                              const int score,
-                             const NodeType node_type)
+                             const NodeType node_type, const int ply)
 {
     if (const int index = address_calc(zobrist_key); !find(zobrist_key) || depth >= table[index].depth)
     {
-        table[index] = TTEntry{zobrist_key, best_move, depth, score, node_type};
+        table[index] = TTEntry{zobrist_key, best_move, depth, scoreToTT(score, ply), node_type};
     }
 }
 
-[[nodiscard]] std::optional<TTEntry> TranspositionTable::get(const uint64_t zobrist_key) const
+[[nodiscard]] std::optional<TTEntry> TranspositionTable::get(const uint64_t zobrist_key, const int ply) const
 {
     if (auto found_entry = table[address_calc(zobrist_key)]; found_entry.zobrist_key == zobrist_key)
     {
+        found_entry.score = scoreFromTT(found_entry.score, ply);
         return found_entry;
     }
     return std::nullopt;

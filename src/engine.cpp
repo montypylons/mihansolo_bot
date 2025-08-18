@@ -96,7 +96,8 @@ namespace engine
         nodes++;
 
         const uint64_t zobrist = board.hash();
-        if (const auto ttEntry = table.find_usable_entry(alpha, beta, QUIESCENCE_DEPTH, zobrist); ttEntry.has_value())
+        if (const auto ttEntry = table.find_usable_entry(alpha, beta, QUIESCENCE_DEPTH, zobrist, ply); ttEntry.
+            has_value())
         {
             return std::get<0>(ttEntry.value());
         }
@@ -131,7 +132,7 @@ namespace engine
 
             if (score >= beta)
             {
-                table.put(zobrist, chess::Move::NO_MOVE, QUIESCENCE_DEPTH, score, NodeType::LOWERBOUND);
+                table.put(zobrist, chess::Move::NO_MOVE, QUIESCENCE_DEPTH, score, NodeType::LOWERBOUND, ply);
                 return score;
             }
             if (score > best_value)
@@ -157,7 +158,7 @@ namespace engine
             node_type = NodeType::EXACT;
         }
 
-        table.put(zobrist, chess::Move::NO_MOVE, QUIESCENCE_DEPTH, best_value, node_type);
+        table.put(zobrist, chess::Move::NO_MOVE, QUIESCENCE_DEPTH, best_value, node_type, ply);
 
         return best_value;
     }
@@ -242,7 +243,8 @@ namespace engine
         const int alpha_original = alpha;
         const auto zobrist_key = board.hash();
 
-        if (auto TTResult = table1.find_usable_entry(alpha_original, beta, depth, zobrist_key); TTResult.has_value())
+        if (auto TTResult = table1.find_usable_entry(alpha_original, beta, depth, zobrist_key, ply); TTResult.
+            has_value())
         {
             return TTResult.value();
         }
@@ -315,7 +317,7 @@ namespace engine
                 {
                     history[board.sideToMove()][move.from().index()][move.to().index()] += depth * depth;
                 }
-                table1.put(zobrist_key, best_move, depth, best_eval, NodeType::LOWERBOUND);
+                table1.put(zobrist_key, best_move, depth, best_eval, NodeType::LOWERBOUND, ply);
                 return std::make_tuple(best_eval, best_move);
             }
         }
@@ -333,7 +335,7 @@ namespace engine
         {
             node_type = NodeType::EXACT;
         }
-        table1.put(zobrist_key, best_move, depth, best_eval, node_type);
+        table1.put(zobrist_key, best_move, depth, best_eval, node_type, ply);
         // End transposition table stuff
 
         return std::make_tuple(best_eval, best_move);

@@ -22,6 +22,10 @@ struct TTEntry_eval
     int score;
 };
 
+int scoreFromTT(int score, int ply);
+int scoreToTT(int score, int ply);
+
+
 class TranspositionTable
 {
 public:
@@ -31,14 +35,14 @@ public:
              const chess::Move& best_move,
              int depth,
              int score,
-             NodeType node_type);
+             NodeType node_type, int ply);
 
     [[nodiscard]] std::optional<std::tuple<int, chess::Move>> find_usable_entry(
         const int original_alpha,
         const int beta, const int depth,
-        const uint64_t zobrist_key) const
+        const uint64_t zobrist_key, const int ply)
     {
-        if (auto ttEntry = get(zobrist_key); ttEntry.has_value() && ttEntry->depth >= depth)
+        if (auto ttEntry = get(zobrist_key, ply); ttEntry.has_value() && ttEntry->depth >= depth)
         {
             if (ttEntry->node_type == NodeType::EXACT || (ttEntry->node_type == NodeType::LOWERBOUND && ttEntry->score
                 >= beta) || (ttEntry->node_type == NodeType::UPPERBOUND && ttEntry->score <= original_alpha))
@@ -49,7 +53,7 @@ public:
         return std::nullopt;
     }
 
-    [[nodiscard]] std::optional<TTEntry> get(uint64_t zobrist_key) const;
+    [[nodiscard]] std::optional<TTEntry> get(uint64_t zobrist_key, int ply) const;
     [[nodiscard]] bool find(uint64_t zobrist_key) const;
 
 private:

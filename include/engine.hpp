@@ -29,6 +29,7 @@ namespace engine
                                          const int& depth, const int& ply, int numExtensions = 0);
     // Game over detection
     inline bool game_over(const chess::Board& board);
+    extern TranspositionTable table;
 
     // UCI protocol loop
     void start_uci(std::istream& in = std::cin, std::ostream& out = std::cout);
@@ -39,7 +40,6 @@ namespace engine
     const extern int initial_alpha;
     const extern int initial_beta;
 
-    extern TranspositionTable table;
     extern std::optional<TimeManagement::TimeManager> manager;
     extern bool abort_due_to_time;
 }
