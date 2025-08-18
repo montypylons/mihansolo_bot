@@ -386,6 +386,8 @@ namespace engine
                 {
                     PV_Move = returned_move;
                     previous_eval = eval;
+                    std::cout << "Final move on iteration/depth " << depth << " is " << chess::uci::moveToUci(
+                        returned_move) << std::endl;
                 }
 
                 depth++;
