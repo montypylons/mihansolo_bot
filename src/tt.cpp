@@ -5,14 +5,22 @@
 
 struct TTEntry; // TODO: get tests for TT
 
+constexpr int MATE_EVAL = 10'000;
+constexpr int MAX_PLY = 512;
+constexpr int MATE_THRESHOLD = MATE_EVAL - MAX_PLY;
+
 int scoreFromTT(const int score, const int ply)
 {
-    return score > 10'000 ? score - ply : score < -10'000 ? score + ply : score;
+    if (score >= MATE_THRESHOLD) return score - ply;
+    if (score <= -MATE_THRESHOLD) return score + ply;
+    return score;
 }
 
 int scoreToTT(const int score, const int ply)
 {
-    return score > 10'000 ? score + ply : score < -10'000 ? score - ply : score;
+    if (score >= MATE_THRESHOLD) return score + ply;
+    if (score <= -MATE_THRESHOLD) return score - ply;
+    return score;
 }
 
 
@@ -33,6 +41,13 @@ void TranspositionTable::put(const uint64_t zobrist_key,
 {
     if (const int index = address_calc(zobrist_key); !find(zobrist_key) || depth >= table[index].depth)
     {
+        if (zobrist_key == chess::Board("r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10").
+            zobrist())
+        {
+            std::cout << "Putting entry for hash 6E593CAF4948964C into TT with " << "move: " << chess::uci::moveToUci(
+                best_move) << std::endl;
+        }
+
         table[index] = TTEntry{zobrist_key, best_move, depth, scoreToTT(score, ply), node_type};
     }
 }
@@ -41,6 +56,13 @@ void TranspositionTable::put(const uint64_t zobrist_key,
 {
     if (auto found_entry = table[address_calc(zobrist_key)]; found_entry.zobrist_key == zobrist_key)
     {
+        if (zobrist_key == chess::Board("r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10").
+            zobrist())
+        {
+            std::cout << "Getting entry for hash 6E593CAF4948964C from TT with " << "move: " << chess::uci::moveToUci(
+                found_entry.best_move) << std::endl;
+        }
+
         found_entry.score = scoreFromTT(found_entry.score, ply);
         return found_entry;
     }
