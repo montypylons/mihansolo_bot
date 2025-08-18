@@ -58,17 +58,25 @@ namespace engine
         return move.typeOf() == chess::Move::PROMOTION;
     }
 
+    // NOLINTBEGIN
     /**
      *
      * @param board The current game state
      * @return If current node is terminal, i.e. the game has ended
      */
-
     inline bool game_over(const chess::Board& board)
     {
-        return std::get<0>(board.isGameOver()) != chess::GameResultReason::NONE;
+        chess::Movelist moves;
+        chess::movegen::legalmoves(moves, board);
+        if (moves.empty() || board.isHalfMoveDraw() || board.isInsufficientMaterial() || board.isRepetition())
+        {
+            return true;
+        }
+
+        return false;
     }
 
+    // NOLINTEND
 
     /**
      *
