@@ -350,6 +350,7 @@ namespace engine
             std::cout << "PV_Move: " << chess::uci::moveToUci(PV_Move) << std::endl;
             std::cout << "Last move: " << chess::uci::moveToUci(last_move) << std::endl;
             std::cout << "Best eval: " << best_eval << std::endl;
+            std::cout << "Ply: " << ply << std::endl;
         }
 
         table1.put(zobrist_key, best_move, depth, best_eval, node_type, ply);
