@@ -111,21 +111,36 @@ std::vector boards = {
     chess::Board("1R6/6pk/2p4p/3bP2r/5B1P/2P2qP1/P4P1Q/4R1K1 w - - 2 40"),
 };
 
-void bench()
+
+/* INVESTIGATE:
+ *
+ *
+* [source: negamax][line: 343] Putting entry for hash 6E593CAF4948964C into TT with move: c2a1
+ [source: line 347][source: negamax] Params:
+ FEN: r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10
+ Depth: 6
+ Alpha: 430
+ Beta: 2147483647
+ PV_Move: b4c2
+ Last move: e1e2
+ Best eval: 430
+ info depth 9 nodes 3014528 score cp 9997
+*/
+void negatest()
 {
-    constexpr double ITERATIONS = 100;
-
-    const auto start1 = std::chrono::high_resolution_clock::now();
-    for (int i = 0; i < ITERATIONS; i++)
-    {
-        evaluation::mobility_eval(boards[i]);
-    }
-    const auto end1 = std::chrono::high_resolution_clock::now();
-    const auto time_per_split_ms = std::chrono::duration_cast<std::chrono::nanoseconds>(end1 - start1).count() / (
-        ITERATIONS * 1'000'000.0);
-
-    std::cout << "Estimated mobility_eval cost:  " << time_per_split_ms * 23'858'041 / 1'000
-        << " s" << std::endl;
+    auto table = TranspositionTable();
+    auto board = chess::Board("r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10");
+    const auto result = engine::negamax(
+        chess::Move::make<chess::Move::NORMAL>(chess::Square::SQ_B4, chess::Square::SQ_C2),
+        table,
+        board,
+        430,
+        2147483647,
+        chess::Move::make<chess::Move::NORMAL>(chess::Square::SQ_E1, chess::Square::SQ_E2), 6,
+        2
+    );
+    std::cout << "Move: " << chess::uci::moveToUci(std::get<1>(result)) << std::endl;
+    std::cout << "Eval: " << std::get<0>(result) << std::endl;
 }
 
 void experiments()
@@ -142,20 +157,10 @@ void experiments()
     std::cout << "EXPECTED ON LAST LINE: d4d3" << std::endl;
 }
 
-void test()
-{
-    auto table = TranspositionTable();
-    auto board = chess::Board("8/5ppp/4n3/R3k3/6P1/2r4P/5PK1/8 b - - 15 49");
-    const auto result = engine::negamax(chess::Move::NO_MOVE, table, board,
-                                        engine::initial_alpha, engine::initial_beta,
-                                        chess::Move::NO_MOVE, 1, 0);
-    std::cout << chess::uci::moveToUci(std::get<1>(result)) << std::endl;
-    // std::cout << "NULL_MOVE (UCI representation): " << chess::uci::moveToUci(chess::Move::NULL_MOVE) << std::endl;
-    // std::cout << "NO_MOVE (UCI representation): " << chess::uci::moveToUci(chess::Move::NO_MOVE) << std::endl;
-}
 
 int main()
 {
     experiments();
+    negatest();
     return 0;
 }
