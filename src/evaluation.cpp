@@ -167,7 +167,7 @@ namespace evaluation
             if (const bool check = board.inCheck();
                 check)
             {
-                return -10000 + ply;
+                return -10'000 + ply;
             }
             return 0;
         }
