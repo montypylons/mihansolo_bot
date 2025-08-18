@@ -317,6 +317,7 @@ namespace engine
                 {
                     history[board.sideToMove()][move.from().index()][move.to().index()] += depth * depth;
                 }
+
                 table1.put(zobrist_key, best_move, depth, best_eval, NodeType::LOWERBOUND, ply);
                 return std::make_tuple(best_eval, best_move);
             }
@@ -335,6 +336,22 @@ namespace engine
         {
             node_type = NodeType::EXACT;
         }
+        if (zobrist_key == chess::Board("r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10").
+            zobrist() && best_move == chess::Move::make<
+                chess::Move::NORMAL>(chess::Square::SQ_C2, chess::Square::SQ_A1))
+        {
+            std::cout << "[source: negamax][line: 343] Putting entry for hash 6E593CAF4948964C into TT with " <<
+                "move: " << chess::uci::moveToUci(best_move) << std::endl;
+            std::cout << "[source: line 347][source: negamax] " << "Params: " << std::endl;
+            std::cout << "FEN: " << board.getFen() << std::endl;
+            std::cout << "Depth: " << depth << std::endl;
+            std::cout << "Alpha: " << alpha << std::endl;
+            std::cout << "Beta: " << beta << std::endl;
+            std::cout << "PV_Move: " << chess::uci::moveToUci(PV_Move) << std::endl;
+            std::cout << "Last move: " << chess::uci::moveToUci(last_move) << std::endl;
+            std::cout << "Best eval: " << best_eval << std::endl;
+        }
+
         table1.put(zobrist_key, best_move, depth, best_eval, node_type, ply);
         // End transposition table stuff
 
@@ -388,8 +405,6 @@ namespace engine
                 {
                     PV_Move = returned_move;
                     previous_eval = eval;
-                    std::cout << "Final move on iteration/depth " << depth << " is " << chess::uci::moveToUci(
-                        returned_move) << std::endl;
                 }
 
                 depth++;
