@@ -337,12 +337,14 @@ namespace engine
             node_type = NodeType::EXACT;
         }
         if (zobrist_key == chess::Board("r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10").
-            zobrist() && best_move == chess::Move::make<
-                chess::Move::NORMAL>(chess::Square::SQ_C2, chess::Square::SQ_A1))
+            zobrist() && (
+                (best_move == chess::Move::make<chess::Move::NORMAL>(chess::Square::SQ_C2, chess::Square::SQ_A1)) ||
+                (best_move == chess::Move::make<chess::Move::NORMAL>(chess::Square::SQ_D4, chess::Square::SQ_D3))))
         {
-            std::cout << "[source: negamax][line: 343] Putting entry for hash 6E593CAF4948964C into TT with " <<
-                "move: " << chess::uci::moveToUci(best_move) << std::endl;
-            std::cout << "[source: line 347][source: negamax] " << "Params: " << std::endl;
+            std::cout << "[source: negamax] [line: 343] Putting entry for hash 6E593CAF4948964C into TT with " <<
+                std::endl;
+            std::cout << "[source: line 346] [source: negamax] " << "Params: " << std::endl;
+            std::cout << "Move : " << chess::uci::moveToUci(best_move) << std::endl;
             std::cout << "FEN: " << board.getFen() << std::endl;
             std::cout << "Depth: " << depth << std::endl;
             std::cout << "Alpha: " << alpha << std::endl;
