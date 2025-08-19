@@ -41,13 +41,6 @@ void TranspositionTable::put(const uint64_t zobrist_key,
 {
     if (const int index = address_calc(zobrist_key); !find(zobrist_key) || depth >= table[index].depth)
     {
-        std::cout << "Putting TT Entry: " << zobrist_key << std::endl;
-        std::cout << "Best move: " << chess::uci::moveToUci(best_move) << std::endl;
-        std::cout << "Score: " << score << std::endl;
-        std::cout << "Depth: " << depth << std::endl;
-        std::cout << "NodeType: " << static_cast<int>(node_type) << std::endl;
-        std::cout << "Ply: " << ply << std::endl;
-
         table[index] = TTEntry{zobrist_key, best_move, depth, scoreToTT(score, ply), node_type};
     }
 }
