@@ -161,6 +161,5 @@ void experiments()
 int main()
 {
     experiments();
-    negatest();
     return 0;
 }

@@ -76,7 +76,18 @@ namespace utils
     {
         std::sort(moves.begin(), moves.end(), [board, &history](const chess::Move& m1, const chess::Move& m2)-> bool
         {
-            if (board.isCapture(m1))
+            const bool m1_capture = board.isCapture(m1);
+            const bool m2_capture = board.isCapture(m2);
+
+            if (m1_capture && !m2_capture)
+            {
+                return true;
+            }
+            if (!m1_capture && m2_capture)
+            {
+                return false;
+            }
+            if (m1_capture && m2_capture)
             {
                 return MVV_LAA_helper(board, m1) > MVV_LAA_helper(board, m2);
             }
