@@ -23,7 +23,8 @@ namespace engine
                        const std::optional<TimeManagement::TimeManager>& manager1, int default_depth = 5);
 
     // Negamax search (returns eval and best move)
-    std::tuple<int, chess::Move> negamax(const chess::Move& PV_Move, TranspositionTable& table1, chess::Board& board,
+    std::tuple<int, chess::Move> negamax(const std::optional<TimeManagement::TimeManager>& nega_manager,
+                                         const chess::Move& PV_Move, TranspositionTable& table1, chess::Board& board,
                                          int alpha, int beta,
                                          const chess::Move& last_move,
                                          const int& depth, const int& ply, int numExtensions = 0);

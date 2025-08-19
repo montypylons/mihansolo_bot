@@ -223,18 +223,33 @@ namespace engine
      * @param depth Current depth - start at 0
      * @param ply Current ply - start at 0
      * @param numExtensions Number of search extensions applied so far
+     * @param nega_manager
      * @return A tuple of the believed evaluation and best move in the position
      */
-    std::tuple<int, chess::Move> negamax(const chess::Move& PV_Move, TranspositionTable& table1, chess::Board& board,
+    std::tuple<int, chess::Move> negamax(const std::optional<TimeManagement::TimeManager>& nega_manager,
+                                         const chess::Move& PV_Move, TranspositionTable& table1, chess::Board& board,
                                          int alpha,
                                          const int beta,
                                          const chess::Move& last_move,
                                          const int& depth, const int& ply, const int numExtensions)
     {
+        std::cout << "Negamax called with: " << std::endl;
+        std::cout << "Depth: " << depth << std::endl;
+        std::cout << "Alpha: " << alpha << std::endl;
+        std::cout << "Beta: " << beta << std::endl;
+        std::cout << "Last move: " << chess::uci::moveToUci(last_move) << std::endl;
+        std::cout << "PV move: " << chess::uci::moveToUci(PV_Move) << std::endl;
+        std::cout << "Ply: " << ply << std::endl;
+        std::cout << "Board FEN: " << board.getFen() << std::endl;
+        std::cout << "Board hash: " << board.hash() << std::endl;
+        if (board.getFen() == "r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10" && depth == 1 &&
+            ply == 0)
+            std::cout << "Running negamax on target node" << std::endl;
         nodes++;
         // time management
-        if (manager.has_value() && !manager->time_remaining())
+        if (nega_manager.has_value() && !nega_manager->time_remaining())
         {
+            std::cout << "Aborting due to signal from time manager" << std::endl;
             abort_due_to_time = true;
             return std::make_tuple(0, chess::Move::NO_MOVE);
         }
@@ -246,6 +261,9 @@ namespace engine
         if (auto TTResult = table1.find_usable_entry(alpha_original, beta, depth, zobrist_key, ply); TTResult.
             has_value())
         {
+            std::cout << "Returning TT best move for FEN: " << board.getFen() << std::endl;
+            std::cout << "Move: " << chess::uci::moveToUci(std::get<1>(TTResult.value())) << std::endl;
+
             return TTResult.value();
         }
         // transposition stuff ends
@@ -296,7 +314,7 @@ namespace engine
             board.makeMove(move);
             int passed_pawn_extension = (is_pawns_near_promotion(board) && numExtensions < MAX_EXTENSIONS) ? 1 : 0;
 
-            std::tie(score, dummy_move) = negamax(PV_Move, table1, board, -beta, -alpha, move,
+            std::tie(score, dummy_move) = negamax(nega_manager, PV_Move, table1, board, -beta, -alpha, move,
                                                   (depth + passed_pawn_extension) - 1, ply + 1,
                                                   numExtensions + passed_pawn_extension);
             score = -score;
@@ -397,7 +415,7 @@ namespace engine
             int eval = 0;
             while (manager1->time_remaining()) // Iterative deepening
             {
-                auto result = negamax(PV_Move, table, board, initial_alpha, initial_beta,
+                auto result = negamax(manager1, PV_Move, table, board, initial_alpha, initial_beta,
                                       chess::Move::NO_MOVE, depth,
                                       0);
                 returned_move = std::get<1>(result);
@@ -413,17 +431,19 @@ namespace engine
                 depth++;
             }
         }
-        else // in testing time management is often not tested
         // TODO: add UCI E2E tests as part of CTest suite, since there are none currently
-        {
-            for (int _i = 1; _i < default_depth; _i++)
-            {
-                auto result = negamax(PV_Move, table, board, initial_alpha, initial_beta,
-                                      chess::Move::NO_MOVE, _i,
-                                      0);
-                returned_move = std::get<1>(result);
 
-                PV_Move = returned_move; // no time management logic here
+        else
+        {
+            for (int i = 1; i <= default_depth; i++)
+            {
+                auto result = negamax(std::nullopt, PV_Move, table, board, initial_alpha, initial_beta,
+                                      chess::Move::NO_MOVE, i,
+                                      0);
+                auto board_fen = board.getFen();
+                std::cout << board_fen << std::endl;
+                std::cout << "PV_Move " << chess::uci::moveToUci(PV_Move) << std::endl;
+                PV_Move = std::get<1>(result);
             }
         }
 
@@ -433,6 +453,7 @@ namespace engine
         }
 
         const std::string move_uci = chess::uci::moveToUci(PV_Move);
+        depth = manager_exists ? depth : default_depth;
         std::cout << "info depth " << depth << " nodes " << nodes << " score cp " << previous_eval << "\n";
         return move_uci;
     }
@@ -511,11 +532,18 @@ namespace engine
             }
             else if (token == "go")
             {
-                int wtime = 0, btime = 0, winc = 0, binc = 0, movetime = -1;
+                std::string bestmove;
+                int wtime = 0, btime = 0, winc = 0, binc = 0, depth = 0, movetime = -1;
 
                 std::string param;
                 while (iss >> param)
                 {
+                    if (param == "depth")
+                    {
+                        iss >> depth;
+                        break;
+                    }
+
                     if (param == "movetime")
                     {
                         iss >> movetime;
@@ -530,8 +558,14 @@ namespace engine
                 {
                     manager->go(wtime, btime, winc, binc, movetime);
                 }
-
-                auto bestmove = search(board, manager);
+                if (depth > 0)
+                {
+                    bestmove = search(board, std::nullopt, depth);
+                }
+                else
+                {
+                    bestmove = search(board, manager);
+                }
                 out << "bestmove " << bestmove << "\n";
             }
             else if (token == "quit")

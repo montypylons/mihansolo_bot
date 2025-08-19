@@ -40,13 +40,20 @@ public:
     [[nodiscard]] std::optional<std::tuple<int, chess::Move>> find_usable_entry(
         const int original_alpha,
         const int beta, const int depth,
-        const uint64_t zobrist_key, const int ply)
+        const uint64_t zobrist_key, const int ply) const
     {
         if (auto ttEntry = get(zobrist_key, ply); ttEntry.has_value() && ttEntry->depth >= depth)
         {
             if (ttEntry->node_type == NodeType::EXACT || (ttEntry->node_type == NodeType::LOWERBOUND && ttEntry->score
                 >= beta) || (ttEntry->node_type == NodeType::UPPERBOUND && ttEntry->score <= original_alpha))
             {
+                std::cout << "Getting TT Entry: " << zobrist_key << std::endl;
+                std::cout << "Best move: " << chess::uci::moveToUci(ttEntry->best_move) << std::endl;
+                std::cout << "Score: " << ttEntry->score << std::endl;
+                std::cout << "Depth: " << depth << std::endl;
+                std::cout << "NodeType: " << static_cast<int>(ttEntry->node_type) << std::endl;
+                std::cout << "Ply: " << ply << std::endl;
+
                 return std::make_tuple(ttEntry->score, ttEntry->best_move);
             }
         }
