@@ -233,23 +233,10 @@ namespace engine
                                          const chess::Move& last_move,
                                          const int& depth, const int& ply, const int numExtensions)
     {
-        std::cout << "Negamax called with: " << std::endl;
-        std::cout << "Depth: " << depth << std::endl;
-        std::cout << "Alpha: " << alpha << std::endl;
-        std::cout << "Beta: " << beta << std::endl;
-        std::cout << "Last move: " << chess::uci::moveToUci(last_move) << std::endl;
-        std::cout << "PV move: " << chess::uci::moveToUci(PV_Move) << std::endl;
-        std::cout << "Ply: " << ply << std::endl;
-        std::cout << "Board FEN: " << board.getFen() << std::endl;
-        std::cout << "Board hash: " << board.hash() << std::endl;
-        if (board.getFen() == "r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10" && depth == 1 &&
-            ply == 0)
-            std::cout << "Running negamax on target node" << std::endl;
         nodes++;
         // time management
         if (nega_manager.has_value() && !nega_manager->time_remaining())
         {
-            std::cout << "Aborting due to signal from time manager" << std::endl;
             abort_due_to_time = true;
             return std::make_tuple(0, chess::Move::NO_MOVE);
         }
@@ -261,9 +248,6 @@ namespace engine
         if (auto TTResult = table1.find_usable_entry(alpha_original, beta, depth, zobrist_key, ply); TTResult.
             has_value())
         {
-            std::cout << "Returning TT best move for FEN: " << board.getFen() << std::endl;
-            std::cout << "Move: " << chess::uci::moveToUci(std::get<1>(TTResult.value())) << std::endl;
-
             return TTResult.value();
         }
         // transposition stuff ends
@@ -354,24 +338,6 @@ namespace engine
         {
             node_type = NodeType::EXACT;
         }
-        if (zobrist_key == chess::Board("r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10").
-            zobrist() && (
-                (best_move == chess::Move::make<chess::Move::NORMAL>(chess::Square::SQ_C2, chess::Square::SQ_A1)) ||
-                (best_move == chess::Move::make<chess::Move::NORMAL>(chess::Square::SQ_D4, chess::Square::SQ_D3))))
-        {
-            std::cout << "[source: negamax] [line: 343] Putting entry for hash 6E593CAF4948964C into TT with " <<
-                std::endl;
-            std::cout << "[source: line 346] [source: negamax] " << "Params: " << std::endl;
-            std::cout << "Move : " << chess::uci::moveToUci(best_move) << std::endl;
-            std::cout << "FEN: " << board.getFen() << std::endl;
-            std::cout << "Depth: " << depth << std::endl;
-            std::cout << "Alpha: " << alpha << std::endl;
-            std::cout << "Beta: " << beta << std::endl;
-            std::cout << "PV_Move: " << chess::uci::moveToUci(PV_Move) << std::endl;
-            std::cout << "Last move: " << chess::uci::moveToUci(last_move) << std::endl;
-            std::cout << "Best eval: " << best_eval << std::endl;
-            std::cout << "Ply: " << ply << std::endl;
-        }
 
         table1.put(zobrist_key, best_move, depth, best_eval, node_type, ply);
         // End transposition table stuff
@@ -440,9 +406,6 @@ namespace engine
                 auto result = negamax(std::nullopt, PV_Move, table, board, initial_alpha, initial_beta,
                                       chess::Move::NO_MOVE, i,
                                       0);
-                auto board_fen = board.getFen();
-                std::cout << board_fen << std::endl;
-                std::cout << "PV_Move " << chess::uci::moveToUci(PV_Move) << std::endl;
                 PV_Move = std::get<1>(result);
             }
         }
