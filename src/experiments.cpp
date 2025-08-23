@@ -1,6 +1,7 @@
 #include "chess.hpp"
 #include <chrono>
 #include <iostream>
+#include <string>
 
 #include "engine.hpp"
 
@@ -110,6 +111,19 @@ std::vector boards = {
     chess::Board("1R6/6pk/2p4p/3bP2r/5B1P/2P2qP1/P4P1Q/4R1K1 w - - 2 40"),
 };
 
+std::string getLastLine(const std::string& s)
+{
+    if (s.empty()) return s;
+    const size_t end = s.find_last_not_of('\n');
+    if (end == std::string::npos) return "";
+    const size_t last_newline_pos = s.rfind('\n', end);
+    if (last_newline_pos == std::string::npos)
+    {
+        return s.substr(0, end + 1);
+    }
+    return s.substr(last_newline_pos + 1, end - last_newline_pos);
+}
+
 
 void negatest()
 {
@@ -130,19 +144,25 @@ void negatest()
     std::cout << "Eval: " << std::get<0>(result) << std::endl;
 }
 
-void experiments()
+bool experiments()
 {
-    std::cout << "Test starting" << std::endl;
+    // std::cout << "Test starting" << std::endl;
     const auto commands2 =
-        "position startpos moves e2e3\ngo movetime 10000\nsetoption name Ponder value true\nposition startpos moves e2e3 b8c6 b1c3\ngo wtime 60470 btime 57999 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4\ngo wtime 61290 btime 55489 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4\ngo wtime 62100 btime 53109 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4\ngo wtime 62910 btime 50849 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1\ngo wtime 63710 btime 48699 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3\ngo wtime 64520 btime 46659 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3\ngo wtime 65330 btime 44719 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3\ngo wtime 66130 btime 42879 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3 b4c2 e1e2\ngo wtime 66950 btime 41129 winc 1000 binc 1000";
-    auto input = std::istringstream(commands2);
+        "position startpos moves e2e3\ngo movetime 10000\nsetoption name Ponder value true\nposition startpos moves e2e3 b8c6 b1c3\ngo wtime 60470 btime 57999 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4\ngo wtime 61290 btime 55489 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4\ngo wtime 62100 btime 53109 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4\ngo wtime 62910 btime 50849 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1\ngo wtime 63710 btime 48699 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3\ngo wtime 64520 btime 46659 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3\ngo wtime 65330 btime 44719 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3\ngo wtime 66130 btime 42879 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3 b4c2 e1e2\ngo depth 1";
+    const auto commands3 =
+        "position startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3\ngo wtime 66130 btime 42879 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3 b4c2 e1e2\ngo wtime 66130 btime 42879 winc 1000 binc 1000";
+    auto input = std::istringstream(commands3);
     auto output = std::ostringstream();
-    engine::start_uci(input);
-    /*
-    std::cout << "Engine output (best moves): " << std::endl;
-    std::cout << output.str() << std::endl;
-    */
-    std::cout << "EXPECTED ON LAST LINE: d4d3" << std::endl;
+    engine::start_uci(input, output);
+
+    // std::cout << "Engine output (best moves): " << std::endl;
+    const auto out_string = output.str();
+    const auto last_line = getLastLine(out_string);
+    // std::cout << out_string << std::endl;
+    // std::cout << "Last line: " << getLastLine(out_string) << "\n\n";
+    std::cout << "Engine says: " << last_line << std::endl;
+    std::cout << "Stockfish says: " << "d4d3" << std::endl;
+    return getLastLine(out_string) == "bestmove d4d3";
 }
 
 void experiments_noTT()
@@ -175,16 +195,31 @@ int main()
 {
     std::cout << "NOTICE: this goes from most complex/E2E to least complex (unit test basically).\n";
 
-    std::cout << "Experiments\n";
-    experiments();
+    std::cout << "Experiments\n\n";
+    int SUCCESS = 0;
+    int FAILURE = 0;
+    for (int i = 0; i < 20; i++)
+    {
+        if (experiments())
+        {
+            SUCCESS++;
+            std::cout << "SUCCESS\n";
+        }
+        else
+        {
+            FAILURE++;
+            std::cout << "FAILURE\n";
+        }
+    }
 
     /*
     std::cout << "experiments_noTT\n\n";
     experiments_noTT();
     */
-/*
-    std::cout << "negamax_debugging\n";
-    negamax_debugging();
-*/
+    /*
+        std::cout << "negamax_debugging\n";
+        negamax_debugging();
+    */
+    std::cout << "Success rate (found d4d3): " << SUCCESS << "/" << SUCCESS + FAILURE << std::endl;
     return 0;
 }

@@ -3,7 +3,6 @@
 #include "evaluation.hpp"
 #include "reader.hpp"
 #include <filesystem>
-#include <iostream>
 #include <limits>
 #include <optional>
 #include <sstream>
@@ -354,10 +353,12 @@ namespace engine
      * @param fen Fen for testing, not required
      * @param manager1 The time manager, also not required
      * @param default_depth Depth to use if there is no time manager
+     * @param output
      * @return The believed best move in the position as a UCI-formatted string
      */
     std::string search(const std::optional<chess::Board>& fen,
-                       const std::optional<TimeManagement::TimeManager>& manager1, const int default_depth)
+                       const std::optional<TimeManagement::TimeManager>& manager1, const int default_depth,
+                       std::ostream& output)
     {
         manager_exists = manager1.has_value();
         int depth = 1;
@@ -420,7 +421,7 @@ namespace engine
 
         const std::string move_uci = chess::uci::moveToUci(PV_Move);
         depth = manager_exists ? depth : default_depth;
-        std::cout << "info depth " << depth << " nodes " << nodes << " score cp " << previous_eval << "\n";
+        output << "info depth " << depth << " nodes " << nodes << " score cp " << previous_eval << "\n";
         return move_uci;
     }
 
@@ -526,11 +527,11 @@ namespace engine
                 }
                 if (depth > 0)
                 {
-                    bestmove = search(board, std::nullopt, depth);
+                    bestmove = search(board, std::nullopt, depth, out);
                 }
                 else
                 {
-                    bestmove = search(board, manager);
+                    bestmove = search(board, manager, -1, out);
                 }
                 out << "bestmove " << bestmove << "\n";
             }
