@@ -84,11 +84,13 @@ namespace engine
      * @param beta Beta, start with initial_beta if not using aspiration windows
      * @param board Board to evaluate
      * @param ply Current ply, used for mate evals. (default is 0)
+     * @param q_manager
      * @return The score of the position after evaluating to a quiescent position (no captures).
      */
-    int QuiescenceSearch(int alpha, const int beta, chess::Board& board, const int ply)
+    int QuiescenceSearch(int alpha, const int beta, chess::Board& board, const int ply,
+                         const std::optional<TimeManagement::TimeManager>& q_manager)
     {
-        if (manager.has_value() && !manager->time_remaining())
+        if (q_manager.has_value() && !q_manager->time_remaining())
         {
             abort_due_to_time = true;
             return 0;
@@ -126,7 +128,7 @@ namespace engine
                 continue;
 
             board.makeMove(move);
-            const int score = -QuiescenceSearch(-beta, -alpha, board, ply + 1);
+            const int score = -QuiescenceSearch(-beta, -alpha, board, ply + 1, q_manager);
             board.unmakeMove(move);
 
 
@@ -254,7 +256,7 @@ namespace engine
 
         if (depth == 0 || game_over(board)) // NOLINT
         {
-            int leaf_eval{QuiescenceSearch(alpha, beta, board, ply)};
+            int leaf_eval{QuiescenceSearch(alpha, beta, board, ply, nega_manager)};
             return std::make_tuple(leaf_eval, last_move);
         }
         // NOLINTBEGIN
@@ -388,7 +390,7 @@ namespace engine
                 eval = std::get<0>(result);
 
 
-                if (!abort_due_to_time) // prevents using corrupted moves
+                if (!abort_due_to_time) // prevents using corrupted moves or eval
                 {
                     PV_Move = returned_move;
                     previous_eval = eval;
@@ -406,6 +408,7 @@ namespace engine
                 auto result = negamax(std::nullopt, PV_Move, table, board, initial_alpha, initial_beta,
                                       chess::Move::NO_MOVE, i,
                                       0);
+                previous_eval = std::get<0>(result);
                 PV_Move = std::get<1>(result);
             }
         }

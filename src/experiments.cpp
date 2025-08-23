@@ -111,20 +111,6 @@ std::vector boards = {
 };
 
 
-/* INVESTIGATE:
- *
- *
-* [source: negamax][line: 343] Putting entry for hash 6E593CAF4948964C into TT with move: c2a1
- [source: line 347][source: negamax] Params:
- FEN: r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10
- Depth: 6
- Alpha: 430
- Beta: 2147483647
- PV_Move: b4c2
- Last move: e1e2
- Best eval: 430
- info depth 9 nodes 3014528 score cp 9997
-*/
 void negatest()
 {
     auto table = TranspositionTable();
@@ -146,8 +132,7 @@ void negatest()
 
 void experiments()
 {
-    // const auto commands =
-    // "position startpos moves e2e3\ngo movetime 10000\nsetoption name Ponder value true\nposition startpos moves e2e3 b8c6 b1c3\ngo wtime 60470 btime 57999 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4\ngo wtime 61290 btime 55489 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4\ngo wtime 62100 btime 53109 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4\ngo wtime 62910 btime 50849 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1\ngo wtime 63710 btime 48699 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3\ngo wtime 64520 btime 46659 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3\ngo wtime 65330 btime 44719 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3\ngo wtime 66130 btime 42879 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3 b4c2 e1e2\ngo wtime 66950 btime 41129 winc 1000 binc 1000";
+    std::cout << "Test starting" << std::endl;
     const auto commands2 =
         "position startpos moves e2e3\ngo movetime 10000\nsetoption name Ponder value true\nposition startpos moves e2e3 b8c6 b1c3\ngo wtime 60470 btime 57999 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4\ngo wtime 61290 btime 55489 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4\ngo wtime 62100 btime 53109 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4\ngo wtime 62910 btime 50849 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1\ngo wtime 63710 btime 48699 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3\ngo wtime 64520 btime 46659 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3\ngo wtime 65330 btime 44719 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3\ngo wtime 66130 btime 42879 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3 b4c2 e1e2\ngo depth 9";
     auto input = std::istringstream(commands2);
@@ -158,9 +143,46 @@ void experiments()
     std::cout << "EXPECTED ON LAST LINE: d4d3" << std::endl;
 }
 
+void experiments_noTT()
+{
+    // the pos startpos works out to FEN r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10
+    std::cout << "Test number 2 starting [we want D4D3]" << std::endl;
+    std::cout <<
+        "Not using pre-seeded transposition table for this ...\n\n\n";
+    const auto no_TT_commands =
+        "position startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3 b4c2 e1e2\ngo depth 1";
+    auto input_no_TT = std::istringstream(no_TT_commands);
+    auto output_no_TT = std::ostringstream();
+    engine::start_uci(input_no_TT, output_no_TT);
+    std::cout << "Engine output (UCI bestmove's), only final position and go commands used, not the whole game\n\n";
+    std::cout << output_no_TT.str() << std::endl;
+}
+
+void negamax_debugging() // trying to get a MRE on #3, this isn't exactly the same issue ,but I think its related
+// FAILS (gods save me)
+{
+    auto table = TranspositionTable();
+    auto board = chess::Board("r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10");
+    const auto result = engine::negamax(std::nullopt, chess::Move::NO_MOVE, table, board, engine::initial_alpha,
+                                        engine::initial_beta, chess::Move::NO_MOVE, 2, 0);
+    std::cout << "Move: " << chess::uci::moveToUci(std::get<1>(result)) << " with eval (cp) " << std::get<0>(result) <<
+        std::endl;
+}
 
 int main()
 {
+    std::cout << "NOTICE: this goes from most complex/E2E to least complex (unit test basically).\n";
+
+    std::cout << "Experiments\n";
     experiments();
+
+    /*
+    std::cout << "experiments_noTT\n\n";
+    experiments_noTT();
+    */
+/*
+    std::cout << "negamax_debugging\n";
+    negamax_debugging();
+*/
     return 0;
 }
