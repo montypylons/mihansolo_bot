@@ -193,20 +193,23 @@ void negamax_debugging() // trying to get a MRE on #3, this isn't exactly the sa
 
 bool MRE(){
     // this is known to fail, typically under 25/50 trials succeed
-    auto commands = "position startpos moves e2e3 b8c6 b1c3 e7e5 d1d4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3\ngo wtime 66130 btime 42879 winc 1000 binc 1000
-    \nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1d4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3 b4c2 e1e2\ngo wtime 
+    auto commands = "position startpos moves e2e3 b8c6 b1c3 e7e5 d1d4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3\ngo wtime 66130 btime 42879 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1d4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3 b4c2 e1e2\ngo wtime 61000 btime 42000 winc 1000 binc 1000";
+    auto input = std::istringstream(commands);
+    auto output = std::ostringstream();
+    engine::start_uci(input,output);
+    std::cout<<output.str()<<std::endl;
 }
 
 int main()
 {
-    std::cout << "NOTICE: this goes from most complex/E2E to least complex (unit test basically).\n";
+   // std::cout << "NOTICE: this goes from most complex/E2E to least complex (unit test basically).\n";
 
-    std::cout << "Experiments\n\n";
+    std::cout << "Minimal reproducible example\n\n";
     int SUCCESS = 0;
     int FAILURE = 0;
     for (int i = 0; i < 50; i++)
     {
-        if (experiments())
+        if (MRE())
         {
             SUCCESS++;
             std::cout << "SUCCESS\n";
