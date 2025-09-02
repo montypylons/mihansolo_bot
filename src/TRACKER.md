@@ -1,4 +1,12 @@
 ### TRACKER.md - not ChatGPT'ed, the emojis make it look like that, but it's not actually
+**URGENT: ONLY HAPPENS ON LINUX???**
+```bash
+@montypylons ➜ /workspaces/mihansolo_bot/build (main) $ ./experiments 
+Minimal reproducible example
+
+experiments: /workspaces/mihansolo_bot/include/chess.hpp:2268: void chess::Board::makeMove(chess::Move) [with bool EXACT = false]: Assertion `(at(move.from()) < Piece::BLACKPAWN) == (stm_ == Color::WHITE)' failed.
+Aborted (core dumped)
+```
 
 **Commands (need to investigate)(only the target move and the move immediately before that):**
 `"position startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3\ngo wtime 66130 btime 42879 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3 b4c2 e1e2\ngo wtime 66130 btime 42879 winc 1200 binc 1200";`
