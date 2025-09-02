@@ -9,6 +9,7 @@
 #include "tt.hpp"
 #include <chrono>
 #include "timemanagement.hpp"
+#include <thread>
 
 // many thanks to https://lichess.org/training for providing puzzle FENs
 
