@@ -140,35 +140,6 @@ auto getPrimes()
     std::cout << counter << std::endl;
 }
 
-
-auto getPrimes()
-{
-    std::array<bool, 1'000'000> primes{};
-
-    primes.fill(true);
-    primes[0] = false;
-    primes[1] = false;
-
-    for (int i = 2; i < 1000; i++)
-    {
-        if (primes[i] == true)
-        {
-            for (int j = i * i; j < 1'000'000; j += i)
-            {
-                primes[j] = false;
-            }
-        }
-    }
-    int counter{};
-    for (const bool prime : primes)
-    {
-        if (prime == true) { counter++; }
-    }
-    std::cout << std::boolalpha;
-    std::cout << primes[0] << std::endl;
-    std::cout << counter << std::endl;
-}
-
 std::string getLastLine(const std::string& s)
 {
     if (s.empty())
