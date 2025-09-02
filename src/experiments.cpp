@@ -169,7 +169,7 @@ auto getPrimes()
     std::cout << counter << std::endl;
 }
 
-std::string getLastLine(const std::string &s)
+std::string getLastLine(const std::string& s)
 {
     if (s.empty())
         return s;
