@@ -111,11 +111,13 @@ std::vector boards = {
     chess::Board("1R6/6pk/2p4p/3bP2r/5B1P/2P2qP1/P4P1Q/4R1K1 w - - 2 40"),
 };
 
-std::string getLastLine(const std::string& s)
+std::string getLastLine(const std::string &s)
 {
-    if (s.empty()) return s;
+    if (s.empty())
+        return s;
     const size_t end = s.find_last_not_of('\n');
-    if (end == std::string::npos) return "";
+    if (end == std::string::npos)
+        return "";
     const size_t last_newline_pos = s.rfind('\n', end);
     if (last_newline_pos == std::string::npos)
     {
@@ -123,7 +125,6 @@ std::string getLastLine(const std::string& s)
     }
     return s.substr(last_newline_pos + 1, end - last_newline_pos);
 }
-
 
 void negatest()
 {
@@ -137,8 +138,7 @@ void negatest()
                                         engine::initial_beta,
                                         chess::Move::NO_MOVE,
                                         1,
-                                        0
-    );
+                                        0);
     std::cout << std::endl;
     std::cout << "Move: " << chess::uci::moveToUci(std::get<1>(result)) << std::endl;
     std::cout << "Eval: " << std::get<0>(result) << std::endl;
@@ -169,8 +169,7 @@ void experiments_noTT()
 {
     // the pos startpos works out to FEN r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10
     std::cout << "Test number 2 starting [we want D4D3]" << std::endl;
-    std::cout <<
-        "Not using pre-seeded transposition table for this ...\n\n\n";
+    std::cout << "Not using pre-seeded transposition table for this ...\n\n\n";
     const auto no_TT_commands =
         "position startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3 b4c2 e1e2\ngo depth 1";
     auto input_no_TT = std::istringstream(no_TT_commands);
@@ -187,26 +186,32 @@ void negamax_debugging() // trying to get a MRE on #3, this isn't exactly the sa
     auto board = chess::Board("r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10");
     const auto result = engine::negamax(std::nullopt, chess::Move::NO_MOVE, table, board, engine::initial_alpha,
                                         engine::initial_beta, chess::Move::NO_MOVE, 2, 0);
-    std::cout << "Move: " << chess::uci::moveToUci(std::get<1>(result)) << " with eval (cp) " << std::get<0>(result) <<
-        std::endl;
+    std::cout << "Move: " << chess::uci::moveToUci(std::get<1>(result)) << " with eval (cp) " << std::get<0>(result) << std::endl;
 }
 
-bool MRE(){
+bool MRE()
+{
     // this is known to fail, typically under 25/50 trials succeed
     constexpr auto target_move = "bestmove d4d3";
-    auto commands = "position startpos moves e2e3 b8c6 b1c3 e7e5 d1d4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3\ngo wtime 66130 btime 42879 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1d4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3 b4c2 e1e2\ngo wtime 61000 btime 42000 winc 1000 binc 1000";
+    // commands should be equal to:
+    /*
+     *position startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3\ngo wtime 66130 btime 42879 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3 b4c2 e1e2\ngo wtime 66130 btime 42879 winc 1200 binc 1200
+     */
+    auto commands =
+        "position startpos moves e2e3 b8c6 b1c3 e7e5 d1d4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3\ngo wtime 66130 btime 42879 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1d4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3 b4c2 e1e2\ngo wtime 66130 btime 42879 winc 1200 binc 1200";
     auto input = std::istringstream(commands);
     auto output = std::ostringstream();
-    engine::start_uci(input,output);
+    engine::start_uci(input, output);
     auto output_string = output.str();
-    std::cout<<output_string<<std::endl;
+    std::cout << output_string << std::endl;
     return getLastLine(output_string) == target_move;
 }
 
 int main()
 {
-   // std::cout << "NOTICE: this goes from most complex/E2E to least complex (unit test basically).\n";
-
+    // std::cout << "NOTICE: this goes from most complex/E2E to least complex (unit test basically).\n";
+    std::cout << "Experiments" << std::endl;
+    experiments();
     std::cout << "Minimal reproducible example\n\n";
     int SUCCESS = 0;
     int FAILURE = 0;
