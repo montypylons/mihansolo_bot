@@ -1,8 +1,8 @@
 #include "chess.hpp"
 #include <chrono>
 #include <iostream>
+#include <set>
 #include <string>
-
 #include "engine.hpp"
 
 /**
@@ -111,7 +111,65 @@ std::vector boards = {
     chess::Board("1R6/6pk/2p4p/3bP2r/5B1P/2P2qP1/P4P1Q/4R1K1 w - - 2 40"),
 };
 
-std::string getLastLine(const std::string &s)
+
+auto getPrimes()
+{
+    std::array<bool, 1'000'000> primes{};
+
+    primes.fill(true);
+    primes[0] = false;
+    primes[1] = false;
+
+    for (int i = 2; i < 1000; i++)
+    {
+        if (primes[i] == true)
+        {
+            for (int j = i * i; j < 1'000'000; j += i)
+            {
+                primes[j] = false;
+            }
+        }
+    }
+    int counter{};
+    for (const bool prime : primes)
+    {
+        if (prime == true) { counter++; }
+    }
+    std::cout << std::boolalpha;
+    std::cout << primes[0] << std::endl;
+    std::cout << counter << std::endl;
+}
+
+
+auto getPrimes()
+{
+    std::array<bool, 1'000'000> primes{};
+
+    primes.fill(true);
+    primes[0] = false;
+    primes[1] = false;
+
+    for (int i = 2; i < 1000; i++)
+    {
+        if (primes[i] == true)
+        {
+            for (int j = i * i; j < 1'000'000; j += i)
+            {
+                primes[j] = false;
+            }
+        }
+    }
+    int counter{};
+    for (const bool prime : primes)
+    {
+        if (prime == true) { counter++; }
+    }
+    std::cout << std::boolalpha;
+    std::cout << primes[0] << std::endl;
+    std::cout << counter << std::endl;
+}
+
+std::string getLastLine(const std::string& s)
 {
     if (s.empty())
         return s;
@@ -150,7 +208,7 @@ bool experiments()
     const auto commands2 =
         "position startpos moves e2e3\ngo movetime 10000\nsetoption name Ponder value true\nposition startpos moves e2e3 b8c6 b1c3\ngo wtime 60470 btime 57999 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4\ngo wtime 61290 btime 55489 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4\ngo wtime 62100 btime 53109 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4\ngo wtime 62910 btime 50849 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1\ngo wtime 63710 btime 48699 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3\ngo wtime 64520 btime 46659 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3\ngo wtime 65330 btime 44719 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3\ngo wtime 66130 btime 42879 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3 b4c2 e1e2\ngo depth 1";
     const auto commands3 =
-        "position startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3 b4c2 e1e2\ngo wtime 66130 btime 42879 winc 1200 binc 1200";
+        "position startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3\ngo wtime 66130 btime 42879 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3 b4c2 e1e2\ngo depth 1";
     auto input = std::istringstream(commands3);
     auto output = std::ostringstream();
     engine::start_uci(input, output);
@@ -227,7 +285,7 @@ int main()
     std::cout << "Minimal reproducible example\n\n";
     int SUCCESS = 0;
     int FAILURE = 0;
-    for (int i = 0; i < 50; i++)
+    for (int i = 0; i < 5; i++)
     {
         if (MRE())
         {
@@ -241,14 +299,8 @@ int main()
         }
     }
 
-    /*
-    std::cout << "experiments_noTT\n\n";
-    experiments_noTT();
-    */
-    /*
-        std::cout << "negamax_debugging\n";
-        negamax_debugging();
-    */
     std::cout << "Success rate (found d4d3): " << SUCCESS << "/" << SUCCESS + FAILURE << std::endl;
+    return 0;
+    getPrimes();
     return 0;
 }
