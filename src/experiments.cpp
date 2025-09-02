@@ -111,7 +111,6 @@ std::vector boards = {
     chess::Board("1R6/6pk/2p4p/3bP2r/5B1P/2P2qP1/P4P1Q/4R1K1 w - - 2 40"),
 };
 
-
 auto getPrimes()
 {
     std::array<bool, 1'000'000> primes{};
@@ -133,14 +132,17 @@ auto getPrimes()
     int counter{};
     for (const bool prime : primes)
     {
-        if (prime == true) { counter++; }
+        if (prime == true)
+        {
+            counter++;
+        }
     }
     std::cout << std::boolalpha;
     std::cout << primes[0] << std::endl;
     std::cout << counter << std::endl;
 }
 
-std::string getLastLine(const std::string& s)
+std::string getLastLine(const std::string &s)
 {
     if (s.empty())
         return s;
@@ -240,7 +242,7 @@ bool MRE()
     auto output = std::ostringstream();
 
     engine::start_uci(input, output);
-    
+
     auto output_string = output.str();
 
     return getLastLine(output_string) == target_move;
@@ -249,14 +251,14 @@ bool MRE()
 int main()
 {
     std::cout << "started main\n\n";
+    constexpr int iterations = 50;
     // std::cout << "NOTICE: this goes from most complex/E2E to least complex (unit test basically).\n";
-    std::cout << "Experiments" << std::endl;
-    experiments();
-    std::cout << "Experiments ended" << std::endl;
+
     std::cout << "Minimal reproducible example\n\n";
+    std::cout << "ITERATIONS: " << iterations << std::endl;
     int SUCCESS = 0;
     int FAILURE = 0;
-    for (int i = 0; i < 5; i++)
+    for (int i = 0; i < iterations; i++)
     {
         if (MRE())
         {
