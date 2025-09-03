@@ -7,6 +7,7 @@
  - works on Linux (Github Codespaces) but not Windows (22H2 Win 11)
  - I have no damn idea why
  - To whoever sees this NO i do not have a mental illness (i think)
+ - need to do windows log
 - **Iterations** = `50`
 - **Result (Windows)** = `15/50 ❌`
 - **Result (Linux)** = `50/50` (no im not adding the check for this)
