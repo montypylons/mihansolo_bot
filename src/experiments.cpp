@@ -248,6 +248,7 @@ bool MRE()
     return getLastLine(output_string) == target_move;
 }
 
+
 int main()
 {
     std::cout << "started main\n\n";
