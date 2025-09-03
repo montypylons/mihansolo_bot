@@ -111,6 +111,8 @@ std::vector boards = {
     chess::Board("1R6/6pk/2p4p/3bP2r/5B1P/2P2qP1/P4P1Q/4R1K1 w - - 2 40"),
 };
 
+// TODO: we need to make logs in windows and linux then file compare them
+
 auto getPrimes()
 {
     std::array<bool, 1'000'000> primes{};
