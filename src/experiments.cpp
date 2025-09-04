@@ -5,6 +5,7 @@
 #include <string>
 #include "engine.hpp"
 
+
 /**
  * 100 middlegame puzzle FENs scraped from https://database.lichess.org
  */
@@ -144,7 +145,7 @@ auto getPrimes()
     std::cout << counter << std::endl;
 }
 
-std::string getLastLine(const std::string &s)
+std::string getLastLine(const std::string& s)
 {
     if (s.empty())
         return s;
@@ -219,26 +220,25 @@ void negamax_debugging() // trying to get a MRE on #3, this isn't exactly the sa
     auto board = chess::Board("r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10");
     const auto result = engine::negamax(std::nullopt, chess::Move::NO_MOVE, table, board, engine::initial_alpha,
                                         engine::initial_beta, chess::Move::NO_MOVE, 2, 0);
-    std::cout << "Move: " << chess::uci::moveToUci(std::get<1>(result)) << " with eval (cp) " << std::get<0>(result) << std::endl;
+    std::cout << "Move: " << chess::uci::moveToUci(std::get<1>(result)) << " with eval (cp) " << std::get<0>(result) <<
+        std::endl;
 }
 
 bool MRE()
 {
     // this is known to fail, typically under 25/50 trials succeed
     constexpr auto target_move = "bestmove d4d3";
-    /*
-     commands should be equal to:
-
-     position startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3\n
-     go wtime 66130 btime 42879 winc 1000 binc 1000\n
-     position startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3 b4c2 e1e2\n
-     go wtime 66130 btime 42879 winc 1200 binc 1200
-     */
-    constexpr auto commands =
+    constexpr auto commands_original =
         "position startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3\n"
         "go wtime 66130 btime 42879 winc 1000 binc 1000\n"
         "position startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3 b4c2 e1e2\n"
         "go wtime 66130 btime 42879 winc 1200 binc 1200";
+
+    constexpr auto commands =
+        "position startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3\n"
+        "go wtime 60000 btime 60000\n" //wtime 66130 btime 42879 winc 1000 binc 1000
+        "position startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3 b4c2 e1e2\n"
+        "go depth 2";
 
     auto input = std::istringstream(commands);
     auto output = std::ostringstream();
