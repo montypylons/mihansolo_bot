@@ -455,7 +455,7 @@ namespace engine
             }
             else if (token == "d")
             {
-                out << board.getFen();
+                out << board.getFen()<<std::endl;
             }
             else if (token == "isready")
             {
