@@ -453,6 +453,10 @@ namespace engine
                 out << "option name UCI_Elo type spin default 1350 min 1350 max 2850\n";
                 out << "uciok\n";
             }
+            else if (token == "d")
+            {
+                out << board.getFen();
+            }
             else if (token == "isready")
             {
                 out << "readyok\n";

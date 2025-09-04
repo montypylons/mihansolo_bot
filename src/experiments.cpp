@@ -113,7 +113,7 @@ std::vector boards = {
 };
 
 // TODO: we need to make logs in windows and linux then file compare them
-
+constexpr auto TARGET_FEN = "";
 auto getPrimes()
 {
     std::array<bool, 1'000'000> primes{};
@@ -253,6 +253,7 @@ bool MRE()
 
 int main()
 {
+    std::cout << chess::Board(TARGET_FEN).hash() << std::endl;
     std::cout << "started main\n\n";
     constexpr int iterations = 50;
     // std::cout << "NOTICE: this goes from most complex/E2E to least complex (unit test basically).\n";
