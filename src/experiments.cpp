@@ -113,7 +113,7 @@ std::vector boards = {
 };
 
 // TODO: we need to make logs in windows and linux then file compare them
-constexpr auto TARGET_FEN = "";
+constexpr auto TARGET_FEN = "";// ToDo: this
 auto getPrimes()
 {
     std::array<bool, 1'000'000> primes{};
@@ -146,7 +146,7 @@ auto getPrimes()
 }
 
 auto getFenFromUCI(){
-    
+auto input = std::istringstream;
 }
 
 std::string getLastLine(const std::string& s)
