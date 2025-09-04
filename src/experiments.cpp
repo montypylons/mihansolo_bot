@@ -145,6 +145,10 @@ auto getPrimes()
     std::cout << counter << std::endl;
 }
 
+auto getFenFromUCI(){
+    
+}
+
 std::string getLastLine(const std::string& s)
 {
     if (s.empty())
