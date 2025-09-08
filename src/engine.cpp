@@ -352,6 +352,9 @@ namespace engine
             std::cout << "Alpha: " << alpha_original << std::endl;
             std::cout << "Beta: " << beta_original << std::endl;
             std::cout << "Depth: " << depth << std::endl;
+            std::cout << "Ply: " << ply << std::endl;
+            std::cout << "Last move: " << chess::uci::moveToUci(last_move) << std::endl;
+            std::cout << "PV_Move: " << chess::uci::moveToUci(PV_Move) << std::endl;
             std::cout << "\n\n";
         }
 
