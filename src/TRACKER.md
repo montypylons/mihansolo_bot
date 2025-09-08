@@ -15,6 +15,7 @@
 
 - Ok def problem with the TT appears:
 - ![img_1.png](img_1.png)
+- shows that the tt entry is being put then gotten, INVESTIGATE THE **get** part
 - ![img_2.png](img_2.png)
 
 **Works and fails: windows**
