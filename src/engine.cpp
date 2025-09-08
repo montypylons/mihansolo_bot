@@ -393,8 +393,15 @@ namespace engine
 
                 if (!abort_due_to_time) // prevents using corrupted moves or eval
                 {
+                    std::cout << "no abort [line 396][engine::search]\n";
                     PV_Move = returned_move;
+                    std::cout << "changed PV Move to: " << chess::uci::moveToUci(PV_Move) <<
+                        " [line 398][engine::search]\n";
                     previous_eval = eval;
+                }
+                else
+                {
+                    std::cout << "Aborting due to time management[line 402][engine::search]\n";
                 }
 
                 depth++;
