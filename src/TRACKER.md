@@ -12,7 +12,9 @@
   - last_move_time = 736280198522400 ns (as a duration)
 
 ## stop ignoring here
-- 
+
+- Ok def problem with the TT appears:
+- ![img_1.png](img_1.png)
 **Works and fails: windows**
 -       FAILS
         "position startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3\n"
