@@ -49,7 +49,7 @@ void TranspositionTable::put(const uint64_t zobrist_key,
             std::cout << "Putting TTEntry at index " << index << std::endl;
             std::cout << "Best move: " << chess::uci::moveToUci(best_move) << std::endl;
             std::cout << "Score: " << score << std::endl;
-            std::cout << "Zobrist key: " << zobrist_key << std::endl;
+            std::cout << "Zobrist key: " << zobrist_key << std::endl << std::endl;
         }
         table[index] = TTEntry{zobrist_key, best_move, depth, scoreToTT(score, ply), node_type};
     }
@@ -68,7 +68,7 @@ void TranspositionTable::put(const uint64_t zobrist_key,
             std::cout << "Index: " << address_calc(zobrist_key) << std::endl;
             std::cout << "Zobrist key: " << zobrist_key << std::endl;
             std::cout << "Best move: " << chess::uci::moveToUci(found_entry.best_move) << std::endl;
-            std::cout << "Score: " << found_entry.score << std::endl;
+            std::cout << "Score: " << found_entry.score << std::endl << std::endl;
         }
 
         found_entry.score = scoreFromTT(found_entry.score, ply);
