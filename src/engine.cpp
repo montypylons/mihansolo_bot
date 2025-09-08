@@ -348,6 +348,7 @@ namespace engine
             std::cout << "Best move: " << chess::uci::moveToUci(best_move) << std::endl;
             std::cout << "Score: " << best_eval << std::endl;
             std::cout << "\nParams: " << std::endl;
+            std::cout << "Board FEN: " << board.getFen() << std::endl;
             std::cout << "Alpha: " << alpha_original << std::endl;
             std::cout << "Beta: " << beta_original << std::endl;
             std::cout << "Depth: " << depth << std::endl;
