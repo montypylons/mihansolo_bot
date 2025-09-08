@@ -56,10 +56,9 @@ public:
 
     [[nodiscard]] std::optional<TTEntry> get(uint64_t zobrist_key, int ply) const;
     [[nodiscard]] bool find(uint64_t zobrist_key) const;
-
-private:
     static int address_calc(uint64_t key);
 
+private:
     std::vector<TTEntry> table = std::vector<TTEntry>(8'388'608);
 };
 
