@@ -261,28 +261,28 @@ bool MRE()
     return getLastLine(output_string) == target_move;
 }
 
-void negamax_MRE()
+bool negamax_MRE(TranspositionTable& table)
 {
     auto board = chess::Board("r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10");
-    TranspositionTable table;
-    auto result = engine::negamax(std::nullopt,
-                                  chess::Move::make<chess::Move::NORMAL>(chess::Square::SQ_B4, chess::Square::SQ_C2),
-                                  table, board,
-                                  -2147483647, 2147483647,
-                                  chess::Move::make<chess::Move::NORMAL>(chess::Square::SQ_E1, chess::Square::SQ_E2), 3,
-                                  2);
-    const auto move = std::get<1>(result);
+    const auto result = engine::negamax(std::nullopt,
+                                        chess::Move::make<chess::Move::NORMAL>(
+                                            chess::Square::SQ_B4, chess::Square::SQ_C2),
+                                        table, board,
+                                        -2147483647, 2147483647,
+                                        chess::Move::make<chess::Move::NORMAL>(
+                                            chess::Square::SQ_E1, chess::Square::SQ_E2), 3,
+                                        2);
+    const auto move = chess::uci::moveToUci(std::get<1>(result));
     const auto eval = std::get<0>(result);
-    std::cout << "Move: " << chess::uci::moveToUci(move) << std::endl;
+    std::cout << "Move: " << move << std::endl;
     std::cout << "Eval: " << eval << std::endl;
+    if (move == "d4d3") return true;
+    return false;
 }
 
 int main()
 {
     std::cout << "started main\n\n";
-    std::cout << "Negamax MRE\n\n\n";
-    negamax_MRE();
-    std::cout << "======================== ENDED NEGA MRE ======================\n\n";
     std::cout << "Minimal reproducible example\n\n";
     // std::cout << "Experiments\n\n";
     std::cout << "ITERATIONS: " << current_MRE_iterations << std::endl;
@@ -290,7 +290,7 @@ int main()
     int FAILURE = 0;
     for (int i = 0; i < current_MRE_iterations; i++)
     {
-        if (MRE())
+        if (TranspositionTable table; negamax_MRE(table))
         {
             SUCCESS++;
             std::cout << "SUCCESS\n";
