@@ -65,6 +65,7 @@ void TranspositionTable::put(const uint64_t zobrist_key,
             zobrist())
         {
             std::cout << "\n\n[line 67] [TranspositionTable::get] Got entry for target FEN with: " << std::endl;
+            std::cout << "Index: " << address_calc(zobrist_key) << std::endl;
             std::cout << "Zobrist key: " << zobrist_key << std::endl;
             std::cout << "Best move: " << chess::uci::moveToUci(found_entry.best_move) << std::endl;
             std::cout << "Score: " << found_entry.score << std::endl;
