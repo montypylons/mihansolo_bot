@@ -208,6 +208,15 @@ bool experiments()
     return getLastLine(out_string) == "bestmove d4d3";
 }
 
+auto negamax_MRE(){
+    // implement this later
+    constexpr auto alpha = 0;
+    constexpr auto beta = 0;
+    constexpr auto ply = 0;
+    constexpr auto depth = 0;
+
+}
+
 void experiments_noTT()
 {
     // the pos startpos works out to FEN r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10
