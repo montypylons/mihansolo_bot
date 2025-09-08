@@ -5,7 +5,6 @@
 #include <string>
 #include "engine.hpp"
 
-
 /**
  * 100 middlegame puzzle FENs scraped from https://database.lichess.org
  */
@@ -113,7 +112,7 @@ std::vector boards = {
 };
 
 // TODO: we need to make logs in windows and linux then file compare them
-constexpr auto TARGET_FEN = "";// ToDo: this
+constexpr auto TARGET_FEN = ""; // ToDo: this
 auto getPrimes()
 {
     std::array<bool, 1'000'000> primes{};
@@ -145,14 +144,17 @@ auto getPrimes()
     std::cout << counter << std::endl;
 }
 
-auto getFenFromUCI(){
+auto getFenFromUCI()
+{
     auto data = "position startpos e2e4"
-    "d";
-auto input = std::istringstream(data);
-engine::start_uci(input,std::cout);
+                "d";
+    auto input = std::istringstream(data);
+    auto output = std::ostringstream();
+    engine::start_uci(input, output);
+    return output.str();
 }
 
-std::string getLastLine(const std::string& s)
+std::string getLastLine(const std::string &s)
 {
     if (s.empty())
         return s;
@@ -227,8 +229,7 @@ void negamax_debugging() // trying to get a MRE on #3, this isn't exactly the sa
     auto board = chess::Board("r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10");
     const auto result = engine::negamax(std::nullopt, chess::Move::NO_MOVE, table, board, engine::initial_alpha,
                                         engine::initial_beta, chess::Move::NO_MOVE, 2, 0);
-    std::cout << "Move: " << chess::uci::moveToUci(std::get<1>(result)) << " with eval (cp) " << std::get<0>(result) <<
-        std::endl;
+    std::cout << "Move: " << chess::uci::moveToUci(std::get<1>(result)) << " with eval (cp) " << std::get<0>(result) << std::endl;
 }
 
 bool MRE()
@@ -243,7 +244,7 @@ bool MRE()
 
     constexpr auto commands =
         "position startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3\n"
-        "go depth 9\n" //wtime 66130 btime 42879 winc 1000 binc 1000
+        "go depth 9\n" // wtime 66130 btime 42879 winc 1000 binc 1000
         "position startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3 b4c2 e1e2\n"
         "go depth 2";
 
@@ -256,7 +257,6 @@ bool MRE()
 
     return getLastLine(output_string) == target_move;
 }
-
 
 int main()
 {
