@@ -344,6 +344,8 @@ namespace engine
         {
             std::cout << "\n\nNegamax PUTTING entry for zobrist key: " << zobrist_key << std::endl;
             std::cout << "Index: " << table1.address_calc(zobrist_key) << std::endl;
+            std::cout << "Best move: " << chess::uci::moveToUci(best_move) << std::endl;
+            std::cout << "Score: " << best_eval << std::endl;
         }
 
         table1.put(zobrist_key, best_move, depth, best_eval, node_type, ply);
