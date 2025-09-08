@@ -238,6 +238,12 @@ namespace engine
         // time management
         if (nega_manager.has_value() && !nega_manager->time_remaining())
         {
+            if (board.zobrist() == chess::Board("r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10").
+                zobrist())
+            {
+                std::cout << "TARGET FEN REACHED ..." << std::endl;
+            }
+
             abort_due_to_time = true;
             return std::make_tuple(0, chess::Move::NO_MOVE);
         }
