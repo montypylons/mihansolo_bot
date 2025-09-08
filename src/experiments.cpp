@@ -282,7 +282,7 @@ int main()
     std::cout << "started main\n\n";
     std::cout << "Negamax MRE\n\n\n";
     negamax_MRE();
-
+    std::cout << "======================== ENDED NEGA MRE ======================\n\n";
     std::cout << "Minimal reproducible example\n\n";
     // std::cout << "Experiments\n\n";
     std::cout << "ITERATIONS: " << current_MRE_iterations << std::endl;
