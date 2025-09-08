@@ -146,7 +146,10 @@ auto getPrimes()
 }
 
 auto getFenFromUCI(){
-auto input = std::istringstream;
+    auto data = "position startpos e2e4"
+    "d";
+auto input = std::istringstream(data);
+engine::start_uci(input,std::cout);
 }
 
 std::string getLastLine(const std::string& s)
