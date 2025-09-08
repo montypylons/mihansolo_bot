@@ -342,8 +342,8 @@ namespace engine
         if (zobrist_key == chess::Board("r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10").
             zobrist())
         {
-            // std::cout << "Negamax PUTTING entry for zobrist key: " << zobrist_key << std::endl;
-            // std::cout << "Index: "<< table1->address_calc(zobrist_key) << std::endl;
+            std::cout << "\n\nNegamax PUTTING entry for zobrist key: " << zobrist_key << std::endl;
+            std::cout << "Index: " << table1.address_calc(zobrist_key) << std::endl;
         }
 
         table1.put(zobrist_key, best_move, depth, best_eval, node_type, ply);
