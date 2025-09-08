@@ -244,6 +244,7 @@ namespace engine
 
         // transposition table stuff starts
         const int alpha_original = alpha;
+        const int beta_original = beta;
         const auto zobrist_key = board.hash();
 
         if (auto TTResult = table1.find_usable_entry(alpha_original, beta, depth, zobrist_key, ply); TTResult.
@@ -346,6 +347,11 @@ namespace engine
             std::cout << "Index: " << table1.address_calc(zobrist_key) << std::endl;
             std::cout << "Best move: " << chess::uci::moveToUci(best_move) << std::endl;
             std::cout << "Score: " << best_eval << std::endl;
+            std::cout << "\nParams: " << std::endl;
+            std::cout << "Alpha: " << alpha_original << std::endl;
+            std::cout << "Beta: " << beta_original << std::endl;
+            std::cout << "Depth: " << depth << std::endl;
+            std::cout << "\n\n";
         }
 
         table1.put(zobrist_key, best_move, depth, best_eval, node_type, ply);
