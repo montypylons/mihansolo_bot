@@ -1,7 +1,6 @@
 #include "chess.hpp"
 #include <chrono>
 #include <iostream>
-#include <set>
 #include <string>
 #include "engine.hpp"
 
@@ -262,12 +261,27 @@ bool MRE()
     return getLastLine(output_string) == target_move;
 }
 
+void negamax_MRE()
+{
+    auto board = chess::Board("r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10");
+    TranspositionTable table;
+    auto result = engine::negamax(std::nullopt,
+                                  chess::Move::make<chess::Move::NORMAL>(chess::Square::SQ_B4, chess::Square::SQ_C2),
+                                  table, board,
+                                  -2147483647, 2147483647,
+                                  chess::Move::make<chess::Move::NORMAL>(chess::Square::SQ_E1, chess::Square::SQ_E2), 3,
+                                  2);
+    const auto move = std::get<1>(result);
+    const auto eval = std::get<0>(result);
+    std::cout << "Move: " << chess::uci::moveToUci(move) << std::endl;
+    std::cout << "Eval: " << eval << std::endl;
+}
 
 int main()
 {
     std::cout << "started main\n\n";
-    constexpr int iterations = 50;
-    // std::cout << "NOTICE: this goes from most complex/E2E to least complex (unit test basically).\n";
+    std::cout << "Negamax MRE\n\n\n";
+    negamax_MRE();
 
     std::cout << "Minimal reproducible example\n\n";
     // std::cout << "Experiments\n\n";
