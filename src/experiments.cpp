@@ -258,7 +258,7 @@ bool MRE()
     engine::start_uci(input, output);
 
     const auto output_string = output.str();
-    std::cout <<"output: \n\n" <<output_string << std::endl;
+    std::cout << "output: \n\n" << output_string << std::endl;
     return getLastLine(output_string) == target_move;
 }
 
