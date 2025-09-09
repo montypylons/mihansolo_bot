@@ -241,7 +241,7 @@ namespace engine
             if (board.zobrist() == chess::Board("r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10").
                 zobrist())
             {
-                std::cout << "TARGET FEN REACHED ..." << std::endl;
+                std::cout << "TARGET FEN REACHED ... AND ABORTED" << std::endl;
             }
 
             abort_due_to_time = true;
@@ -300,6 +300,12 @@ namespace engine
 
         for (const auto& move : legal_moves)
         {
+            if (board.zobrist() == chess::Board("r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10").
+                zobrist())
+            {
+                std::cout << "Evaluating move " << chess::uci::moveToUci(move) << std::endl;
+            }
+
             int score;
             chess::Move dummy_move{};
 
