@@ -291,7 +291,8 @@ int main()
     int FAILURE = 0;
     for (int i = 0; i < current_MRE_iterations; i++)
     {
-        if (TranspositionTable table; negamax_MRE(table))
+        // if (TranspositionTable table; negamax_MRE(table))
+        if (MRE())
         {
             SUCCESS++;
             std::cout << "SUCCESS\n";

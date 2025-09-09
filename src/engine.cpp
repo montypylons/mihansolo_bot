@@ -301,12 +301,6 @@ namespace engine
 
         for (const auto& move : legal_moves)
         {
-            if (board.zobrist() == chess::Board("r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10").
-                zobrist())
-            {
-                std::cout << "Evaluating move " << chess::uci::moveToUci(move) << std::endl;
-            }
-
             int score;
             chess::Move dummy_move{};
 
@@ -319,7 +313,12 @@ namespace engine
             score = -score;
 
             board.unmakeMove(move);
-
+            if (board.getFen() == "r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10")
+            {
+                std::cout << "\n\nEvaluating move " << chess::uci::moveToUci(move) << " ... " << "with score: " << score
+                    <<
+                    std::endl;
+            }
             if (score > best_eval)
             {
                 best_eval = score;
