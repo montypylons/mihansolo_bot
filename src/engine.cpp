@@ -307,6 +307,10 @@ namespace engine
         {
             int score;
             chess::Move dummy_move{};
+            if (board.getFen() == "r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10")
+            {
+                std::cout << "Evaluating move " << chess::uci::moveToUci(move) << " ... " << std::endl;
+            }
 
             board.makeMove(move);
             int passed_pawn_extension = (is_pawns_near_promotion(board) && numExtensions < MAX_EXTENSIONS) ? 1 : 0;
@@ -319,9 +323,7 @@ namespace engine
             board.unmakeMove(move);
             if (board.getFen() == "r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10")
             {
-                std::cout << "\n\nEvaluating move " << chess::uci::moveToUci(move) << " ... " << "with score: " << score
-                    <<
-                    std::endl;
+                std::cout << " ... " << "with score: " << score << std::endl;
             }
             if (score > best_eval)
             {
