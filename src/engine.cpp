@@ -195,6 +195,7 @@ namespace engine
      */
     inline int reduction_for(const int depth)
     {
+
         return depth >= 6 ? 3 : 2;
     }
 
@@ -239,11 +240,13 @@ namespace engine
         // time management
         if (nega_manager.has_value() && !nega_manager->time_remaining())
         {
+#ifndef NDEBUG
             if (board.zobrist() == chess::Board("r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10").
                 zobrist())
             {
                 std::cout << "TARGET FEN REACHED ... AND ABORTED" << std::endl;
             }
+#endif
 
             abort_due_to_time = true;
             return std::make_tuple(0, chess::Move::NO_MOVE);
@@ -298,20 +301,23 @@ namespace engine
         */
 
         // SPRT shows NMP is -37.6 elo, so commented out for now
+#ifndef NDEBUG
+
         if (board.getFen() == "r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10")
         {
             log_TT = true;
         }
-
+#endif
         for (const auto& move : legal_moves)
         {
             int score;
             chess::Move dummy_move{};
+#ifndef NDEBUG
             if (board.getFen() == "r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10")
             {
                 std::cout << "Evaluating move " << chess::uci::moveToUci(move) << " ... " << std::endl;
             }
-
+#endif
             board.makeMove(move);
             int passed_pawn_extension = (is_pawns_near_promotion(board) && numExtensions < MAX_EXTENSIONS) ? 1 : 0;
 
@@ -321,10 +327,12 @@ namespace engine
             score = -score;
 
             board.unmakeMove(move);
+#ifndef NDEBUG
             if (board.getFen() == "r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10")
             {
                 std::cout << " ... " << "with score: " << score << std::endl;
             }
+#endif
             if (score > best_eval)
             {
                 best_eval = score;
@@ -359,6 +367,8 @@ namespace engine
         {
             node_type = NodeType::EXACT;
         }
+#ifndef NDEBUG
+
         if (zobrist_key == chess::Board("r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10").
             zobrist())
         {
@@ -376,6 +386,7 @@ namespace engine
             std::cout << "PV_Move: " << chess::uci::moveToUci(PV_Move) << std::endl;
             std::cout << "\n\n";
         }
+#endif
 
         table1.put(zobrist_key, best_move, depth, best_eval, node_type, ply);
         // End transposition table stuff
@@ -430,19 +441,31 @@ namespace engine
 
                 if (!abort_due_to_time) // prevents using corrupted moves or eval
                 {
+#ifndef NDEBUG
+
                     std::cout << "no abort [line 396][engine::search]\n";
+#endif
+
                     PV_Move = returned_move;
+#ifndef NDEBUG
+
                     std::cout << "changed PV Move to: " << chess::uci::moveToUci(PV_Move) <<
                         " [line 398][engine::search]\n";
+#endif
                     previous_eval = eval;
                     if (std::abs(eval) > 9995)
                     {
+#ifndef NDEBUG
                         std::cout << "Mate detected, stopping early\n";
+#endif
                         break;
                     }
                     else
                     {
+#ifndef NDEBUG
+
                         std::cout << "Aborting due to time management[line 402][engine::search]\n";
+#endif
                     }
 
                     depth++;

@@ -61,6 +61,7 @@ void TranspositionTable::put(const uint64_t zobrist_key,
 {
     if (auto found_entry = table[address_calc(zobrist_key)]; found_entry.zobrist_key == zobrist_key)
     {
+#ifndef NDEBUG
         if (engine::log_TT && ply == 3)
         {
             std::cout << "Getting TT entry ... \n";
@@ -82,7 +83,7 @@ void TranspositionTable::put(const uint64_t zobrist_key,
             std::cout << "Best move: " << chess::uci::moveToUci(found_entry.best_move) << std::endl;
             std::cout << "Score: " << found_entry.score << std::endl;
         }
-
+#endif
         found_entry.score = scoreFromTT(found_entry.score, ply);
         return found_entry;
     }
