@@ -302,11 +302,6 @@ int main()
         else
         {
             FAILURE++;
-            if (already_logged_failure == false)
-            {
-                std::cout << "================== FAILURE LOG OUTPUT =======================";
-                std::cout << std::get<1>(mre_result) << std::endl;
-            }
             std::cout << "FAILURE\n";
         }
     }
