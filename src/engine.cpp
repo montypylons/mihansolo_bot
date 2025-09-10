@@ -19,7 +19,7 @@ namespace engine
     constexpr int MAX_EXTENSIONS = 0; // BUG: extensions cause node explosion
     constexpr int QUIESCENCE_DEPTH = 0;
     constexpr int DELTA = 200;
-
+    bool log_TT = false;
     int history[2][64][64];
     int nodes = 0;
 

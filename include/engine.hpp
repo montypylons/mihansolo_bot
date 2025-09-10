@@ -14,13 +14,15 @@ namespace engine
 
     // Book initialization
     void init_book();
+    extern bool log_TT;
 
     // Book move lookup
     std::optional<std::string> book_move(const chess::Board& board);
 
     // Search for best move (returns UCI string)
     std::string search(const std::optional<chess::Board>& fen,
-                       const std::optional<TimeManagement::TimeManager>& manager1, int default_depth = 5, std::ostream& output =
+                       const std::optional<TimeManagement::TimeManager>& manager1, int default_depth = 5,
+                       std::ostream& output =
                            std::cout);
 
     // Negamax search (returns eval and best move)
