@@ -298,6 +298,10 @@ namespace engine
         */
 
         // SPRT shows NMP is -37.6 elo, so commented out for now
+        if (board.getFen() == "r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10")
+        {
+            log_TT = true;
+        }
 
         for (const auto& move : legal_moves)
         {
@@ -338,6 +342,7 @@ namespace engine
                 return std::make_tuple(best_eval, best_move);
             }
         }
+        log_TT = false;
         // Start transposition table stuff
         NodeType node_type;
         if (best_eval <= alpha_original)

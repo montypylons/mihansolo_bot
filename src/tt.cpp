@@ -2,6 +2,8 @@
 #include "chess.hpp"
 #include "tt.hpp"
 
+#include "engine.hpp"
+
 
 struct TTEntry; // TODO: get tests for TT
 
@@ -59,6 +61,10 @@ void TranspositionTable::put(const uint64_t zobrist_key,
 {
     if (auto found_entry = table[address_calc(zobrist_key)]; found_entry.zobrist_key == zobrist_key)
     {
+        if (engine::log_TT && ply == 3)
+        {
+            std::cout << "Getting TT entry ... \n";
+        }
         if (found_entry.best_move == chess::Move::make<chess::Move::NORMAL>(chess::Square::SQ_C2, chess::Square::SQ_A1)
             &&
             zobrist_key == chess::Board("r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10").
