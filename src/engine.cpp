@@ -195,7 +195,6 @@ namespace engine
      */
     inline int reduction_for(const int depth)
     {
-
         return depth >= 6 ? 3 : 2;
     }
 
