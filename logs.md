@@ -1,23 +1,14 @@
 ```powershell
-C:\Users\DELL\Documents\mihansolo_bot\cmake-build-release\experiments.exe
-started main
 
-Minimal reproducible example
-
-ITERATIONS: 4
-no abort [line 396][engine::search]
-changed PV Move to: c8d7 [line 398][engine::search]
-no abort [line 396][engine::search]
-changed PV Move to: b4c2 [line 398][engine::search]
 Evaluating move c2a1 ...
+
 Getting TT entry ...
-
-
 [line 67] [TranspositionTable::get] Got entry for CHILD of target FEN with:
 Index: 5955065
 Zobrist key: 18389004031434087929
 Best move: a1a1
 Score: -470
+
  ... with score: 470
 Evaluating move d4e3 ...
  ... with score: 280
@@ -120,15 +111,16 @@ PV_Move: b4c2
 
 no abort [line 396][engine::search]
 changed PV Move to: b4c2 [line 398][engine::search]
+
 Evaluating move c2a1 ...
 Getting TT entry ...
-
 
 [line 67] [TranspositionTable::get] Got entry for CHILD of target FEN with:
 Index: 5955065
 Zobrist key: 18389004031434087929
 Best move: a1a1
 Score: -470
+
  ... with score: 0
 Evaluating move d4e3 ...
  ... with score: 0
@@ -229,34 +221,12 @@ Last move: e1e2
 PV_Move: b4c2
 
 
-
-
 [line 46] [TranspositionTable::put]
 Putting TTEntry at index 5176714
 Best move: c2a1
 Score: 0
 Zobrist key: 4044544641827011978
 Aborting due to time management[line 402][engine::search]
-
-
-[line 79] [TranspositionTable::get] Got entry for target FEN with:
-Index: 5176714
-Zobrist key: 4044544641827011978
-Best move: c2a1
-Score: 0
-
-
-[line 79] [TranspositionTable::get] Got entry for target FEN with:
-Index: 5176714
-Zobrist key: 4044544641827011978
-Best move: c2a1
-Score: 0
-output:
-
-info depth 5 nodes 4314 score cp 9997
-bestmove b4c2
-info depth 2 nodes 2 score cp 0
-bestmove c2a1
 
 FAILURE
 ```

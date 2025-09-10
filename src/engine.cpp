@@ -435,17 +435,21 @@ namespace engine
                     std::cout << "changed PV Move to: " << chess::uci::moveToUci(PV_Move) <<
                         " [line 398][engine::search]\n";
                     previous_eval = eval;
-                }
-                else
-                {
-                    std::cout << "Aborting due to time management[line 402][engine::search]\n";
-                }
+                    if (std::abs(eval) > 9995)
+                    {
+                        std::cout << "Mate detected, stopping early\n";
+                        break;
+                    }
+                    else
+                    {
+                        std::cout << "Aborting due to time management[line 402][engine::search]\n";
+                    }
 
-                depth++;
+                    depth++;
+                }
             }
+            // TODO: add UCI E2E tests as part of CTest suite, since there are none currently
         }
-        // TODO: add UCI E2E tests as part of CTest suite, since there are none currently
-
         else
         {
             for (int i = 1; i <= default_depth; i++)

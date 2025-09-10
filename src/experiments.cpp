@@ -5,7 +5,7 @@
 #include "engine.hpp"
 
 const auto targetFEN = "r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10";
-constexpr auto current_MRE_iterations = 4;
+constexpr auto current_MRE_iterations = 50;
 constexpr auto current_M_success_commands_ik_my_variable_names_are_bad =
     "position startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3\n"
     "go depth 2\n"
@@ -234,6 +234,30 @@ bool MRE()
 {
     // this is known to fail, typically under 25/50 trials succeed
     constexpr auto target_move = "bestmove d4d3";
+    constexpr auto commands_actually_original =
+        "ucinewgame\n"
+        "isready\n"
+        "position startpos moves e2e3\n"
+        "go movetime 10000\n"
+        "setoption name Ponder value true\n"
+        "position startpos moves e2e3 b8c6 b1c3\n"
+        "go wtime 60470 btime 57999 winc 1000 binc 1000\n"
+        "position startpos moves e2e3 b8c6 b1c3 e7e5 d1g4\n"
+        "go wtime 61290 btime 55489 winc 1000 binc 1000\n"
+        "position startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4\n"
+        "go wtime 62100 btime 53109 winc 1000 binc 1000\n"
+        "position startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4\n"
+        "go wtime 62910 btime 50849 winc 1000 binc 1000\n"
+        "position startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1\n"
+        "go wtime 63710 btime 48699 winc 1000 binc 1000\n"
+        "position startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3\n"
+        "go wtime 64520 btime 46659 winc 1000 binc 1000\n"
+        "position startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3\n"
+        "go wtime 65330 btime 44719 winc 1000 binc 1000\n"
+        "position startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3\n"
+        "go wtime 66130 btime 42879 winc 1000 binc 1000\n"
+        "position startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3 b4c2 e1e2\n"
+        "go wtime 66950 btime 41129 winc 1000 binc 1000";
     constexpr auto commands_original =
         "position startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3\n"
         "go wtime 66130 btime 42879 winc 1000 binc 1000\n"
@@ -248,11 +272,11 @@ bool MRE()
 
     constexpr auto current_MRE = // verified with stockfish 17 (AVX2, x86-64)
         "position startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3\n"
-        "go wtime 1500 btime 1500\n"
+        "go wtime 6300 btime 6300 winc 1000 binc 1000\n"
         "position startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3 b4c2 e1e2\n"
-        "go depth 2";
+        "go wtime 1500 btime 1500 winc 1000 binc 1000";
 
-    auto input = std::istringstream(current_MRE);
+    auto input = std::istringstream(commands_actually_original);
     auto output = std::ostringstream();
 
     engine::start_uci(input, output);
