@@ -1,5 +1,154 @@
 ### TRACKER.md - not ChatGPT'ed, the emojis make it look like that, but it's not actually
 
+## LOg output to parse through
+
+C:\Users\DELL\Documents\mihansolo_bot\cmake-build-release\experiments.exe
+started main
+
+Minimal reproducible example
+
+no abort [line 396][engine::search]
+changed PV Move to: b4c2 [line 398][engine::search]
+no abort [line 396][engine::search]
+changed PV Move to: b4c2 [line 398][engine::search]
+no abort [line 396][engine::search]
+changed PV Move to: b4c2 [line 398][engine::search]
+no abort [line 396][engine::search]
+changed PV Move to: b4c2 [line 398][engine::search]
+no abort [line 396][engine::search]
+changed PV Move to: b4c2 [line 398][engine::search]
+Getting TT entry ...
+
+[line 67] [TranspositionTable::get] Got entry for CHILD of target FEN with:
+Index: 5955065
+Zobrist key: 18389004031434087929
+Best move: f3e5
+Score: -425
+
+Evaluating move c2a1 ... with score: 425
+
+Evaluating move d4e3 ... with score: 425
+
+Evaluating move d4c3 ... with score: 425
+
+Evaluating move c2e3 ... with score: 425
+
+Evaluating move g8h8 ... with score: 360
+
+Evaluating move d8e8 ... with score: 340
+
+Evaluating move e5e4 ... with score: 405
+
+Evaluating move a7a6 ... with score: 355
+
+Evaluating move b7b6 ... with score: 370
+
+Evaluating move c7c6 ... with score: 415
+
+Evaluating move g7g6 ... with score: 355
+
+Evaluating move h7h6 ... with score: 370
+
+Evaluating move a7a5 ... with score: 365
+
+Evaluating move b7b5 ... with score: 0
+
+Evaluating move g7g5 ... with score: 0
+
+Evaluating move h7h5 ... with score: 0
+
+Evaluating move c2e1 ... with score: 0
+
+Evaluating move c2a3 ... with score: 0
+
+Evaluating move c2b4 ... with score: 0
+
+Evaluating move f6e4 ... with score: 0
+
+Evaluating move f6g4 ... with score: 0
+
+Evaluating move f6d5 ... with score: 0
+
+Evaluating move f6h5 ... with score: 0
+
+Evaluating move f6d7 ... with score: 0
+
+Evaluating move f6e8 ... with score: 0
+
+Evaluating move c5a3 ... with score: 0
+
+Evaluating move c5b4 ... with score: 0
+
+Evaluating move c5b6 ... with score: 0
+
+Evaluating move c5d6 ... with score: 0
+
+Evaluating move c5e7 ... with score: 0
+
+Evaluating move c8h3 ... with score: 0
+
+Evaluating move c8g4 ... with score: 0
+
+Evaluating move c8f5 ... with score: 0
+
+Evaluating move c8e6 ... with score: 0
+
+Evaluating move a8b8 ... with score: 0
+
+Evaluating move f8e8 ... with score: 0
+
+Evaluating move d8d5 ... with score: 0
+
+Evaluating move d8d6 ... with score: 0
+
+Evaluating move d8d7 ... with score: 0
+
+Evaluating move d8e7 ... with score: 0
+
+Evaluating move d4d3 ... with score: 0
+
+Evaluating move c8d7 ... with score: 0
+
+Negamax PUTTING entry for zobrist key: 4044544641827011978
+Index: 5176714
+Best move: c2a1
+Score: 425
+
+Params:
+Board FEN: r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10
+Alpha: -2147483647
+Beta: 2147483647
+Depth: 4
+Ply: 2
+Last move: e1e2
+PV_Move: b4c2
+
+[line 46] [TranspositionTable::put]
+Putting TTEntry at index 5176714
+Best move: c2a1
+Score: 425
+Zobrist key: 4044544641827011978
+Aborting due to time management[line 402][engine::search]
+
+[line 79] [TranspositionTable::get] Got entry for target FEN with:
+Index: 5176714
+Zobrist key: 4044544641827011978
+Best move: c2a1
+Score: 425
+
+[line 79] [TranspositionTable::get] Got entry for target FEN with:
+Index: 5176714
+Zobrist key: 4044544641827011978
+Best move: c2a1
+Score: 425
+
+info depth 7 nodes 14929 score cp 9997
+bestmove b4c2
+info depth 2 nodes 2 score cp 425
+bestmove c2a1
+
+FAILURE
+
 **Even more minimal examepl**
 
 ## ignore below
