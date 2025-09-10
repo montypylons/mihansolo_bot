@@ -38,7 +38,7 @@
 ## Acknowledgements
 - Disservin's [chess-lib](https://github.com/Disservin/chess-library)
 - [Cutechess](https://github.com/cutechess/cutechess)
-- [Hack Club](hackclub.com) For giving me the motivation to build this with their excellent Summer Of Making program
+- [Hack Club](hackclub.com) - For giving me the motivation to build this with their excellent Summer Of Making program
 - [Chess Programming Wiki](https://www.chessprogramming.org/Main_Page)
 - [Engine Programming Discord](https://discord.com/invite/F6W6mMsTGN)
 - [Stockfish Discord](https://discord.com/invite/GWDRS3kU6R)
