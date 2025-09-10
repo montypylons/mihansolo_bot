@@ -230,7 +230,7 @@ void negamax_debugging() // trying to get a MRE on #3, this isn't exactly the sa
         std::endl;
 }
 
-bool MRE()
+std::pair<bool, std::string> MRE()
 {
     // this is known to fail, typically under 25/50 trials succeed
     constexpr auto target_move = "bestmove d4d3";
@@ -256,10 +256,11 @@ bool MRE()
     auto output = std::ostringstream();
 
     engine::start_uci(input, output);
-
     const auto output_string = output.str();
+
     std::cout << "output: \n\n" << output_string << std::endl;
-    return getLastLine(output_string) == target_move;
+
+    return std::make_pair(getLastLine(output_string) == target_move, output_string);
 }
 
 bool negamax_MRE(TranspositionTable& table)
@@ -287,12 +288,13 @@ int main()
     std::cout << "Minimal reproducible example\n\n";
     // std::cout << "Experiments\n\n";
     std::cout << "ITERATIONS: " << current_MRE_iterations << std::endl;
+    bool already_logged_failure = false;
     int SUCCESS = 0;
     int FAILURE = 0;
     for (int i = 0; i < current_MRE_iterations; i++)
     {
         // if (TranspositionTable table; negamax_MRE(table))
-        if (MRE())
+        if (const auto mre_result = MRE(); std::get<0>(mre_result))
         {
             SUCCESS++;
             std::cout << "SUCCESS\n";
@@ -300,6 +302,11 @@ int main()
         else
         {
             FAILURE++;
+            if (already_logged_failure == false)
+            {
+                std::cout << "================== FAILURE LOG OUTPUT =======================";
+                std::cout << std::get<1>(mre_result) << std::endl;
+            }
             std::cout << "FAILURE\n";
         }
     }
