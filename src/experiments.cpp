@@ -5,7 +5,7 @@
 #include "engine.hpp"
 
 const auto targetFEN = "r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10";
-constexpr auto current_MRE_iterations = 10;
+constexpr auto current_MRE_iterations = 50;
 constexpr auto current_M_success_commands_ik_my_variable_names_are_bad =
     "position startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3\n"
     "go depth 2\n"
@@ -280,6 +280,7 @@ bool MRE()
     auto output = std::ostringstream();
 
     engine::start_uci(input, output);
+
     const auto output_string = output.str();
 
     std::cout << "output: \n\n" << output_string << std::endl;

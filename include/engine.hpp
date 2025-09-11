@@ -32,8 +32,20 @@ namespace engine
                                          const chess::Move& last_move,
                                          const int& depth, const int& ply, int numExtensions = 0);
     // Game over detection
-    inline bool game_over(const chess::Board& board);
     extern TranspositionTable table;
+
+    inline bool game_over(const chess::Board& board)
+    {
+        chess::Movelist moves;
+        chess::movegen::legalmoves(moves, board);
+        if (moves.empty() || board.isHalfMoveDraw() || board.isInsufficientMaterial() || board.isRepetition())
+        {
+            return true;
+        }
+
+        return false;
+    }
+
 
     // UCI protocol loop
     void start_uci(std::istream& in = std::cin, std::ostream& out = std::cout);
