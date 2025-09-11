@@ -285,7 +285,7 @@ bool MRE()
 
     const auto output_string = output.str();
 
-    std::cout << "output: \n\n" << output_string << std::endl;
+    std::cout << "output: \n" << output_string << std::endl;
 
     return getLastLine(output_string) == target_move;
 }
@@ -317,32 +317,28 @@ void RAW()
 
 int main()
 {
-    /*
-        std::cout << "started main\n\n";
-        std::cout << "Minimal reproducible example\n\n";
-        // std::cout << "Experiments\n\n";
-        std::cout << "ITERATIONS: " << current_MRE_iterations << std::endl;
-        int SUCCESS = 0;
-        int FAILURE = 0;
-        for (int i = 0; i < current_MRE_iterations; i++)
+    std::cout << "started main\n\n";
+    std::cout << "Minimal reproducible example\n\n";
+    // std::cout << "Experiments\n\n";
+    std::cout << "ITERATIONS: " << current_MRE_iterations << std::endl;
+    int SUCCESS = 0;
+    int FAILURE = 0;
+    for (int i = 0; i < current_MRE_iterations; i++)
+    {
+        // if (TranspositionTable table; negamax_MRE(table))
+        if (MRE())
         {
-            // if (TranspositionTable table; negamax_MRE(table))
-            if (MRE())
-            {
-                SUCCESS++;
-                std::cout << "SUCCESS\n";
-            }
-            else
-            {
-                FAILURE++;
-                std::cout << "FAILURE\n";
-            }
+            SUCCESS++;
+            std::cout << "SUCCESS\n";
         }
+        else
+        {
+            FAILURE++;
+            std::cout << "FAILURE\n";
+        }
+    }
 
-        std::cout << "Success rate (found d4d3): " << SUCCESS << "/" << SUCCESS + FAILURE << std::endl;
-        return 0;
-        getPrimes();
-        */
-    RAW();
+    std::cout << "Success rate (found d4d3): " << SUCCESS << "/" << SUCCESS + FAILURE << std::endl;
+    return 0;
     return 0;
 }
