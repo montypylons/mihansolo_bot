@@ -37,3 +37,5 @@ build/
 # Temporary / lock files
 .~lock.*.ods#
 **/.cursor
+config.yml~
+.config.yml.un~
