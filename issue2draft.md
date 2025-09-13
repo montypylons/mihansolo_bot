@@ -9,7 +9,21 @@ Problem: goes from mate in 5 to -2.4 (Stockfish 17.1 evaluation)
 - Blunder is move `43`,where the engine played the incorrect move `Rd5??` instead of the winning move `d8=Q+`.
 - Engine is playing as white
 
-Relevant log section(s):
+## Reproducing bug
+
+### Moves `42-44`
+
+<details>
+<summary><strong>UCI commands </strong> </summary>
+
+```powershell
+ucinewgame
+isready
+```
+
+</details>
+<details>
+<summary><strong>Relevant log section(s) </strong> </summary>
 
 ```powershell
 INFO     move: 42
@@ -47,3 +61,17 @@ INFO     Evaluation: -1.4
 INFO     Depth: 10
 INFO     Nodes: 6.7M
 ```
+
+</details>
+
+### Moves `1-44`
+
+<details>
+<summary><strong> UCI commands </strong> </summary>
+
+```powershell
+ucinewgame
+isready
+```
+
+</details>

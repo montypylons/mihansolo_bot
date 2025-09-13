@@ -38,5 +38,7 @@ build/
 .~lock.*.ods#
 **/.cursor
 config.yml~
+*.yml.un~
 *.un~
 *.png
+.config.yml.un~
