@@ -1111,7 +1111,7 @@ INFO     move: 1                                                                
 pattern = re.compile(
     r"<<([\s\S]*?)(?=\n\s*(?:DEBUG|INFO))"
 )
-timestamp_regex = re.compile("\[\d{2}/\d{2}/\d{2} \d{2}:\d{2}:\d{2}\]")
+timestamp_regex = re.compile(r"\[\d{2}/\d{2}/\d{2} \d{2}:\d{2}:\d{2}\]")
 
 def extract_UCI(text):
     text = re.sub(timestamp_regex, "", text)
@@ -1120,7 +1120,6 @@ def extract_UCI(text):
     for match in matches:
         match = match.replace("engine.py:950","")
         match = match.replace("engine.py:976","")
-        match = match.strip("\n")
 
         cleaned.append(match)
     return cleaned
