@@ -1,7 +1,7 @@
 # YAML
 *.yml
 
-*.png
+# *.png
 
 # Python
 **/__pycache__/
