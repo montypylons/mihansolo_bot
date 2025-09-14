@@ -235,9 +235,9 @@ namespace engine
 
         // transposition table stuff starts
         const int alpha_original = alpha;
-        #ifndef NDEBUG
+#ifndef NDEBUG
         const int beta_original = beta;
-        #endif
+#endif
         const auto zobrist_key = board.hash();
 
         if (auto TTResult = table1.find_usable_entry(alpha_original, beta, depth, zobrist_key, ply); TTResult.has_value())
@@ -334,9 +334,9 @@ namespace engine
                 return std::make_tuple(best_eval, best_move);
             }
         }
-        #ifndef NDEBUG
+#ifndef NDEBUG
         log_TT = false;
-        #endif
+#endif
         // Start transposition table stuff
         NodeType node_type;
         if (best_eval <= alpha_original)
