@@ -1,3 +1,6 @@
 [submodule "lichess-bot"]
 	path = lichess-bot
 	url = git@github.com:lichess-bot-devs/lichess-bot.git
+[submodule "vcpkg"]
+    path = vcpkg
+    url = git@github.com:microsoft/vcpkg.git
