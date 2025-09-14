@@ -17,6 +17,7 @@ TEMP/*
 # Editor configs
 .vscode/
 .vs/
+.idea\
 .idea/
 *.user
 
