@@ -156,7 +156,7 @@ namespace engine
      */
     void init_book()
     {
-        book.Load("C:/Users/DELL/Documents/mihansolo_bot/gm2600.bin");
+        book.Load("C:/Users/DELL/Documents/mihansolo_bot/books/gm2600.bin");
     }
 
     /**

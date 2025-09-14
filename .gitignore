@@ -1,6 +1,8 @@
 # YAML
 *.yml
 
+*.png
+
 # Python
 **/__pycache__/
 
@@ -15,6 +17,7 @@ TEMP/*
 # Editor configs
 .vscode/
 .vs/
+.idea\
 .idea/
 *.user
 
@@ -37,3 +40,7 @@ build/
 # Temporary / lock files
 .~lock.*.ods#
 **/.cursor
+config.yml~
+*.yml.un~
+*.un~
+.config.yml.un~

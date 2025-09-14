@@ -10,17 +10,18 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 if (MSVC AND CMAKE_BUILD_TYPE STREQUAL "Release")
     add_compile_options(
-            /Ox /Ot /Ob2 /Oi /Oy /GL /fp:fast /Gy
+            /Ox /Ot /Ob2 /Oi /Oy /GL /fp:fast /Gy 
     )
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /LTCG /OPT:REF /OPT:ICF")
 endif()
 
 if (MSVC AND CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
     add_compile_options(
-            /Ox /Ot /Ob2 /Oi /Oy /GL /fp:fast /Gy /Zi
+            /Ox /Ot /Ob2 /Oi /Oy /GL /fp:fast /Gy /Zi 
     )
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /PROFILE /LTCG /OPT:REF /OPT:ICF")
 endif()
+
 
 # -------------------------------
 # Dependencies
