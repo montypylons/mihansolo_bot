@@ -29,7 +29,7 @@ namespace engine
     bool manager_exists = false;
 
     Reader::Book book;
-    TranspositionTable table;                           // TODO: add tests fr this
+    TranspositionTable table; // TODO: add tests fr this
     std::optional<TimeManagement::TimeManager> manager; // TODO: add tests fr this
 
     const int initial_alpha = std::numeric_limits<int>::min() + 1; // to avoid wraparound bugs
@@ -42,10 +42,10 @@ namespace engine
      * i.e. they are one move away from promoting.
      * The main use is for passed pawn search extensions.
      */
-    inline bool is_pawns_near_promotion(const chess::Board &board)
+    inline bool is_pawns_near_promotion(const chess::Board& board)
     {
         return 0x00FF000000000000ULL & board.pieces(chess::PieceType::PAWN, chess::Color::BLACK).getBits() ||
-               0x000000000000FF00ULL & board.pieces(chess::PieceType::PAWN, chess::Color::WHITE).getBits();
+            0x000000000000FF00ULL & board.pieces(chess::PieceType::PAWN, chess::Color::WHITE).getBits();
     }
 
     /**
@@ -53,7 +53,7 @@ namespace engine
      * @param move
      * @return Whether it is a promotion or not
      */
-    inline bool is_promotion(const chess::Move &move)
+    inline bool is_promotion(const chess::Move& move)
     {
         return move.typeOf() == chess::Move::PROMOTION;
     }
@@ -76,8 +76,8 @@ namespace engine
      * @param q_manager
      * @return The score of the position after evaluating to a quiescent position (no captures).
      */
-    int QuiescenceSearch(int alpha, const int beta, chess::Board &board, const int ply,
-                         const std::optional<TimeManagement::TimeManager> &q_manager)
+    int QuiescenceSearch(int alpha, const int beta, chess::Board& board, const int ply,
+                         const std::optional<TimeManagement::TimeManager>& q_manager)
     {
         if (q_manager.has_value() && !q_manager->time_remaining())
         {
@@ -87,7 +87,8 @@ namespace engine
         nodes++;
 
         const uint64_t zobrist = board.hash();
-        if (const auto ttEntry = table.find_usable_entry(alpha, beta, QUIESCENCE_DEPTH, zobrist, ply); ttEntry.has_value())
+        if (const auto ttEntry = table.find_usable_entry(alpha, beta, QUIESCENCE_DEPTH, zobrist, ply); ttEntry.
+            has_value())
         {
             return std::get<0>(ttEntry.value());
         }
@@ -109,7 +110,7 @@ namespace engine
         chess::movegen::legalmoves<chess::movegen::MoveGenType::CAPTURE>(capture_moves, board);
         utils::order_capture_moves(capture_moves, board);
 
-        for (const auto &move : capture_moves)
+        for (const auto& move : capture_moves)
         {
             if (!board.inCheck() && !evaluation::is_endgame(board) && !is_promotion(move) &&
                 best_value + utils::piece_values[board.at(move.to()).type()] + DELTA < alpha)
@@ -156,7 +157,7 @@ namespace engine
      */
     void init_book()
     {
-        book.Load("C:/Users/DELL/Documents/mihansolo_bot/books/gm2600.bin");
+        book.Load("../books/gm2600.bin");
     }
 
     /**
@@ -164,7 +165,7 @@ namespace engine
      * @param board Board to find book move for
      * @return A random book move if multiple found, if only one found return that, if none found return std::nullopt
      */
-    std::optional<std::string> book_move(const chess::Board &board)
+    std::optional<std::string> book_move(const chess::Board& board)
     {
         if (const Reader::BookMoves book_moves = book.GetBookMoves(board.hash()); !book_moves.empty())
         {
@@ -190,11 +191,11 @@ namespace engine
      * @param depth Current search depth
      * @return Whether we can use null move pruning without adverse side effects
      */
-    inline bool can_NMP(const chess::Board &board, const int depth)
+    inline bool can_NMP(const chess::Board& board, const int depth)
     {
         const int R = reduction_for(depth);
         return depth >= R && depth > R + 1 // need at least one more ply than R
-               && board.hasNonPawnMaterial(board.sideToMove()) && !board.inCheck();
+            && board.hasNonPawnMaterial(board.sideToMove()) && !board.inCheck();
     }
 
     /**
@@ -211,19 +212,20 @@ namespace engine
      * @param nega_manager
      * @return A tuple of the believed evaluation and best move in the position
      */
-    std::tuple<int, chess::Move> negamax(const std::optional<TimeManagement::TimeManager> &nega_manager,
-                                         const chess::Move &PV_Move, TranspositionTable &table1, chess::Board &board,
+    std::tuple<int, chess::Move> negamax(const std::optional<TimeManagement::TimeManager>& nega_manager,
+                                         const chess::Move& PV_Move, TranspositionTable& table1, chess::Board& board,
                                          int alpha,
                                          const int beta,
-                                         const chess::Move &last_move,
-                                         const int &depth, const int &ply, const int numExtensions)
+                                         const chess::Move& last_move,
+                                         const int& depth, const int& ply, const int numExtensions)
     {
         nodes++;
         // time management
         if (nega_manager.has_value() && !nega_manager->time_remaining())
         {
 #ifndef NDEBUG
-            if (board.zobrist() == chess::Board("r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10").zobrist())
+            if (board.zobrist() == chess::Board("r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10").
+                zobrist())
             {
                 std::cout << "TARGET FEN REACHED ... AND ABORTED" << std::endl;
             }
@@ -240,7 +242,8 @@ namespace engine
 #endif
         const auto zobrist_key = board.hash();
 
-        if (auto TTResult = table1.find_usable_entry(alpha_original, beta, depth, zobrist_key, ply); TTResult.has_value())
+        if (auto TTResult = table1.find_usable_entry(alpha_original, beta, depth, zobrist_key, ply); TTResult.
+            has_value())
         {
             return TTResult.value();
         }
@@ -290,7 +293,7 @@ namespace engine
             log_TT = true;
         }
 #endif
-        for (const auto &move : legal_moves)
+        for (const auto& move : legal_moves)
         {
             int score;
             chess::Move dummy_move{};
@@ -353,7 +356,8 @@ namespace engine
         }
 #ifndef NDEBUG
 
-        if (zobrist_key == chess::Board("r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10").zobrist())
+        if (zobrist_key == chess::Board("r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10").
+            zobrist())
         {
             std::cout << "\n\nNegamax PUTTING entry for zobrist key: " << zobrist_key << std::endl;
             std::cout << "Index: " << table1.address_calc(zobrist_key) << std::endl;
@@ -386,9 +390,9 @@ namespace engine
      * @param output
      * @return The believed best move in the position as a UCI-formatted string
      */
-    std::string search(const std::optional<chess::Board> &fen,
-                       const std::optional<TimeManagement::TimeManager> &manager1, const int default_depth,
-                       std::ostream &output)
+    std::string search(const std::optional<chess::Board>& fen,
+                       const std::optional<TimeManagement::TimeManager>& manager1, const int default_depth,
+                       std::ostream& output)
     {
         manager_exists = manager1.has_value();
         int depth = 1;
@@ -430,7 +434,8 @@ namespace engine
                     PV_Move = returned_move;
 #ifndef NDEBUG
 
-                    std::cout << "changed PV Move to: " << chess::uci::moveToUci(PV_Move) << " [line 398][engine::search]\n";
+                    std::cout << "changed PV Move to: " << chess::uci::moveToUci(PV_Move) <<
+                        " [line 398][engine::search]\n";
 #endif
                     previous_eval = eval;
                     if (std::abs(eval) > 9995)
@@ -479,7 +484,7 @@ namespace engine
     /**
      * Start the UCI input/output loop, doesn't have all the options yet but working on it :D
      */
-    void start_uci(std::istream &in, std::ostream &out)
+    void start_uci(std::istream& in, std::ostream& out)
     {
         chess::Board board;
         std::string line;
