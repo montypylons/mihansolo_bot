@@ -37,8 +37,7 @@ TEST(BookMoveTest, BasicAssertions)
     ASSERT_TRUE(
         engine::book_move(chess::Board("rnbqkbnr/ppp1pppp/8/3p4/2PP4/8/PP2PPPP/RNBQKBNR b KQkq - 0 2")).has_value());
     ASSERT_TRUE(
-        engine::book_move(chess::Board("r1bqkbnr/pppp1ppp/2n5/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 0 1")).has_value(
-        ));
+        engine::book_move(chess::Board("r1bqkbnr/pppp1ppp/2n5/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 0 1")).has_value());
 
     ASSERT_FALSE(
         engine::book_move(chess::Board("2rq1rk1/pQ3Rbp/3p2p1/1p4N1/2p3N1/2P5/PP3PPP/n5K1 b - - 0 21")).has_value());
@@ -106,11 +105,11 @@ TEST(NoIllegalMovesTest, BasicAssertions) // we are returning 0000 at extremely 
 {
     auto board1 = chess::Board("r4rk1/pppbq1bp/2n1p3/3pP1p1/6P1/2N1QN1P/PPP2PB1/R2R2K1 b - - 3 17");
     auto man = TimeManagement::TimeManager(false);
-    man.go(100, 24, 0, 0); // if btime is 19 test fails
+    man.go(100, 100, 0, 0); // if btime is 19 test fails
     const auto result1 = engine::search(board1, man);
+    std::cout << "Result" << result1 << std::endl;
     ASSERT_FALSE(result1 == "a1a1");
     ASSERT_FALSE(result1 == "0000"); // due to this
-    std::cout << "Search result: " << result1 << std::endl;
 }
 
 TEST(TimeManagementTest, BasicAssertions)
