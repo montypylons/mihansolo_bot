@@ -1,6 +1,8 @@
 # YAML
 *.yml
 
+*.png
+
 # Python
 **/__pycache__/
 
@@ -40,5 +42,4 @@ build/
 config.yml~
 *.yml.un~
 *.un~
-*.png
 .config.yml.un~
