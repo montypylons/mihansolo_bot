@@ -343,6 +343,7 @@ void new_MRE()
     std::ostringstream output;
     std::istringstream input(commands);
         engine::start_uci(input, output);
+        std::cout << output.str()<<std::endl;
 }
 int main()
 {
