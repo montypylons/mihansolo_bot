@@ -1,6 +1,6 @@
 # Draft for issue #3 (discovered in a game vs mochi-bot)
 
-![alt text](image-2.png)
+![screenshot of lichess page](image-2.png)
 
 Lichess: [`n6wtAbkq`](https://lichess.org/n6wtAbkq#84)
 
@@ -83,4 +83,8 @@ The commands
 followed by `go wtime 1000 btime 1000` lead to the output `bestmove d7d8q` (see picture below). However, when other
 positions are set up, the output is simply `bestmove x1y2`. Where is the `q` at the end coming from?
 
-![alt text](image-3.png)
+Update: even with `go depth 1`, it returns
+`info depth 1 nodes 43 score cp 660` then
+`bestmove d7d8q`
+
+![screenshot of terminal](image-3.png)
