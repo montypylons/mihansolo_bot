@@ -8,6 +8,7 @@ Problem: goes from mate in 5 to -2.4 (Stockfish 17.1 evaluation)
 
 - Blunder is move `43`,where the engine played the incorrect move `Rd5??` instead of the winning move `d8=Q+`.
 - Engine is playing as white
+- MihanSolo's vs Stockfish's decisions: ![img_3.png](img_3.png)
 
 ## Reproducing bug
 
