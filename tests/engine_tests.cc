@@ -106,7 +106,7 @@ TEST(NoIllegalMovesTest, BasicAssertions) // we are returning 0000 at extremely 
 {
     auto board1 = chess::Board("r4rk1/pppbq1bp/2n1p3/3pP1p1/6P1/2N1QN1P/PPP2PB1/R2R2K1 b - - 3 17");
     auto man = TimeManagement::TimeManager(false);
-    man.go(100, 39, 0, 0); // if btime is <40 ms the test will fail (see line 113)
+    man.go(100, 40, 0, 0); // if btime is <40 ms the test will fail (see line 113)
     // TODO: fix that it used to be <20 ms then a failure
     const auto result1 = engine::search(board1, man);
     std::cout << "Result: " << result1 << std::endl;
