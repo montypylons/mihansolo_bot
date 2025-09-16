@@ -19,6 +19,7 @@ Problem: goes from mate in 5 to -2.4 (Stockfish 17.1 evaluation)
 ```powershell
 ucinewgame
 isready
+position startpos moves c2c4 e7e5 g1f3 e5e4 f3d4 g8f6 b1c3 b8c6 e2e3 f8b4 c3d5 f6d5 c4d5 c6d4 e3d4 e8g8 a2a3 b4a5 d1a4 c7c6 d5d6 b7b5 a4c2 f8e8 a3a4 d8h4 g2g3 e4e3 f2e3 e8e3 e1f2 e3g3 h2g3
 ```
 
 </details>
