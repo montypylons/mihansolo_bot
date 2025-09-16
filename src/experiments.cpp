@@ -342,8 +342,8 @@ void new_MRE()
                               "go wtime 23180 btime 22690 winc 2000 binc 2000";
     std::ostringstream output;
     std::istringstream input(commands);
-        engine::start_uci(input, output);
-        std::cout << output.str()<<std::endl;
+    engine::start_uci(input, output);
+    std::cout << output.str() << std::endl;
 }
 int main()
 {
@@ -371,6 +371,7 @@ int main()
 
     std::cout << "Success rate (found d4d3): " << SUCCESS << "/" << SUCCESS + FAILURE << std::endl;
 */
-    figure_out_why_q_at_end_of_bestmove();
+    // figure_out_why_q_at_end_of_bestmove();
+    new_MRE();
     return 0;
 }
