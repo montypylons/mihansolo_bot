@@ -33,7 +33,6 @@ build/
 *.a
 *.lib
 
-*.log
 *.pgn
 *.txt
 
