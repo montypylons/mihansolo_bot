@@ -5,4 +5,4 @@ $currentDate = Get-Date -Format "M_d_yyyy"
 # Define log file name
 $logFile = "$currentDate.log"
 cd ../lichess-bot
-python lichess-bot.py -v --config.yml ../config/windows-accept-bot.yml | Out-File -FilePath ../logs/windows/$logFile
+python lichess-bot.py -v --config ../config/windows-accept-bot.yml | Tee-Object -FilePath ../logs/windows/$logFile -Append
