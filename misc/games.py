@@ -8,22 +8,19 @@ if len(sys.argv) != 2:
 
 log_file = sys.argv[1]
 
-seen = set()
-lichess_urls = []
+# Pattern to match 8-char game ID
+pattern = re.compile(r"IDs: \{'([A-Za-z0-9]{8})'\}")
 
-try:
-    with open(log_file, "r") as f:
-        for line in f:
-            match = re.search(r'/game/([A-Za-z0-9]+)/move/', line)
-            if match:
-                game_id = match.group(1)
-                if game_id not in seen:
-                    seen.add(game_id)
-                    lichess_urls.append(f"https://lichess.org/{game_id}")
-except FileNotFoundError:
-    print(f"File not found: {log_file}")
-    sys.exit(1)
+def find_gameids(log: str, game_ids) -> list:
+    with open(log, "r", encoding="utf-16") as f:
+            log_content = f.read()    
+            matches = pattern.findall(log_content)
+            for match in matches:
+                if match not in game_ids:
+                    game_ids.append(match)
 
-# Print each URL on its own line
-for url in lichess_urls:
-    print(url)
+game_ids = []
+find_gameids(log_file, game_ids)
+
+for game_id in game_ids:
+    print(f"https://lichess.org/{game_id}")
