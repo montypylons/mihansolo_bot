@@ -80,7 +80,9 @@ namespace engine
     int QuiescenceSearch(int alpha, const int beta, chess::Board& board, const int ply,
                          const std::optional<TimeManagement::TimeManager>& q_manager)
     {
-        if (q_manager.has_value() && !q_manager->time_remaining())
+        bool q_manager_found = false;
+        if (q_manager.has_value()) q_manager_found = true;
+        if (q_manager_found && !q_manager->time_remaining())
         {
             abort_due_to_time = true;
             return 0;
@@ -123,7 +125,10 @@ namespace engine
 
             if (score >= beta)
             {
-                table.put(zobrist, chess::Move::NO_MOVE, QUIESCENCE_DEPTH, score, NodeType::LOWERBOUND, ply);
+                if ((!abort_due_to_time && q_manager->time_remaining()) || !q_manager_found)
+                {
+                    table.put(zobrist, chess::Move::NO_MOVE, QUIESCENCE_DEPTH, score, NodeType::LOWERBOUND, ply);
+                }
                 return score;
             }
             if (score > best_value)
@@ -148,11 +153,11 @@ namespace engine
         {
             node_type = NodeType::EXACT;
         }
-        if (q_manager->time_remaining() && !abort_due_to_time)
+        if ((q_manager->time_remaining() && !abort_due_to_time) || !q_manager_found)
         {
             table.put(zobrist, chess::Move::NO_MOVE, QUIESCENCE_DEPTH, best_value, node_type, ply);
         }
-        else std::cout << "Stopped bad tt put in qsearch" << std::endl;
+
         return best_value;
     }
 
@@ -224,7 +229,9 @@ namespace engine
     {
         nodes++;
         // time management
-        if (nega_manager.has_value() && !nega_manager->time_remaining())
+        bool nega_manager_found = false;
+        if (nega_manager.has_value()) nega_manager_found = true;
+        if (nega_manager_found && !nega_manager->time_remaining())
         {
 #ifndef NDEBUG
             if (board.zobrist() == chess::Board("r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10").
@@ -237,6 +244,7 @@ namespace engine
             abort_due_to_time = true;
             return std::make_tuple(0, chess::Move::NO_MOVE);
         }
+
 
         // transposition table stuff starts
         const int alpha_original = alpha;
@@ -336,13 +344,9 @@ namespace engine
                     history[board.sideToMove()][move.from().index()][move.to().index()] += depth * depth;
                 }
 
-                if (!abort_due_to_time && nega_manager->time_remaining())
+                if ((!abort_due_to_time && nega_manager->time_remaining()) || !nega_manager_found)
                 {
                     table1.put(zobrist_key, best_move, depth, best_eval, NodeType::LOWERBOUND, ply);
-                }
-                else
-                {
-                    std::cout << "Prevented bad TT entry you are welcome (negamax)" << std::endl;
                 }
                 return std::make_tuple(best_eval, best_move);
             }
@@ -385,10 +389,10 @@ namespace engine
         }
 #endif
 
-        if (!abort_due_to_time && nega_manager->time_remaining())
-            table1.put(
-                zobrist_key, best_move, depth, best_eval, node_type, ply);
-        else std::cout << "Line 390 stopped bad put\n";
+        if ((!abort_due_to_time && nega_manager->time_remaining()) || !nega_manager_found)
+        {
+            table1.put(zobrist_key, best_move, depth, best_eval, node_type, ply);
+        }
         // End transposition table stuff
 
         return std::make_tuple(best_eval, best_move);
