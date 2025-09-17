@@ -5,7 +5,7 @@
 #include "engine.hpp"
 
 const auto targetFEN = "r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10";
-constexpr auto current_MRE_iterations = 10;
+constexpr auto current_MRE_iterations = 25;
 constexpr auto current_M_success_commands_ik_my_variable_names_are_bad =
     "position startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3\n"
     "go depth 2\n"
@@ -176,7 +176,7 @@ auto getPrimes()
     std::cout << counter << std::endl;
 }
 
-std::string getLastLine(const std::string &s)
+std::string getLastLine(const std::string& s)
 {
     if (s.empty())
         return s;
@@ -251,7 +251,8 @@ void negamax_debugging() // trying to get a MRE on #3, this isn't exactly the sa
     auto board = chess::Board("r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10");
     const auto result = engine::negamax(std::nullopt, chess::Move::NO_MOVE, table, board, engine::initial_alpha,
                                         engine::initial_beta, chess::Move::NO_MOVE, 2, 0);
-    std::cout << "Move: " << chess::uci::moveToUci(std::get<1>(result)) << " with eval (cp) " << std::get<0>(result) << std::endl;
+    std::cout << "Move: " << chess::uci::moveToUci(std::get<1>(result)) << " with eval (cp) " << std::get<0>(result) <<
+        std::endl;
 }
 
 bool MRE()
@@ -284,12 +285,12 @@ bool MRE()
     const auto output_string = output.str();
 
     std::cout << "output: \n"
-              << output_string << std::endl;
+        << output_string << std::endl;
 
     return getLastLine(output_string) == target_move;
 }
 
-bool negamax_MRE(TranspositionTable &table)
+bool negamax_MRE(TranspositionTable& table)
 {
     auto board = chess::Board("r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10");
     const auto result = engine::negamax(std::nullopt,
@@ -325,30 +326,37 @@ void figure_out_why_q_at_end_of_bestmove()
     engine::start_uci(input);
 }
 
-void new_MRE()
+bool issue_3_MRE()
 {
-    constexpr auto commands = "ucinewgame\nisready\nposition startpos moves c2c4 e7e5 g1f3 e5e4 f3d4 g8f6 b1c3 b8c6 e2e3 f8b4 c3d5 f6d5 "
-                              "c6d4 e3d4 e8g8 aZa3 b4a5 dia4 c7c6 d5d6 b7b5 a4c2 f8e8 a3a4 d8h4 g2g3 e4е3 f2e3 e8е3 e1f2 "
-                              "e3g3 h2g3h4h1 f1g2 h1h5 a4b5 h5b5 c2c5 b5c5 d4c5 a5d8 d2d4 a7a5 f2f3 a8b8 f3e4 b8b4 alb1 "
-                              "d8f6 cle3 a5a4 blal b4b2 ala4 b2g2 a4a8 h7h6 a8c8 g8h7 c8c7 g2g3 c7d7 g3g4 e4d3 h7g6 d7c7 "
-                              "g4g3 d3e2 f6g5 e3g5 g3g5 c7c6 g6f6 d6d7 f6e7 c6d6 e7d8 c5c6 g5g2 e2d3 g2b2\n"
-                              "go wtime 23460 btime 23030 winc 2000 binc 2000\n"
-                              "position startpos moves c2c4 e7e5 g1f3 e5e4 f3d4 g8f6 b1c3 b8c6 e2e3 f8b4 "
-                              "c3d5 f6d5 c4d5 c6d4 e3d4 e8g8 a2a3 b4a5 d1a4 c7c6 d5d6 b7b5 a4c2 "
-                              "f8e8 a3a4 d8h4 g2g3 e4e3 f2e3 e8e3 e1f2 e3g3 h2g3 h4h1 f1g2 h1h5 a4b5 h5b5 c2c5 b5c5 d4c5 "
-                              "a5d8 d2d4 a7a5 f2f3 a8b8 f3e4 b8b4 a1b1 d8f6 c1e3 a5a4 b1a1 b4b2 a1a4 b2g2 a4a8 h7h6 a8c8 "
-                              "g8h7 c8c7 g2g3 c7d7 g3g4 e4d3 h7g6 d7c7 g4g3 d3e2 f6g5 e3g5 g3g5 c7c6 g6f6 d6d7 f6e7 c6d6 "
-                              "e7d8 c5c6 g5g2 e2d3 g2b2 c6c7 d8c7\n"
-                              "go wtime 23180 btime 22690 winc 2000 binc 2000";
+    /*
+     *Stockfish output for this position:
+     *
+     *info depth 20 seldepth 14 multipv 1 score mate 5 nodes 6218 nps 327263 hashfull 1 tbhits 0 time 19 pv d7d8q c7b7 d6d7 b7a6 d8c8 b2b7 d7b7 h6h5 c8a8
+     *bestmove d7d8q ponder c7b7
+    */
+    // works when first command is a depth-based one or really, really short time
+    // not when its time-based
+    constexpr auto commands =
+        "position startpos moves c2c4 e7e5 g1f3 e5e4 f3d4 g8f6 b1c3 b8c6 e2e3 f8b4 c3d5 f6d5 c4d5 c6d4 e3d4 e8g8 a2a3 b4a5 d1a4 c7c6 d5d6 b7b5 a4c2 f8e8 a3a4 d8h4 g2g3 e4e3 f2e3 e8e3 e1f2 e3g3 h2g3 h4h1 f1g2 h1h5 a4b5 h5b5 c2c5 b5c5 d4c5 a5d8 d2d4 a7a5 f2f3 a8b8 f3e4 b8b4 a1b1 d8f6 c1e3 a5a4 b1a1 b4b2 a1a4 b2g2 a4a8 h7h6 a8c8 g8h7 c8c7 g2g3 c7d7 g3g4 e4d3 h7g6 d7c7 g4g3 d3e2 f6g5 e3g5 g3g5 c7c6 g6f6 d6d7 f6e7 c6d6 e7d8 c5c6 g5g2 e2d3 g2b2\n"
+        // "go depth 5\n"
+        // "go wtime 1000 btime 1000\n"
+        // "go wtime 10000 btime 10000 winc 100 binc 100\n"
+        // "go wtime 23180 btime 22690 winc 2000 binc 2000\n"
+        "go wtime 23180 btime 22690 winc 2000 binc 2000\n"
+        "position startpos moves c2c4 e7e5 g1f3 e5e4 f3d4 g8f6 b1c3 b8c6 e2e3 f8b4 c3d5 f6d5 c4d5 c6d4 e3d4 e8g8 a2a3 b4a5 d1a4 c7c6 d5d6 b7b5 a4c2 f8e8 a3a4 d8h4 g2g3 e4e3 f2e3 e8e3 e1f2 e3g3 h2g3 h4h1 f1g2 h1h5 a4b5 h5b5 c2c5 b5c5 d4c5 a5d8 d2d4 a7a5 f2f3 a8b8 f3e4 b8b4 a1b1 d8f6 c1e3 a5a4 b1a1 b4b2 a1a4 b2g2 a4a8 h7h6 a8c8 g8h7 c8c7 g2g3 c7d7 g3g4 e4d3 h7g6 d7c7 g4g3 d3e2 f6g5 e3g5 g3g5 c7c6 g6f6 d6d7 f6e7 c6d6 e7d8 c5c6  g5g2 e2d3 g2b2 c6c7 d8c7\n"
+        "go depth 1";
     std::ostringstream output;
     std::istringstream input(commands);
     engine::start_uci(input, output);
+
     std::cout << output.str() << std::endl;
+    if (getLastLine(output.str()) == "bestmove d7d8q") return true;
+    return false;
 }
+
 int main()
 {
-    /*
-     std::cout << "started main\n\n";
+    std::cout << "started main\n\n";
     std::cout << "Minimal reproducible example\n\n";
     // std::cout << "Experiments\n\n";
     std::cout << "ITERATIONS: " << current_MRE_iterations << std::endl;
@@ -357,7 +365,7 @@ int main()
     for (int i = 0; i < current_MRE_iterations; i++)
     {
         // if (TranspositionTable table; negamax_MRE(table))
-        if (MRE())
+        if (issue_3_MRE())
         {
             SUCCESS++;
             std::cout << "SUCCESS\n";
@@ -369,9 +377,8 @@ int main()
         }
     }
 
-    std::cout << "Success rate (found d4d3): " << SUCCESS << "/" << SUCCESS + FAILURE << std::endl;
-*/
-    // figure_out_why_q_at_end_of_bestmove();
-    new_MRE();
+    std::cout << "Success rate (found d7d8q): " << SUCCESS << "/" << SUCCESS + FAILURE << std::endl;
+
+    //issue_3_MRE();
     return 0;
 }
