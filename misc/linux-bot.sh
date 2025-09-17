@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 current_date=$(date +"%m_%d_%Y")
 
 echo "Starting lichess-bot"
