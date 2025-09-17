@@ -61,6 +61,7 @@ namespace engine
     // NOLINTBEGIN
     /**
      *
+     * @param alpha
      * @param board The current game state
      * @return If current node is terminal, i.e. the game has ended
      */
@@ -147,9 +148,11 @@ namespace engine
         {
             node_type = NodeType::EXACT;
         }
-
-        table.put(zobrist, chess::Move::NO_MOVE, QUIESCENCE_DEPTH, best_value, node_type, ply);
-
+        if (q_manager->time_remaining() && !abort_due_to_time)
+        {
+            table.put(zobrist, chess::Move::NO_MOVE, QUIESCENCE_DEPTH, best_value, node_type, ply);
+        }
+        else std::cout << "Stopped bad tt put in qsearch" << std::endl;
         return best_value;
     }
 
@@ -333,7 +336,14 @@ namespace engine
                     history[board.sideToMove()][move.from().index()][move.to().index()] += depth * depth;
                 }
 
-                table1.put(zobrist_key, best_move, depth, best_eval, NodeType::LOWERBOUND, ply);
+                if (!abort_due_to_time && nega_manager->time_remaining())
+                {
+                    table1.put(zobrist_key, best_move, depth, best_eval, NodeType::LOWERBOUND, ply);
+                }
+                else
+                {
+                    std::cout << "Prevented bad TT entry you are welcome (negamax)" << std::endl;
+                }
                 return std::make_tuple(best_eval, best_move);
             }
         }
@@ -375,7 +385,10 @@ namespace engine
         }
 #endif
 
-        table1.put(zobrist_key, best_move, depth, best_eval, node_type, ply);
+        if (!abort_due_to_time && nega_manager->time_remaining())
+            table1.put(
+                zobrist_key, best_move, depth, best_eval, node_type, ply);
+        else std::cout << "Line 390 stopped bad put\n";
         // End transposition table stuff
 
         return std::make_tuple(best_eval, best_move);
@@ -537,7 +550,7 @@ namespace engine
                     }
                     fen.pop_back(); // remove trailing space
                     board.setFen(fen);
-                    manager = TimeManagement::TimeManager(~board.sideToMove());
+                    manager = TimeManagement::TimeManager(!board.sideToMove());
                     // chess::Color is defined as an enum with WHITE = 0 and BLACK = 1,
                     // which is contradictory to how TimeManager is implemented, so we have to invert it using ~.
                     manager_exists = true;
@@ -556,7 +569,7 @@ namespace engine
 
                     if (manager_exists)
                     {
-                        manager->white = ~board.sideToMove();
+                        manager->white = !board.sideToMove();
                     }
                 }
             }
