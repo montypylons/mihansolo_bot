@@ -456,7 +456,7 @@ bool issue_3_MRE()
 
 bool issue_4_MRE()
 {
-    constexpr auto commands = // TODO: investigate further
+    constexpr auto commands = // TODO: investigate this further
         "position startpos moves e2e4 g7g6 d1f3 b8c6 f1c4 g8f6 d2d3 c6d4 f3d1 "
         "d7d5 e4d5 f6d5 c2c3 d4c6 d1f3 e7e6 g1e2 c6e5 f3e4 e5c4 e4c4 e6e5 e1g1 "
         "f8g7 d3d4 e8g8 d4e5 g7e5 c1h6 f8e8 b1d2 d5b6 c4b3 d8h4 g2g3 h4h6 d2f3 "
