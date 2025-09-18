@@ -1114,7 +1114,7 @@ pattern = re.compile(
 timestamp_regex = re.compile(r"\[\d{2}/\d{2}/\d{2} \d{2}:\d{2}:\d{2}\]")
 moves_regexes = [re.compile("move: ."), re.compile("move: .."), re.compile("move: ...")]
 game_regex = r""
-searching_regex = r"Searching for wtime (?<=\s)\d+(?=\s)"
+searching_regex = r"Searching for wtime (?<=\s)\d+(?=\s) btime (?<=\s)\d+(?=\s)"
 wtime_btime_regex = re.compile(pattern = r"(?<=\s)\d+(?=\s)")
 
 
