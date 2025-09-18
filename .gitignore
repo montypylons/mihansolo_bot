@@ -1,6 +1,7 @@
 # YAML
 *.yml
 *.env
+*.AppImage
 # *.png
 
 # Python
