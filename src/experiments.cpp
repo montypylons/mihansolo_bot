@@ -449,7 +449,7 @@ bool issue_4_MRE() {
     std::ostringstream output;
     engine::start_uci(data,output);
     std::cout << output.str() << std::endl;
-    return !(getLastLine(output.str()) == "bestmove f5e6")
+    return !(getLastLine(output.str()) == "bestmove f5e6");
 }
 int main() {
   std::cout << "started main\n\n";
