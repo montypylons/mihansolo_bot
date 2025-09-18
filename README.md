@@ -42,7 +42,7 @@ _About the name: My friend made it up as a parody on my name and the Star Wars c
 - [Cutechess](https://github.com/cutechess/cutechess)
 - [Hack Club](https://hackclub.com) - For giving me the motivation to build this with their excellent [Summer Of Making](https://summer.hackclub.com) program
 - [Chess Programming Wiki](https://www.chessprogramming.org/Main_Page)
-- [Engine Programming Discord](https://discord.com/invite/F6W6mMsTGN)
+- [Engine Programming Discord](https://discord.com/invite/F6W6mMsTGN) can be a little harsh at times but its all in good faith
 - [Stockfish Discord](https://discord.com/invite/GWDRS3kU6R)
 - [Lichess](https://lichess.org)
   
