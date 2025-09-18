@@ -1112,7 +1112,9 @@ pattern = re.compile(
     r"<<([\s\S]*?)(?=\n\s*(?:DEBUG|INFO))"
 )
 timestamp_regex = re.compile(r"\[\d{2}/\d{2}/\d{2} \d{2}:\d{2}:\d{2}\]")
-game_regex = 
+game_regex = r""
+searching_regex = r""
+wtime_btime_regex = re.compile(pattern = r"(?<=\s)\d+(?=\s)")
 
 
 def get_game_text_for_moves(file_path, game_id: str, starting_move: str, end_move: str) -> str:
