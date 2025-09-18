@@ -438,7 +438,7 @@ bool issue_3_MRE() {
   return false;
 }
 
-bool issue_4_MRE() {
+bool issue_4_MRE() { //TODO: THIS
   constexpr auto commands =
       "position startpos moves e2e4 g7g6 d1f3 b8c6 f1c4 g8f6 d2d3 c6d4 f3d1 "
       "d7d5 e4d5 f6d5 c2c3 d4c6 d1f3 e7e6 g1e2 c6e5 f3e4 e5c4 e4c4 e6e5 e1g1 "
