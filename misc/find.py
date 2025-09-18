@@ -1113,16 +1113,18 @@ pattern = re.compile(
 )
 timestamp_regex = re.compile(r"\[\d{2}/\d{2}/\d{2} \d{2}:\d{2}:\d{2}\]")
 
-def extract_UCI(text):
-    text = re.sub(timestamp_regex, "", text)
-    matches = pattern.findall(text)
-    cleaned = []
-    for match in matches:
-        match = match.replace("engine.py:950","")
-        match = match.replace("engine.py:976","")
+def extract_UCI(file_path):
+    with open(file_path,"r") as f:
+        content = f.read()
+        text = re.sub(timestamp_regex, "", text)
+        matches = pattern.findall(text)
+        cleaned = []
+        for match in matches:
+            match = match.replace("engine.py:950","")
+            match = match.replace("engine.py:976","")
 
-        cleaned.append(match)
-    return cleaned
+            cleaned.append(match)
+        return cleaned
 
 if __name__ == "__main__":
     for match in extract_UCI(target_text):
