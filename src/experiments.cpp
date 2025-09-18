@@ -85,7 +85,7 @@ std::vector boards = {
         "r3kb1r/ppq2ppp/4pn2/2Ppn3/1P4bP/2P2N2/P3BPP1/RNBQ1RK1 b kq - 2 10"),
     chess::Board("3r1rk1/1b1n1pp1/3p4/p4PPQ/4P3/3q1BN1/8/2R2RK1 b - - 1 28"),
     chess::Board("r3qrk1/2p2pp1/p2bpn1p/2ppNb2/3P1P2/1PP1P1B1/P2N2PP/R2Q1RK1 b "
-                 "- - 0 14"),
+        "- - 0 14"),
     chess::Board("7k/p4R1p/3p3r/2pN1n2/2PbBBb1/3P2P1/P3r3/5R1K w - - 1 28"),
     chess::Board(
         "r4rk1/pp3ppp/3p1q2/P1P1p3/2B5/2B2n2/2P2P1P/R2Q1RK1 w - - 0 16"),
@@ -197,255 +197,263 @@ std::vector boards = {
 
 // TODO: we need to make logs in windows and linux then file compare them
 
-auto getPrimes() {
-  std::array<bool, 1'000'000> primes{};
+auto getPrimes()
+{
+    std::array<bool, 1'000'000> primes{};
 
-  primes.fill(true);
-  primes[0] = false;
-  primes[1] = false;
+    primes.fill(true);
+    primes[0] = false;
+    primes[1] = false;
 
-  for (int i = 2; i < 1000; i++) {
-    if (primes[i] == true) {
-      for (int j = i * i; j < 1'000'000; j += i) {
-        primes[j] = false;
-      }
+    for (int i = 2; i < 1000; i++)
+    {
+        if (primes[i] == true)
+        {
+            for (int j = i * i; j < 1'000'000; j += i)
+            {
+                primes[j] = false;
+            }
+        }
     }
-  }
-  int counter{};
-  for (const bool prime : primes) {
-    if (prime == true) {
-      counter++;
+    int counter{};
+    for (const bool prime : primes)
+    {
+        if (prime == true)
+        {
+            counter++;
+        }
     }
-  }
-  std::cout << std::boolalpha;
-  std::cout << primes[0] << std::endl;
-  std::cout << counter << std::endl;
+    std::cout << std::boolalpha;
+    std::cout << primes[0] << std::endl;
+    std::cout << counter << std::endl;
 }
 
-std::string getLastLine(const std::string &s) {
-  if (s.empty())
-    return s;
-  const size_t end = s.find_last_not_of('\n');
-  if (end == std::string::npos)
-    return "";
-  const size_t last_newline_pos = s.rfind('\n', end);
-  if (last_newline_pos == std::string::npos) {
-    return s.substr(0, end + 1);
-  }
-  return s.substr(last_newline_pos + 1, end - last_newline_pos);
+std::string getLastLine(const std::string& s)
+{
+    if (s.empty())
+        return s;
+    const size_t end = s.find_last_not_of('\n');
+    if (end == std::string::npos)
+        return "";
+    const size_t last_newline_pos = s.rfind('\n', end);
+    if (last_newline_pos == std::string::npos)
+    {
+        return s.substr(0, end + 1);
+    }
+    return s.substr(last_newline_pos + 1, end - last_newline_pos);
 }
 
-void negatest() {
-  auto table = TranspositionTable();
-  auto board = chess::Board(
-      "r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10");
-  const auto result = engine::negamax(
-      std::nullopt, chess::Move::NO_MOVE, table, board, engine::initial_alpha,
-      engine::initial_beta, chess::Move::NO_MOVE, 1, 0);
-  std::cout << std::endl;
-  std::cout << "Move: " << chess::uci::moveToUci(std::get<1>(result))
-            << std::endl;
-  std::cout << "Eval: " << std::get<0>(result) << std::endl;
+void negatest()
+{
+    auto table = TranspositionTable();
+    auto board = chess::Board(
+        "r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10");
+    const auto result = engine::negamax(
+        std::nullopt, chess::Move::NO_MOVE, table, board, engine::initial_alpha,
+        engine::initial_beta, chess::Move::NO_MOVE, 1, 0);
+    std::cout << std::endl;
+    std::cout << "Move: " << chess::uci::moveToUci(std::get<1>(result))
+        << std::endl;
+    std::cout << "Eval: " << std::get<0>(result) << std::endl;
 }
 
-bool experiments() {
-  // std::cout << "Test starting" << std::endl;
-  const auto commands2 =
-      "position startpos moves e2e3\ngo movetime 10000\nsetoption name Ponder "
-      "value true\nposition startpos moves e2e3 b8c6 b1c3\ngo wtime 60470 "
-      "btime 57999 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 "
-      "e7e5 d1g4\ngo wtime 61290 btime 55489 winc 1000 binc 1000\nposition "
-      "startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4\ngo wtime 62100 btime "
-      "53109 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 "
-      "d1g4 g8f6 g4c4 d7d5 c4a4\ngo wtime 62910 btime 50849 winc 1000 binc "
-      "1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 "
-      "c4a4 d5d4 c3d1\ngo wtime 63710 btime 48699 winc 1000 binc "
-      "1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 "
-      "c4a4 d5d4 c3d1 f8c5 g1f3\ngo wtime 64520 btime 46659 winc 1000 binc "
-      "1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 "
-      "c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3\ngo wtime 65330 btime 44719 winc "
-      "1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 "
-      "g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3\ngo wtime 66130 "
-      "btime 42879 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 "
-      "e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3 "
-      "b4c2 e1e2\ngo depth 1";
-  const auto commands3 =
-      "position startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 "
-      "d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3\ngo wtime 66130 btime 42879 "
-      "winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 "
-      "g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3 b4c2 "
-      "e1e2\ngo wtime 66130 btime 42879 winc 1200 binc 1200";
-  auto input = std::istringstream(commands3);
-  auto output = std::ostringstream();
-  engine::start_uci(input, output);
+bool experiments()
+{
+    // std::cout << "Test starting" << std::endl;
+    const auto commands2 =
+        "position startpos moves e2e3\ngo movetime 10000\nsetoption name Ponder "
+        "value true\nposition startpos moves e2e3 b8c6 b1c3\ngo wtime 60470 "
+        "btime 57999 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 "
+        "e7e5 d1g4\ngo wtime 61290 btime 55489 winc 1000 binc 1000\nposition "
+        "startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4\ngo wtime 62100 btime "
+        "53109 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 "
+        "d1g4 g8f6 g4c4 d7d5 c4a4\ngo wtime 62910 btime 50849 winc 1000 binc "
+        "1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 "
+        "c4a4 d5d4 c3d1\ngo wtime 63710 btime 48699 winc 1000 binc "
+        "1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 "
+        "c4a4 d5d4 c3d1 f8c5 g1f3\ngo wtime 64520 btime 46659 winc 1000 binc "
+        "1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 "
+        "c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3\ngo wtime 65330 btime 44719 winc "
+        "1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 "
+        "g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3\ngo wtime 66130 "
+        "btime 42879 winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 "
+        "e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3 "
+        "b4c2 e1e2\ngo depth 1";
+    const auto commands3 =
+        "position startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 "
+        "d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3\ngo wtime 66130 btime 42879 "
+        "winc 1000 binc 1000\nposition startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 "
+        "g8f6 g4c4 d7d5 c4a4 d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3 b4c2 "
+        "e1e2\ngo wtime 66130 btime 42879 winc 1200 binc 1200";
+    auto input = std::istringstream(commands3);
+    auto output = std::ostringstream();
+    engine::start_uci(input, output);
 
-  // std::cout << "Engine output (best moves): " << std::endl;
-  const auto out_string = output.str();
-  const auto last_line = getLastLine(out_string);
-  // std::cout << out_string << std::endl;
-  // std::cout << "Last line: " << getLastLine(out_string) << "\n\n";
-  std::cout << "Engine says: " << last_line << std::endl;
-  std::cout << "Stockfish says: " << "d4d3" << std::endl;
-  return getLastLine(out_string) == "bestmove d4d3";
+    // std::cout << "Engine output (best moves): " << std::endl;
+    const auto out_string = output.str();
+    const auto last_line = getLastLine(out_string);
+    // std::cout << out_string << std::endl;
+    // std::cout << "Last line: " << getLastLine(out_string) << "\n\n";
+    std::cout << "Engine says: " << last_line << std::endl;
+    std::cout << "Stockfish says: " << "d4d3" << std::endl;
+    return getLastLine(out_string) == "bestmove d4d3";
 }
 
-void experiments_noTT() {
-  // the pos startpos works out to FEN
-  // r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10
-  std::cout << "Test number 2 starting [we want D4D3]" << std::endl;
-  std::cout << "Not using pre-seeded transposition table for this ...\n\n\n";
-  const auto no_TT_commands =
-      "position startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 "
-      "d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3 b4c2 e1e2\ngo depth 1";
-  auto input_no_TT = std::istringstream(no_TT_commands);
-  auto output_no_TT = std::ostringstream();
-  engine::start_uci(input_no_TT, output_no_TT);
-  std::cout << "Engine output (UCI bestmove's), only final position and go "
-               "commands used, not the whole game\n\n";
-  std::cout << output_no_TT.str() << std::endl;
+void experiments_noTT()
+{
+    // the pos startpos works out to FEN
+    // r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10
+    std::cout << "Test number 2 starting [we want D4D3]" << std::endl;
+    std::cout << "Not using pre-seeded transposition table for this ...\n\n\n";
+    const auto no_TT_commands =
+        "position startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 "
+        "d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3 b4c2 e1e2\ngo depth 1";
+    auto input_no_TT = std::istringstream(no_TT_commands);
+    auto output_no_TT = std::ostringstream();
+    engine::start_uci(input_no_TT, output_no_TT);
+    std::cout << "Engine output (UCI bestmove's), only final position and go "
+        "commands used, not the whole game\n\n";
+    std::cout << output_no_TT.str() << std::endl;
 }
 
 void negamax_debugging() // trying to get a MRE on #3, this isn't exactly the
-                         // same issue ,but I think its related
+// same issue ,but I think its related
 // FAILS (gods save me)
 {
-  auto table = TranspositionTable();
-  auto board = chess::Board(
-      "r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10");
-  const auto result = engine::negamax(
-      std::nullopt, chess::Move::NO_MOVE, table, board, engine::initial_alpha,
-      engine::initial_beta, chess::Move::NO_MOVE, 2, 0);
-  std::cout << "Move: " << chess::uci::moveToUci(std::get<1>(result))
-            << " with eval (cp) " << std::get<0>(result) << std::endl;
+    auto table = TranspositionTable();
+    auto board = chess::Board(
+        "r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10");
+    const auto result = engine::negamax(
+        std::nullopt, chess::Move::NO_MOVE, table, board, engine::initial_alpha,
+        engine::initial_beta, chess::Move::NO_MOVE, 2, 0);
+    std::cout << "Move: " << chess::uci::moveToUci(std::get<1>(result))
+        << " with eval (cp) " << std::get<0>(result) << std::endl;
 }
 
-bool MRE() {
-  // this is known to fail, typically under 25/50 trials succeed
-  constexpr auto target_move = "bestmove d4d3";
-  constexpr auto commands_original =
-      "position startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 "
-      "d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3\n"
-      "go wtime 66130 btime 42879 winc 1000 binc 1000\n"
-      "position startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 "
-      "d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3 b4c2 e1e2\n"
-      "go wtime 66130 btime 42879 winc 1200 binc 1200";
+bool MRE()
+{
+    // this is known to fail, typically under 25/50 trials succeed
+    constexpr auto target_move = "bestmove d4d3";
+    constexpr auto commands_original =
+        "position startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 "
+        "d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3\n"
+        "go wtime 66130 btime 42879 winc 1000 binc 1000\n"
+        "position startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 "
+        "d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3 b4c2 e1e2\n"
+        "go wtime 66130 btime 42879 winc 1200 binc 1200";
 
-  constexpr auto commands =
-      "position startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 "
-      "d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3\n"
-      "go depth 9\n" // wtime 66130 btime 42879 winc 1000 binc 1000
-      "position startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 "
-      "d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3 b4c2 e1e2\n"
-      "go depth 2";
+    constexpr auto commands =
+        "position startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 "
+        "d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3\n"
+        "go depth 9\n" // wtime 66130 btime 42879 winc 1000 binc 1000
+        "position startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 "
+        "d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3 b4c2 e1e2\n"
+        "go depth 2";
 
-  constexpr auto current_MRE = // verified with stockfish 17 (AVX2, x86-64)
-      "position startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 "
-      "d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3\n"
-      "go wtime 6300 btime 6300 winc 1000 binc 1000\n"
-      "position startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 "
-      "d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3 b4c2 e1e2\n"
-      "go wtime 1500 btime 1500 winc 1000 binc 1000";
+    constexpr auto current_MRE = // verified with stockfish 17 (AVX2, x86-64)
+        "position startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 "
+        "d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3\n"
+        "go wtime 6300 btime 6300 winc 1000 binc 1000\n"
+        "position startpos moves e2e3 b8c6 b1c3 e7e5 d1g4 g8f6 g4c4 d7d5 c4a4 "
+        "d5d4 c3d1 f8c5 g1f3 e8g8 b2b3 c6b4 c2c3 b4c2 e1e2\n"
+        "go wtime 1500 btime 1500 winc 1000 binc 1000";
 
-  auto input = std::istringstream(commands_actually_original);
-  auto output = std::ostringstream();
+    auto input = std::istringstream(commands_actually_original);
+    auto output = std::ostringstream();
 
-  engine::start_uci(input, output);
+    engine::start_uci(input, output);
 
-  const auto output_string = output.str();
+    const auto output_string = output.str();
 
-  std::cout << "output: \n" << output_string << std::endl;
+    std::cout << "output: \n" << output_string << std::endl;
 
-  return getLastLine(output_string) == target_move;
+    return getLastLine(output_string) == target_move;
 }
 
-bool negamax_MRE(TranspositionTable &table) {
-  auto board = chess::Board(
-      "r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10");
-  const auto result =
-      engine::negamax(std::nullopt,
-                      chess::Move::make<chess::Move::NORMAL>(
-                          chess::Square::SQ_B4, chess::Square::SQ_C2),
-                      table, board, -2147483647, 2147483647,
-                      chess::Move::make<chess::Move::NORMAL>(
-                          chess::Square::SQ_E1, chess::Square::SQ_E2),
-                      3, 2);
-  const auto move = chess::uci::moveToUci(std::get<1>(result));
-  const auto eval = std::get<0>(result);
-  std::cout << "Move: " << move << std::endl;
-  std::cout << "Eval: " << eval << std::endl;
-  if (move == "d4d3")
-    return true;
-  return false;
+bool negamax_MRE(TranspositionTable& table)
+{
+    auto board = chess::Board(
+        "r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10");
+    const auto result =
+        engine::negamax(std::nullopt,
+                        chess::Move::make<chess::Move::NORMAL>(
+                            chess::Square::SQ_B4, chess::Square::SQ_C2),
+                        table, board, -2147483647, 2147483647,
+                        chess::Move::make<chess::Move::NORMAL>(
+                            chess::Square::SQ_E1, chess::Square::SQ_E2),
+                        3, 2);
+    const auto move = chess::uci::moveToUci(std::get<1>(result));
+    const auto eval = std::get<0>(result);
+    std::cout << "Move: " << move << std::endl;
+    std::cout << "Eval: " << eval << std::endl;
+    if (move == "d4d3")
+        return true;
+    return false;
 }
 
-void RAW() {
-  std::istringstream input(commands_actually_original);
-  engine::start_uci(input);
+void RAW()
+{
+    std::istringstream input(commands_actually_original);
+    engine::start_uci(input);
 }
 
-void figure_out_why_q_at_end_of_bestmove() {
-  constexpr auto commands =
-      "position startpos moves c2c4 e7e5 g1f3 e5e4 f3d4 g8f6 b1c3 b8c6 e2e3 "
-      "f8b4 c3d5 f6d5 c4d5 c6d4 e3d4 e8g8 a2a3 b4a5 d1a4 c7c6 d5d6 b7b5 a4c2 "
-      "f8e8 a3a4 d8h4 g2g3 e4e3 f2e3 e8e3 e1f2 e3g3 h2g3 h4h1 f1g2 h1h5 a4b5 "
-      "h5b5 c2c5 b5c5 d4c5 a5d8 d2d4 a7a5 f2f3 a8b8 f3e4 b8b4 a1b1 d8f6 c1e3 "
-      "a5a4 b1a1 b4b2 a1a4 b2g2 a4a8 h7h6 a8c8 g8h7 c8c7 g2g3 c7d7 g3g4 e4d3 "
-      "h7g6 d7c7 g4g3 d3e2 f6g5 e3g5 g3g5 c7c6 g6f6 d6d7 f6e7 c6d6 e7d8 c5c6 "
-      "g5g2 e2d3 g2b2 c6c7 d8c7\n"
-      "go depth 1"; // trying to get node-count down
-  std::istringstream input(commands);
-  engine::start_uci(input);
+void figure_out_why_q_at_end_of_bestmove()
+{
+    constexpr auto commands =
+        "position startpos moves c2c4 e7e5 g1f3 e5e4 f3d4 g8f6 b1c3 b8c6 e2e3 "
+        "f8b4 c3d5 f6d5 c4d5 c6d4 e3d4 e8g8 a2a3 b4a5 d1a4 c7c6 d5d6 b7b5 a4c2 "
+        "f8e8 a3a4 d8h4 g2g3 e4e3 f2e3 e8e3 e1f2 e3g3 h2g3 h4h1 f1g2 h1h5 a4b5 "
+        "h5b5 c2c5 b5c5 d4c5 a5d8 d2d4 a7a5 f2f3 a8b8 f3e4 b8b4 a1b1 d8f6 c1e3 "
+        "a5a4 b1a1 b4b2 a1a4 b2g2 a4a8 h7h6 a8c8 g8h7 c8c7 g2g3 c7d7 g3g4 e4d3 "
+        "h7g6 d7c7 g4g3 d3e2 f6g5 e3g5 g3g5 c7c6 g6f6 d6d7 f6e7 c6d6 e7d8 c5c6 "
+        "g5g2 e2d3 g2b2 c6c7 d8c7\n"
+        "go depth 1"; // trying to get node-count down
+    std::istringstream input(commands);
+    engine::start_uci(input);
 }
 
-bool issue_3_MRE() {
-  /*
-   *Stockfish output for this position:
-   *
-   *info depth 20 seldepth 14 multipv 1 score mate 5 nodes 6218 nps 327263
-   *hashfull 1 tbhits 0 time 19 pv d7d8q c7b7 d6d7 b7a6 d8c8 b2b7 d7b7 h6h5 c8a8
-   *bestmove d7d8q ponder c7b7
-   */
-  // works when first command is a depth-based one or really, really short time
-  // not when its time-based
-  constexpr auto commands =
-      "position startpos moves c2c4 e7e5 g1f3 e5e4 f3d4 g8f6 b1c3 b8c6 e2e3 "
-      "f8b4 c3d5 f6d5 c4d5 c6d4 e3d4 e8g8 a2a3 b4a5 d1a4 c7c6 d5d6 b7b5 a4c2 "
-      "f8e8 a3a4 d8h4 g2g3 e4e3 f2e3 e8e3 e1f2 e3g3 h2g3 h4h1 f1g2 h1h5 a4b5 "
-      "h5b5 c2c5 b5c5 d4c5 a5d8 d2d4 a7a5 f2f3 a8b8 f3e4 b8b4 a1b1 d8f6 c1e3 "
-      "a5a4 b1a1 b4b2 a1a4 b2g2 a4a8 h7h6 a8c8 g8h7 c8c7 g2g3 c7d7 g3g4 e4d3 "
-      "h7g6 d7c7 g4g3 d3e2 f6g5 e3g5 g3g5 c7c6 g6f6 d6d7 f6e7 c6d6 e7d8 c5c6 "
-      "g5g2 e2d3 g2b2\n"
-      // "go depth 5\n"
-      // "go wtime 1000 btime 1000\n"
-      // "go wtime 10000 btime 10000 winc 100 binc 100\n"
-      // "go wtime 23180 btime 22690 winc 2000 binc 2000\n"
-      "go wtime 23180 btime 22690 winc 2000 binc 2000\n"
-      "position startpos moves c2c4 e7e5 g1f3 e5e4 f3d4 g8f6 b1c3 b8c6 e2e3 "
-      "f8b4 c3d5 f6d5 c4d5 c6d4 e3d4 e8g8 a2a3 b4a5 d1a4 c7c6 d5d6 b7b5 a4c2 "
-      "f8e8 a3a4 d8h4 g2g3 e4e3 f2e3 e8e3 e1f2 e3g3 h2g3 h4h1 f1g2 h1h5 a4b5 "
-      "h5b5 c2c5 b5c5 d4c5 a5d8 d2d4 a7a5 f2f3 a8b8 f3e4 b8b4 a1b1 d8f6 c1e3 "
-      "a5a4 b1a1 b4b2 a1a4 b2g2 a4a8 h7h6 a8c8 g8h7 c8c7 g2g3 c7d7 g3g4 e4d3 "
-      "h7g6 d7c7 g4g3 d3e2 f6g5 e3g5 g3g5 c7c6 g6f6 d6d7 f6e7 c6d6 e7d8 c5c6  "
-      "g5g2 e2d3 g2b2 c6c7 d8c7\n"
-      "go depth 1";
-  std::ostringstream output;
-  std::istringstream input(commands);
-  engine::start_uci(input, output);
+bool issue_3_MRE()
+{
+    /*
+     *Stockfish output for this position:
+     *
+     *info depth 20 seldepth 14 multipv 1 score mate 5 nodes 6218 nps 327263
+     *hashfull 1 tbhits 0 time 19 pv d7d8q c7b7 d6d7 b7a6 d8c8 b2b7 d7b7 h6h5 c8a8
+     *bestmove d7d8q ponder c7b7
+     */
+    // works when first command is a depth-based one or really, really short time
+    // not when its time-based
+    constexpr auto commands =
+        "position startpos moves c2c4 e7e5 g1f3 e5e4 f3d4 g8f6 b1c3 b8c6 e2e3 "
+        "f8b4 c3d5 f6d5 c4d5 c6d4 e3d4 e8g8 a2a3 b4a5 d1a4 c7c6 d5d6 b7b5 a4c2 "
+        "f8e8 a3a4 d8h4 g2g3 e4e3 f2e3 e8e3 e1f2 e3g3 h2g3 h4h1 f1g2 h1h5 a4b5 "
+        "h5b5 c2c5 b5c5 d4c5 a5d8 d2d4 a7a5 f2f3 a8b8 f3e4 b8b4 a1b1 d8f6 c1e3 "
+        "a5a4 b1a1 b4b2 a1a4 b2g2 a4a8 h7h6 a8c8 g8h7 c8c7 g2g3 c7d7 g3g4 e4d3 "
+        "h7g6 d7c7 g4g3 d3e2 f6g5 e3g5 g3g5 c7c6 g6f6 d6d7 f6e7 c6d6 e7d8 c5c6 "
+        "g5g2 e2d3 g2b2\n"
+        // "go depth 5\n"
+        // "go wtime 1000 btime 1000\n"
+        // "go wtime 10000 btime 10000 winc 100 binc 100\n"
+        // "go wtime 23180 btime 22690 winc 2000 binc 2000\n"
+        "go wtime 23180 btime 22690 winc 2000 binc 2000\n"
+        "position startpos moves c2c4 e7e5 g1f3 e5e4 f3d4 g8f6 b1c3 b8c6 e2e3 "
+        "f8b4 c3d5 f6d5 c4d5 c6d4 e3d4 e8g8 a2a3 b4a5 d1a4 c7c6 d5d6 b7b5 a4c2 "
+        "f8e8 a3a4 d8h4 g2g3 e4e3 f2e3 e8e3 e1f2 e3g3 h2g3 h4h1 f1g2 h1h5 a4b5 "
+        "h5b5 c2c5 b5c5 d4c5 a5d8 d2d4 a7a5 f2f3 a8b8 f3e4 b8b4 a1b1 d8f6 c1e3 "
+        "a5a4 b1a1 b4b2 a1a4 b2g2 a4a8 h7h6 a8c8 g8h7 c8c7 g2g3 c7d7 g3g4 e4d3 "
+        "h7g6 d7c7 g4g3 d3e2 f6g5 e3g5 g3g5 c7c6 g6f6 d6d7 f6e7 c6d6 e7d8 c5c6  "
+        "g5g2 e2d3 g2b2 c6c7 d8c7\n"
+        "go depth 1";
+    std::ostringstream output;
+    std::istringstream input(commands);
+    engine::start_uci(input, output);
 
-  std::cout << output.str() << std::endl;
-  if (getLastLine(output.str()) == "bestmove d7d8q")
-    return true;
-  return false;
+    std::cout << output.str() << std::endl;
+    if (getLastLine(output.str()) == "bestmove d7d8q")
+        return true;
+    return false;
 }
 
-bool issue_4_MRE() { //TODO: THIS
-  constexpr auto commands =
-      "position startpos moves e2e4 g7g6 d1f3 b8c6 f1c4 g8f6 d2d3 c6d4 f3d1 "
-      "d7d5 e4d5 f6d5 c2c3 d4c6 d1f3 e7e6 g1e2 c6e5 f3e4 e5c4 e4c4 e6e5 e1g1 "
-      "f8g7 d3d4 e8g8 d4e5 g7e5 c1h6 f8e8 b1d2 d5b6 c4b3 d8h4 g2g3 h4h6 d2f3 "
-      "c8e6 b3c2 e6f5 c2b3 f5e6 b3c2 e6f5 c2b3\n"
-      "go wtime 31070 btime 24819 winc 1000 binc 1000";
-=======
 bool issue_4_MRE()
 {
     constexpr auto commands = // TODO: investigate further
@@ -454,34 +462,39 @@ bool issue_4_MRE()
         "f8g7 d3d4 e8g8 d4e5 g7e5 c1h6 f8e8 b1d2 d5b6 c4b3 d8h4 g2g3 h4h6 d2f3 "
         "c8e6 b3c2 e6f5 c2b3 f5e6 b3c2 e6f5 c2b3\n"
         "go wtime 31070 btime 24819 winc 1000 binc 1000";
->>>>>>> 038b24c5f44dc02d6338d3533f804583519e38c9
     std::istringstream data(commands);
     std::ostringstream output;
-    engine::start_uci(data,output);
+    engine::start_uci(data, output);
     std::cout << output.str() << std::endl;
     return !(getLastLine(output.str()) == "bestmove f5e6");
 }
-int main() {
-  std::cout << "started main\n\n";
-  std::cout << "Minimal reproducible example\n\n";
-  // std::cout << "Experiments\n\n";
-  std::cout << "ITERATIONS: " << current_MRE_iterations << std::endl;
-  int SUCCESS = 0;
-  int FAILURE = 0;
-  for (int i = 0; i < current_MRE_iterations; i++) {
-    // if (TranspositionTable table; negamax_MRE(table))
-    if (issue_4_MRE()) {
-      SUCCESS++;
-      std::cout << "SUCCESS\n";
-    } else {
-      FAILURE++;
-      std::cout << "FAILURE\n";
+
+int main()
+{
+    std::cout << "started main\n\n";
+    std::cout << "Minimal reproducible example\n\n";
+    // std::cout << "Experiments\n\n";
+    std::cout << "ITERATIONS: " << current_MRE_iterations << std::endl;
+    int SUCCESS = 0;
+    int FAILURE = 0;
+    for (int i = 0; i < current_MRE_iterations; i++)
+    {
+        // if (TranspositionTable table; negamax_MRE(table))
+        if (issue_4_MRE())
+        {
+            SUCCESS++;
+            std::cout << "SUCCESS\n";
+        }
+        else
+        {
+            FAILURE++;
+            std::cout << "FAILURE\n";
+        }
     }
-  }
 
-  std::cout << "Success rate (found d7d8q): " << SUCCESS << "/"
-            << SUCCESS + FAILURE << std::endl;
+    std::cout << "Success rate (didnt draw): " << SUCCESS << "/"
+        << SUCCESS + FAILURE << std::endl;
 
-  // issue_3_MRE();
-  return 0;
+    // issue_3_MRE();
+    return 0;
 }
