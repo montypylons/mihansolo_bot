@@ -5,9 +5,11 @@
 
 ---
 
-## About mihansolo
+## About MihanSolo
 
-**MihanSolo** is my first chess engine (written in C++); it uses an HCE (hand-crafted evaluation) and Negamax search with alpha/beta and quiescence. I can only add new features occasionally now that school starts soon :(, but its ok as it is. Around 1700 bullet and blitz on [Lichess](https://lichess.org/). Uses Disservin's chess-lib for movegen, checkmate detection, all the nitty-gritty details.
+_About the name: My friend made it up as a parody on my name and the Star Wars character Han Solo_
+
+**MihanSolo** is my first chess engine (written in C++); it uses an HCE (hand-crafted evaluation) and Negamax search with alpha/beta and quiescence. I can only add new features occasionally now that school starts soon :(, but its ok as it is. Around 1700 bullet and blitz on [Lichess](https://lichess.org/). Uses Disservin's chess-lib for movegen, checkmate detection, all the nitty-gritty details. 
 
 ---
 
