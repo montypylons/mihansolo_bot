@@ -14,7 +14,7 @@
 # Logs and generated data
 lichess_bot_auto_logs/*
 TEMP/*
-
+cutechess/*
 # Editor configs
 .vscode/
 .vs/
