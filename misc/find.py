@@ -1112,12 +1112,19 @@ pattern = re.compile(
     r"<<([\s\S]*?)(?=\n\s*(?:DEBUG|INFO))"
 )
 timestamp_regex = re.compile(r"\[\d{2}/\d{2}/\d{2} \d{2}:\d{2}:\d{2}\]")
+game_regex = 
 
-def extract_UCI(file_path):
+
+def get_game_text_for_moves(file_path, game_id: str, starting_move: str, end_move: str) -> str:
+    with open(file_path, "r") as f:
+        content = f.read()
+
+
+def extract_UCI(file_path: str) -> list:
     with open(file_path,"r") as f:
         content = f.read()
-        text = re.sub(timestamp_regex, "", text)
-        matches = pattern.findall(text)
+        content = re.sub(timestamp_regex, "", content)
+        matches = pattern.findall(content)
         cleaned = []
         for match in matches:
             match = match.replace("engine.py:950","")
