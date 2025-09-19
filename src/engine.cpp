@@ -25,7 +25,7 @@ namespace engine
     constexpr int MAX_EXTENSIONS = 0; // BUG: extensions cause node explosion
     constexpr int QUIESCENCE_DEPTH = 0;
     constexpr int DELTA = 200;
-    const auto log_path = std::string("../logs/internal") + get_date_time();
+    const auto log_path = std::string("../logs/internal/") + get_date_time() + std::string(".log");
 
     int history[2][64][64];
     int nodes = 0;
