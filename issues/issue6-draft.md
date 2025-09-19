@@ -3,6 +3,28 @@
 ![alt text](image-5.png)
 ![alt text](image-6.png)
 
+## PGN of the game:
+```cpp
+[Event "engine vs engine"]
+[Site "Holland"]
+[Date "2025.09.17"]
+[Round "?"]
+[White "RustyKnight v1.8"]
+[Black "Mihansolo v6.0.0"]
+[Result "1-0"]
+[ECO "B06"]
+[GameDuration "00:02:42"]
+[Opening "Robatsch (Modern) defense"]
+[Termination "illegal move"]
+[TimeControl "300+3"]
+
+1. e4 {+0.16/11 9.8s} g6 2. Nf3 {+0.57/11 9.8s} d6 3. d4 {+0.51/12 9.6s} Bg7
+4. Bd3 {+0.51/10 9.5s} Nf6 {-1.10/5 17s} 5. O-O {+0.40/11 9.3s} O-O
+6. Be3 {+0.42/10 9.2s} Nbd7 {-6.00/5 17s} 7. Nc3 {+0.43/11 9.0s}
+e5 {-5.85/5 16s} 8. a3 {+0.32/11 8.6s} exd4 {-5.75/5 15s}
+9. Bxd4 {+0.06/11 8.7s, Black makes an illegal move: h8g8} 1-0
+```
+
 ## Commands without annotations (in a cpp compatible format): 
 ```cpp
 constexpr auto uci_commands = "position startpos moves e2e4\n"
