@@ -3,7 +3,7 @@
 ![alt text](image-5.png)
 ![alt text](image-6.png)
 
-Commands without annotations (in a cpp compatible format): 
+## Commands without annotations (in a cpp compatible format): 
 ```cpp
 "position startpos moves e2e4\n"
 "isready\n"
@@ -26,7 +26,7 @@ Commands without annotations (in a cpp compatible format):
 "go wtime 99 btime 262000 winc 3000 binc 3000";
 
 ```
-With annotations: 
+## With annotations: 
 ```bash
 position startpos moves e2e4
 isready
