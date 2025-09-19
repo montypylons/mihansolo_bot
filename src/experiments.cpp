@@ -4,7 +4,6 @@
 #include <sstream>
 #include <string>
 
-
 const auto targetFEN =
     "r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10";
 constexpr auto current_MRE_iterations = 5;
@@ -85,7 +84,7 @@ std::vector boards = {
         "r3kb1r/ppq2ppp/4pn2/2Ppn3/1P4bP/2P2N2/P3BPP1/RNBQ1RK1 b kq - 2 10"),
     chess::Board("3r1rk1/1b1n1pp1/3p4/p4PPQ/4P3/3q1BN1/8/2R2RK1 b - - 1 28"),
     chess::Board("r3qrk1/2p2pp1/p2bpn1p/2ppNb2/3P1P2/1PP1P1B1/P2N2PP/R2Q1RK1 b "
-        "- - 0 14"),
+                 "- - 0 14"),
     chess::Board("7k/p4R1p/3p3r/2pN1n2/2PbBBb1/3P2P1/P3r3/5R1K w - - 1 28"),
     chess::Board(
         "r4rk1/pp3ppp/3p1q2/P1P1p3/2B5/2B2n2/2P2P1P/R2Q1RK1 w - - 0 16"),
@@ -228,7 +227,7 @@ auto getPrimes()
     std::cout << counter << std::endl;
 }
 
-std::string getLastLine(const std::string& s)
+std::string getLastLine(const std::string &s)
 {
     if (s.empty())
         return s;
@@ -253,7 +252,7 @@ void negatest()
         engine::initial_beta, chess::Move::NO_MOVE, 1, 0);
     std::cout << std::endl;
     std::cout << "Move: " << chess::uci::moveToUci(std::get<1>(result))
-        << std::endl;
+              << std::endl;
     std::cout << "Eval: " << std::get<0>(result) << std::endl;
 }
 
@@ -312,7 +311,7 @@ void experiments_noTT()
     auto output_no_TT = std::ostringstream();
     engine::start_uci(input_no_TT, output_no_TT);
     std::cout << "Engine output (UCI bestmove's), only final position and go "
-        "commands used, not the whole game\n\n";
+                 "commands used, not the whole game\n\n";
     std::cout << output_no_TT.str() << std::endl;
 }
 
@@ -327,7 +326,7 @@ void negamax_debugging() // trying to get a MRE on #3, this isn't exactly the
         std::nullopt, chess::Move::NO_MOVE, table, board, engine::initial_alpha,
         engine::initial_beta, chess::Move::NO_MOVE, 2, 0);
     std::cout << "Move: " << chess::uci::moveToUci(std::get<1>(result))
-        << " with eval (cp) " << std::get<0>(result) << std::endl;
+              << " with eval (cp) " << std::get<0>(result) << std::endl;
 }
 
 bool MRE()
@@ -365,12 +364,13 @@ bool MRE()
 
     const auto output_string = output.str();
 
-    std::cout << "output: \n" << output_string << std::endl;
+    std::cout << "output: \n"
+              << output_string << std::endl;
 
     return getLastLine(output_string) == target_move;
 }
 
-bool negamax_MRE(TranspositionTable& table)
+bool negamax_MRE(TranspositionTable &table)
 {
     auto board = chess::Board(
         "r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10");
@@ -469,29 +469,34 @@ bool issue_4_MRE()
     return getLastLine(output.str()) != "bestmove f5e6";
 }
 
-bool issue_6_MRE(){
+bool issue_6_MRE()
+{
     constexpr auto uci_commands = "position startpos moves e2e4\n"
-"isready\n"
-"go wtime 296248 btime 303000 winc 3000 binc 3000\n"
-"position startpos moves e2e4 g7g6 g1f3\n"
-"go wtime 286448 btime 306000 winc 3000 binc 3000\n"
-"position startpos moves e2e4 g7g6 g1f3 d7d6 d2d4\n"
-"go wtime 286448 btime 309000 winc 3000 binc 3000\n"
-"position startpos moves e2e4 g7g6 g1f3 d7d6 d2d4 f8g7 f1d3\n"
-"go wtime 333 btime 312000 winc 3000 binc 3000\n"
-"position startpos moves e2e4 g7g6 g1f3 d7d6 d2d4 f8g7 f1d3 g8f6 e1g1\n"
-"go wtime 99 btime 298000 winc 3000 binc 3000\n"
-"position startpos moves e2e4 g7g6 g1f3 d7d6 d2d4 f8g7 f1d3 g8f6 e1g1 e8g8 c1e3\n"
-"go wtime 99 btime 301000 winc 3000 binc 3000\n"
-"position startpos moves e2e4 g7g6 g1f3 d7d6 d2d4 f8g7 f1d3 g8f6 e1g1 e8g8 c1e3 b8d7 b1c3\n"
-"go wtime 99 btime 287000 winc 3000 binc 3000\n"
-"position startpos moves e2e4 g7g6 g1f3 d7d6 d2d4 f8g7 f1d3 g8f6 e1g1 e8g8 c1e3 b8d7 b1c3 e7e5 a2a3\n"
-"go wtime 99 btime 274000 winc 3000 binc 3000\n"
-"position startpos moves e2e4 g7g6 g1f3 d7d6 d2d4 f8g7 f1d3 g8f6 e1g1 e8g8 c1e3 b8d7 b1c3 e7e5 a2a3 e5d4 e3d4\n"
-"go wtime 99 btime 262000 winc 3000 binc 3000";
-std::istringstream input(uci_commands);
-engine::start_uci(input);
-std::cout << "Finished running engine." << std::endl;
+                                  "isready\n"
+                                  "go wtime 99 btime 303000 winc 3000 binc 3000\n"
+                                  "position startpos moves e2e4 g7g6 g1f3\n"
+                                  "go wtime 99 btime 306000 winc 3000 binc 3000\n"
+                                  "position startpos moves e2e4 g7g6 g1f3 d7d6 d2d4\n"
+                                  "go wtime 99 btime 309000 winc 3000 binc 3000\n"
+                                  "position startpos moves e2e4 g7g6 g1f3 d7d6 d2d4 f8g7 f1d3\n"
+                                  "go wtime 99 btime 312000 winc 3000 binc 3000\n"
+                                  "position startpos moves e2e4 g7g6 g1f3 d7d6 d2d4 f8g7 f1d3 g8f6 e1g1\n"
+                                  "go wtime 99 btime 298000 winc 3000 binc 3000\n"
+                                  "position startpos moves e2e4 g7g6 g1f3 d7d6 d2d4 f8g7 f1d3 g8f6 e1g1 e8g8 c1e3\n"
+                                  "go wtime 99 btime 301000 winc 3000 binc 3000\n"
+                                  "position startpos moves e2e4 g7g6 g1f3 d7d6 d2d4 f8g7 f1d3 g8f6 e1g1 e8g8 c1e3 b8d7 b1c3\n"
+                                  "go wtime 99 btime 287000 winc 3000 binc 3000\n"
+                                  "position startpos moves e2e4 g7g6 g1f3 d7d6 d2d4 f8g7 f1d3 g8f6 e1g1 e8g8 c1e3 b8d7 b1c3 e7e5 a2a3\n"
+                                  "go wtime 99 btime 274000 winc 3000 binc 3000\n"
+                                  "position startpos moves e2e4 g7g6 g1f3 d7d6 d2d4 f8g7 f1d3 g8f6 e1g1 e8g8 c1e3 b8d7 b1c3 e7e5 a2a3 e5d4 e3d4\n"
+                                  "go wtime 99 btime 262000 winc 3000 binc 3000";
+    std::istringstream input(uci_commands);
+    std::ostringstream out;
+    engine::init_book();
+    engine::start_uci(input, out);
+    std::cout<<out.str() <<"\n";
+    std::cout << "Finished running engine." << std::endl;
+    return getLastLine(out.str()) == "bestmove h8g8";
 }
 
 int main()
@@ -518,7 +523,7 @@ int main()
     }
 
     std::cout << "Success rate (didnt draw): " << SUCCESS << "/"
-        << SUCCESS + FAILURE << std::endl;
+              << SUCCESS + FAILURE << std::endl;
 
     // issue_3_MRE();
     return 0;
