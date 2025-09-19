@@ -491,7 +491,7 @@ bool issue_6_MRE()
         "e8g8 c1e3 b8d7 b1c3 e7e5 a2a3\n"
         "go wtime 99 btime 212800 winc 3000 binc 3000";
 
-    constexpr auto uci_commands =
+    constexpr auto i_say =
         "position startpos moves e2e4\n"
         "isready\n"
         "go wtime 99 btime 303000 winc 3000 binc 3000\n"
@@ -515,7 +515,7 @@ bool issue_6_MRE()
         "position startpos moves e2e4 g7g6 g1f3 d7d6 d2d4 f8g7 f1d3 g8f6 e1g1 "
         "e8g8 c1e3 b8d7 b1c3 e7e5 a2a3 e5d4 e3d4\n"
         "go wtime 99 btime 262000 winc 3000 binc 3000";
-    std::istringstream input(chatgpt_says); // checking if chatgpt is right lol
+    std::istringstream input(i_say); // checking if chatgpt is right lol
     // stockfish output:
     // FEN: r1bq1rk1/pppn1pbp/3p1np1/8/3BP3/P1NB1N2/1PP2PPP/R2Q1RK1 b - - 0 9
     // Board:
