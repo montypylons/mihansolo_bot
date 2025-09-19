@@ -510,7 +510,7 @@ int main()
     for (int i = 0; i < current_MRE_iterations; i++)
     {
         // if (TranspositionTable table; negamax_MRE(table))
-        if (issue_4_MRE())
+        if (issue_6_MRE())
         {
             SUCCESS++;
             std::cout << "SUCCESS\n";
