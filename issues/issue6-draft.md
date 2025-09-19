@@ -1,11 +1,75 @@
-# Reproducing the bug: 
+# Reproducing the bug:
 
 ![alt text](image-5.png)
 ![alt text](image-6.png)
 
-[Lichess](https://lichess.org/analysis/r1bq1rk1/pppn1pbp/3p1np1/8/3BP3/P1NB1N2/1PP2PPP/R2Q1RK1_b_-_-_0_9?color=white)
+## Cutechess tournament end (MihanSolo vs itself)
 
-## Commands without annotations (in a cpp compatible format): 
+```terminaloutput
+Score of mihan1 vs mihan2: 9 - 7 - 15 [0.532]
+...      mihan1 playing White: 4 - 4 - 8  [0.500] 16
+...      mihan1 playing Black: 5 - 3 - 7  [0.567] 15
+...      White vs Black: 7 - 9 - 15  [0.468] 31
+Elo difference: 22.4 +/- 89.7, LOS: 69.1 %, DrawRatio: 48.4 %
+SPRT: llr 0 (0.0%), lbound -inf, ubound inf
+32 of 40 games finished.
+
+Player: mihan1
+   "Draw by 3-fold repetition": 15
+   "Loss: Black makes an illegal move: g4e3": 1
+   "Loss: Black makes an illegal move: h8g8": 1
+   "Loss: Black mates": 2
+   "Loss: White makes an illegal move: d5f6": 1
+   "Loss: White makes an illegal move: h1g1": 1
+   "Loss: White mates": 1
+   "No result": 1
+   "Win: Black makes an illegal move: h8g8": 1
+   "Win: Black mates": 4
+   "Win: White makes an illegal move: h1g1": 1
+   "Win: White mates": 3
+Player: mihan2
+   "Draw by 3-fold repetition": 15
+   "Loss: Black makes an illegal move: h8g8": 1
+   "Loss: Black mates": 4
+   "Loss: White makes an illegal move: h1g1": 1
+   "Loss: White mates": 3
+   "No result": 1
+   "Win: Black makes an illegal move: g4e3": 1
+   "Win: Black makes an illegal move: h8g8": 1
+   "Win: Black mates": 2
+   "Win: White makes an illegal move: d5f6": 1
+   "Win: White makes an illegal move: h1g1": 1
+   "Win: White mates": 1
+```
+
+- This shows that it makes _multiple_ differnt kinds of illegal moves, **not just one (such as castling-related stuff).
+  **
+
+## PGN of the game:
+
+```cpp
+[Event "engine vs engine"]
+[Site "Holland"]
+[Date "2025.09.17"]
+[Round "?"]
+[White "RustyKnight v1.8"]
+[Black "Mihansolo v6.0.0"]
+[Result "1-0"]
+[ECO "B06"]
+[GameDuration "00:02:42"]
+[Opening "Robatsch (Modern) defense"]
+[Termination "illegal move"]
+[TimeControl "300+3"]
+
+1. e4 {+0.16/11 9.8s} g6 2. Nf3 {+0.57/11 9.8s} d6 3. d4 {+0.51/12 9.6s} Bg7
+4. Bd3 {+0.51/10 9.5s} Nf6 {-1.10/5 17s} 5. O-O {+0.40/11 9.3s} O-O
+6. Be3 {+0.42/10 9.2s} Nbd7 {-6.00/5 17s} 7. Nc3 {+0.43/11 9.0s}
+e5 {-5.85/5 16s} 8. a3 {+0.32/11 8.6s} exd4 {-5.75/5 15s}
+9. Bxd4 {+0.06/11 8.7s, Black makes an illegal move: h8g8} 1-0
+```
+
+## Commands without annotations (in a cpp compatible format):
+
 ```cpp
 constexpr auto uci_commands = "position startpos moves e2e4\n"
 "isready\n"
@@ -28,7 +92,9 @@ constexpr auto uci_commands = "position startpos moves e2e4\n"
 "go wtime 99 btime 262000 winc 3000 binc 3000";
 
 ```
-## With annotations: 
+
+## With annotations:
+
 ```powershell
 position startpos moves e2e4
 isready
