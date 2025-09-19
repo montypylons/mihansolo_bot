@@ -509,6 +509,7 @@ namespace engine
         chess::Board board;
         std::string line;
         std::ofstream log_file(log_path);
+        std::cout << "log_path: " << log_path << std::endl;
 
         while (std::getline(in, line))
         {
