@@ -494,9 +494,10 @@ bool issue_6_MRE()
     std::ostringstream out;
     engine::init_book();
     engine::start_uci(input, out);
-    std::cout<<out.str() <<"\n";
+    const auto out_string = out.str();
+    std::cout << out_string << "\n";
     std::cout << "Finished running engine." << std::endl;
-    return getLastLine(out.str()) == "bestmove h8g8";
+    return getLastLine(out_string) != "bestmove h8g8";
 }
 
 int main()
