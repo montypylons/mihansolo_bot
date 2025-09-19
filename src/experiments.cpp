@@ -492,7 +492,7 @@ bool issue_6_MRE()
                                   "go wtime 99 btime 262000 winc 3000 binc 3000";
     std::istringstream input(uci_commands);
     std::ostringstream out;
-    engine::init_book();
+    // engine::init_book();
     engine::start_uci(input, out);
     const auto out_string = out.str();
     std::cout << out_string << "\n";
