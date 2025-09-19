@@ -491,6 +491,30 @@ bool issue_6_MRE()
                                   "position startpos moves e2e4 g7g6 g1f3 d7d6 d2d4 f8g7 f1d3 g8f6 e1g1 e8g8 c1e3 b8d7 b1c3 e7e5 a2a3 e5d4 e3d4\n"
                                   "go wtime 99 btime 262000 winc 3000 binc 3000";
     std::istringstream input(uci_commands);
+    // stockfish output: 
+    // FEN: r1bq1rk1/pppn1pbp/3p1np1/8/3BP3/P1NB1N2/1PP2PPP/R2Q1RK1 b - - 0 9
+    // Board: 
+    /*
+     +---+---+---+---+---+---+---+---+
+     | r |   | b | q |   | r | k |   | 8
+     +---+---+---+---+---+---+---+---+
+     | p | p | p | n |   | p | b | p | 7
+     +---+---+---+---+---+---+---+---+
+     |   |   |   | p |   | n | p |   | 6
+     +---+---+---+---+---+---+---+---+
+     |   |   |   |   |   |   |   |   | 5
+     +---+---+---+---+---+---+---+---+
+     |   |   |   | B | P |   |   |   | 4
+     +---+---+---+---+---+---+---+---+
+     | P |   | N | B |   | N |   |   | 3
+     +---+---+---+---+---+---+---+---+
+     |   | P | P |   |   | P | P | P | 2
+     +---+---+---+---+---+---+---+---+
+     | R |   |   | Q |   | R | K |   | 1
+     +---+---+---+---+---+---+---+---+
+     a   b   c   d   e   f   g   h
+    */
+    // bestmove d7c5 ponder a3a4
     std::ostringstream out;
     // engine::init_book();
     engine::start_uci(input, out);
