@@ -5,7 +5,7 @@
 
 ## Commands without annotations (in a cpp compatible format): 
 ```cpp
-"position startpos moves e2e4\n"
+constexpr auto uci_commands = "position startpos moves e2e4\n"
 "isready\n"
 "go wtime 296248 btime 303000 winc 3000 binc 3000\n"
 "position startpos moves e2e4 g7g6 g1f3\n"
@@ -27,7 +27,7 @@
 
 ```
 ## With annotations: 
-```bash
+```powershell
 position startpos moves e2e4
 isready
 readyok
