@@ -469,6 +469,31 @@ bool issue_4_MRE()
     return getLastLine(output.str()) != "bestmove f5e6";
 }
 
+bool issue_6_MRE(){
+    constexpr auto uci_commands = "position startpos moves e2e4\n"
+"isready\n"
+"go wtime 296248 btime 303000 winc 3000 binc 3000\n"
+"position startpos moves e2e4 g7g6 g1f3\n"
+"go wtime 286448 btime 306000 winc 3000 binc 3000\n"
+"position startpos moves e2e4 g7g6 g1f3 d7d6 d2d4\n"
+"go wtime 286448 btime 309000 winc 3000 binc 3000\n"
+"position startpos moves e2e4 g7g6 g1f3 d7d6 d2d4 f8g7 f1d3\n"
+"go wtime 333 btime 312000 winc 3000 binc 3000\n"
+"position startpos moves e2e4 g7g6 g1f3 d7d6 d2d4 f8g7 f1d3 g8f6 e1g1\n"
+"go wtime 99 btime 298000 winc 3000 binc 3000\n"
+"position startpos moves e2e4 g7g6 g1f3 d7d6 d2d4 f8g7 f1d3 g8f6 e1g1 e8g8 c1e3\n"
+"go wtime 99 btime 301000 winc 3000 binc 3000\n"
+"position startpos moves e2e4 g7g6 g1f3 d7d6 d2d4 f8g7 f1d3 g8f6 e1g1 e8g8 c1e3 b8d7 b1c3\n"
+"go wtime 99 btime 287000 winc 3000 binc 3000\n"
+"position startpos moves e2e4 g7g6 g1f3 d7d6 d2d4 f8g7 f1d3 g8f6 e1g1 e8g8 c1e3 b8d7 b1c3 e7e5 a2a3\n"
+"go wtime 99 btime 274000 winc 3000 binc 3000\n"
+"position startpos moves e2e4 g7g6 g1f3 d7d6 d2d4 f8g7 f1d3 g8f6 e1g1 e8g8 c1e3 b8d7 b1c3 e7e5 a2a3 e5d4 e3d4\n"
+"go wtime 99 btime 262000 winc 3000 binc 3000";
+std::istringstream input(uci_commands);
+engine::start_uci(input);
+std::cout << "Finished running engine." << std::endl;
+}
+
 int main()
 {
     std::cout << "started main\n\n";
