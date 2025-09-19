@@ -8,4 +8,4 @@ cutechess-cli \
   -each proto=uci tc=200/60 \
   -rounds 40 -games 2 \
   -pgnout "../logs/cutechess/tournament_${date_time}.pgn" \
-  -debug > "../logs/cutechess/debug_${date_time}.log"
+  -debug | tee "../logs/cutechess/debug_${date_time}.log"
