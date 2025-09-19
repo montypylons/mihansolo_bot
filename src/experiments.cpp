@@ -547,7 +547,7 @@ int main()
         }
     }
 
-    std::cout << "Success rate (didnt draw): " << SUCCESS << "/"
+    std::cout << "Success rate (didnt make an illegal move): " << SUCCESS << "/"
               << SUCCESS + FAILURE << std::endl;
 
     // issue_3_MRE();
