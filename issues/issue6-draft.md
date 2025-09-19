@@ -35,4 +35,5 @@ go wtime 99 btime 274000 winc 3000 binc 3000
 [ bestmove e5d4 ]
 [ took 15 000 ms]
 position startpos moves e2e4 g7g6 g1f3 d7d6 d2d4 f8g7 f1d3 g8f6 O-O O-O c1e3 b8d7 b1c3 e7e5 a2a3 e5d4 e3d4
+go wtime 99 btime 262000 winc 3000 binc 3000
 [ bestmove h8g8 (*illegal*)]
