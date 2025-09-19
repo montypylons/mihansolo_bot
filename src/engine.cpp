@@ -14,16 +14,18 @@
 #include "timemanagement.hpp"
 #include <fstream>
 
+
 namespace engine
 {
 #ifndef NDEBUG
     constexpr auto TARGET_FEN = "r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10";
     bool log_TT = false;
 #endif
-    constexpr auto log_path = "../logs/internal";
+
     constexpr int MAX_EXTENSIONS = 0; // BUG: extensions cause node explosion
     constexpr int QUIESCENCE_DEPTH = 0;
     constexpr int DELTA = 200;
+    const auto log_path = std::string("../logs/internal") + get_date_time();
 
     int history[2][64][64];
     int nodes = 0;
@@ -50,6 +52,7 @@ namespace engine
         return 0x00FF000000000000ULL & board.pieces(chess::PieceType::PAWN, chess::Color::BLACK).getBits() ||
             0x000000000000FF00ULL & board.pieces(chess::PieceType::PAWN, chess::Color::WHITE).getBits();
     }
+
 
     /**
      *
@@ -509,11 +512,10 @@ namespace engine
         chess::Board board;
         std::string line;
         std::ofstream log_file(log_path);
-        std::cout << "log_path: " << log_path << std::endl;
 
         while (std::getline(in, line))
         {
-            log_file << "INFO: " << line << "\n";
+            log_file << "[UCI] INFO: " << line << "\n";
             std::istringstream iss(line);
             std::string token;
             iss >> token;
