@@ -13,31 +13,17 @@
 #include "tt.hpp"
 #include "timemanagement.hpp"
 #include <process.h>
-// #include <fstream>
+#include <fstream>
 
 
 namespace engine
 {
-#ifndef NDEBUG
-    constexpr auto TARGET_FEN = "r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10";
-    bool log_TT = false;
+    constexpr bool LOG = true;
+    std::string log_path;
 
-#endif
-    /*
-#ifdef _WIN32
-    auto pid = _getpid(); // Windows
-#else
-    auto pid = getpid(); // POSIX
-#endif
-*/
     constexpr int MAX_EXTENSIONS = 0; // BUG: extensions cause node explosion
     constexpr int QUIESCENCE_DEPTH = 0;
     constexpr int DELTA = 200;
-    /*
-    const auto log_path = std::string("../logs/internal/") + get_date_time() + std::string("_PID=") +
-        std::to_string(pid) +
-        std::string(".log");
-*/
     int history[2][64][64];
     int nodes = 0;
 
@@ -47,7 +33,7 @@ namespace engine
     Reader::Book book;
     TranspositionTable table; // TODO: add tests fr this
     std::optional<TimeManagement::TimeManager> manager; // TODO: add tests fr this
-
+    std::optional<std::ofstream> log_file;
     const int initial_alpha = std::numeric_limits<int>::min() + 1; // to avoid wraparound bugs
     const int initial_beta = std::numeric_limits<int>::max();
 
@@ -64,6 +50,21 @@ namespace engine
             0x000000000000FF00ULL & board.pieces(chess::PieceType::PAWN, chess::Color::WHITE).getBits();
     }
 
+    void init_log()
+    {
+        if (LOG)
+        {
+#ifdef _WIN32
+            auto pid = _getpid(); // Windows
+#else
+            auto pid = getpid(); // POSIX
+#endif
+
+            log_path = std::string("../logs/internal/") + get_date_time() + std::string("_PID=") +
+                std::to_string(pid) +
+                std::string(".log");
+        }
+    }
 
     /**
      *
@@ -238,7 +239,8 @@ namespace engine
      * @return A tuple of the believed evaluation and best move in the position
      */
     std::tuple<int, chess::Move> negamax(const std::optional<TimeManagement::TimeManager>& nega_manager,
-                                         const chess::Move& PV_Move, TranspositionTable& table1, chess::Board& board,
+                                         const chess::Move& PV_Move, TranspositionTable& table1,
+                                         chess::Board& board,
                                          int alpha,
                                          const int beta,
                                          const chess::Move& last_move,
@@ -250,14 +252,6 @@ namespace engine
         if (nega_manager.has_value()) nega_manager_found = true;
         if (nega_manager_found && !nega_manager->time_remaining())
         {
-#ifndef NDEBUG
-            if (board.zobrist() == chess::Board("r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10").
-                zobrist())
-            {
-                std::cout << "TARGET FEN REACHED ... AND ABORTED" << std::endl;
-            }
-#endif
-
             abort_due_to_time = true;
             return std::make_tuple(0, chess::Move::NO_MOVE);
         }
@@ -265,9 +259,6 @@ namespace engine
 
         // transposition table stuff starts
         const int alpha_original = alpha;
-#ifndef NDEBUG
-        const int beta_original = beta;
-#endif
         const auto zobrist_key = board.hash();
 
         if (auto TTResult = table1.find_usable_entry(alpha_original, beta, depth, zobrist_key, ply); TTResult.
@@ -314,23 +305,10 @@ namespace engine
         */
 
         // SPRT shows NMP is -37.6 elo, so commented out for now
-#ifndef NDEBUG
-
-        if (board.getFen() == "r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10")
-        {
-            log_TT = true;
-        }
-#endif
         for (const auto& move : legal_moves)
         {
             int score;
             chess::Move dummy_move{};
-#ifndef NDEBUG
-            if (board.getFen() == "r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10")
-            {
-                std::cout << "Evaluating move " << chess::uci::moveToUci(move) << " ... " << std::endl;
-            }
-#endif
             board.makeMove(move);
             int passed_pawn_extension = (is_pawns_near_promotion(board) && numExtensions < MAX_EXTENSIONS) ? 1 : 0;
 
@@ -340,12 +318,6 @@ namespace engine
             score = -score;
 
             board.unmakeMove(move);
-#ifndef NDEBUG
-            if (board.getFen() == "r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10")
-            {
-                std::cout << " ... " << "with score: " << score << std::endl;
-            }
-#endif
             if (score > best_eval)
             {
                 best_eval = score;
@@ -368,9 +340,6 @@ namespace engine
                 return std::make_tuple(best_eval, best_move);
             }
         }
-#ifndef NDEBUG
-        log_TT = false;
-#endif
         // Start transposition table stuff
         NodeType node_type;
         if (best_eval <= alpha_original)
@@ -385,26 +354,6 @@ namespace engine
         {
             node_type = NodeType::EXACT;
         }
-#ifndef NDEBUG
-
-        if (zobrist_key == chess::Board("r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10").
-            zobrist())
-        {
-            std::cout << "\n\nNegamax PUTTING entry for zobrist key: " << zobrist_key << std::endl;
-            std::cout << "Index: " << table1.address_calc(zobrist_key) << std::endl;
-            std::cout << "Best move: " << chess::uci::moveToUci(best_move) << std::endl;
-            std::cout << "Score: " << best_eval << std::endl;
-            std::cout << "\nParams: " << std::endl;
-            std::cout << "Board FEN: " << board.getFen() << std::endl;
-            std::cout << "Alpha: " << alpha_original << std::endl;
-            std::cout << "Beta: " << beta_original << std::endl;
-            std::cout << "Depth: " << depth << std::endl;
-            std::cout << "Ply: " << ply << std::endl;
-            std::cout << "Last move: " << chess::uci::moveToUci(last_move) << std::endl;
-            std::cout << "PV_Move: " << chess::uci::moveToUci(PV_Move) << std::endl;
-            std::cout << "\n\n";
-        }
-#endif
 
         if ((!abort_due_to_time && nega_manager->time_remaining()) || !nega_manager_found)
         {
@@ -460,33 +409,12 @@ namespace engine
 
                 if (!abort_due_to_time) // prevents using corrupted moves or eval
                 {
-#ifndef NDEBUG
-
-                    std::cout << "no abort [line 396][engine::search]\n";
-#endif
-
                     PV_Move = returned_move;
-#ifndef NDEBUG
-
-                    std::cout << "changed PV Move to: " << chess::uci::moveToUci(PV_Move) <<
-                        " [line 398][engine::search]\n";
-#endif
                     previous_eval = eval;
                     if (std::abs(eval) > 9995)
                     {
-#ifndef NDEBUG
-                        std::cout << "Mate detected, stopping early\n";
-#endif
                         break;
                     }
-                    else
-                    {
-#ifndef NDEBUG
-
-                        std::cout << "Aborting due to time management[line 402][engine::search]\n";
-#endif
-                    }
-
                     depth++;
                 }
             }
@@ -522,11 +450,25 @@ namespace engine
     {
         chess::Board board;
         std::string line;
-        // std::ofstream log_file(log_path);
+        if (LOG && log_file.has_value())
+        {
+            try
+            {
+                log_file->open(log_path);
+            }
+            catch (const std::exception& e)
+            {
+                std::cout << e.what() << std::endl;
+            }
+            std::cout << "opened log file" << std::endl;
+        }
 
         while (std::getline(in, line))
         {
-            // log_file << "[UCI] INFO: " << line << "\n";
+            if constexpr (LOG)
+            {
+                log_file.value() << "[UCI] INFO: " << line << "\n";
+            }
             std::istringstream iss(line);
             std::string token;
             iss >> token;
@@ -640,7 +582,7 @@ namespace engine
             }
             else if (token == "quit")
             {
-                // log_file.close();
+                if (LOG && log_file.has_value()) log_file->close();
                 break;
             }
             else if (token == "setoption")

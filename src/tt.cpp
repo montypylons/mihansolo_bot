@@ -43,18 +43,6 @@ void TranspositionTable::put(const uint64_t zobrist_key,
 {
     if (const int index = address_calc(zobrist_key); !find(zobrist_key) || depth >= table[index].depth)
     {
-#ifndef NDEBUG
-        if (best_move == chess::Move::make<chess::Move::NORMAL>(chess::Square::SQ_C2, chess::Square::SQ_A1) &&
-            zobrist_key == chess::Board("r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10").
-            zobrist())
-        {
-            std::cout << "\n\n[line 46] [TranspositionTable::put]\n";
-            std::cout << "Putting TTEntry at index " << index << std::endl;
-            std::cout << "Best move: " << chess::uci::moveToUci(best_move) << std::endl;
-            std::cout << "Score: " << score << std::endl;
-            std::cout << "Zobrist key: " << zobrist_key << std::endl;
-        }
-#endif
         table[index] = TTEntry{zobrist_key, best_move, depth, scoreToTT(score, ply), node_type};
     }
 }
@@ -63,29 +51,6 @@ void TranspositionTable::put(const uint64_t zobrist_key,
 {
     if (auto found_entry = table[address_calc(zobrist_key)]; found_entry.zobrist_key == zobrist_key)
     {
-#ifndef NDEBUG
-        if (engine::log_TT && ply == 3)
-        {
-            std::cout << "Getting TT entry ... \n";
-            std::cout << "\n\n[line 67] [TranspositionTable::get] Got entry for CHILD of target FEN with: " <<
-                std::endl;
-            std::cout << "Index: " << address_calc(zobrist_key) << std::endl;
-            std::cout << "Zobrist key: " << zobrist_key << std::endl;
-            std::cout << "Best move: " << chess::uci::moveToUci(found_entry.best_move) << std::endl;
-            std::cout << "Score: " << found_entry.score << std::endl;
-        }
-        if (found_entry.best_move == chess::Move::make<chess::Move::NORMAL>(chess::Square::SQ_C2, chess::Square::SQ_A1)
-            &&
-            zobrist_key == chess::Board("r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10").
-            zobrist())
-        {
-            std::cout << "\n\n[line 79] [TranspositionTable::get] Got entry for target FEN with: " << std::endl;
-            std::cout << "Index: " << address_calc(zobrist_key) << std::endl;
-            std::cout << "Zobrist key: " << zobrist_key << std::endl;
-            std::cout << "Best move: " << chess::uci::moveToUci(found_entry.best_move) << std::endl;
-            std::cout << "Score: " << found_entry.score << std::endl;
-        }
-#endif
         found_entry.score = scoreFromTT(found_entry.score, ply);
         return found_entry;
     }
