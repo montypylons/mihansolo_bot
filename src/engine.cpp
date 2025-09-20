@@ -18,7 +18,6 @@
 
 namespace engine
 {
-    constexpr bool LOG = true;
     std::string log_path;
 
     constexpr int MAX_EXTENSIONS = 0; // BUG: extensions cause node explosion
@@ -48,22 +47,6 @@ namespace engine
     {
         return 0x00FF000000000000ULL & board.pieces(chess::PieceType::PAWN, chess::Color::BLACK).getBits() ||
             0x000000000000FF00ULL & board.pieces(chess::PieceType::PAWN, chess::Color::WHITE).getBits();
-    }
-
-    void init_log()
-    {
-        if (LOG)
-        {
-#ifdef _WIN32
-            auto pid = _getpid(); // Windows
-#else
-            auto pid = getpid(); // POSIX
-#endif
-
-            log_path = std::string("../logs/internal/") + get_date_time() + std::string("_PID=") +
-                std::to_string(pid) +
-                std::string(".log");
-        }
     }
 
     /**
@@ -450,25 +433,9 @@ namespace engine
     {
         chess::Board board;
         std::string line;
-        if (LOG && log_file.has_value())
-        {
-            try
-            {
-                log_file->open(log_path);
-            }
-            catch (const std::exception& e)
-            {
-                std::cout << e.what() << std::endl;
-            }
-            std::cout << "opened log file" << std::endl;
-        }
 
         while (std::getline(in, line))
         {
-            if constexpr (LOG)
-            {
-                log_file.value() << "[UCI] INFO: " << line << "\n";
-            }
             std::istringstream iss(line);
             std::string token;
             iss >> token;
@@ -582,7 +549,6 @@ namespace engine
             }
             else if (token == "quit")
             {
-                if (LOG && log_file.has_value()) log_file->close();
                 break;
             }
             else if (token == "setoption")
