@@ -18,8 +18,6 @@
 
 namespace engine
 {
-    std::string log_path;
-
     constexpr int MAX_EXTENSIONS = 0; // BUG: extensions cause node explosion
     constexpr int QUIESCENCE_DEPTH = 0;
     constexpr int DELTA = 200;
