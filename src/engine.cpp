@@ -21,16 +21,19 @@ namespace engine
     constexpr int MAX_EXTENSIONS = 0; // BUG: extensions cause node explosion
     constexpr int QUIESCENCE_DEPTH = 0;
     constexpr int DELTA = 200;
+
     int history[2][64][64];
     int nodes = 0;
 
     bool abort_due_to_time = false;
     bool manager_exists = false;
 
+    Logging::Logger logger;
     Reader::Book book;
     TranspositionTable table; // TODO: add tests fr this
     std::optional<TimeManagement::TimeManager> manager; // TODO: add tests fr this
     std::optional<std::ofstream> log_file;
+
     const int initial_alpha = std::numeric_limits<int>::min() + 1; // to avoid wraparound bugs
     const int initial_beta = std::numeric_limits<int>::max();
 
@@ -56,16 +59,6 @@ namespace engine
     {
         return move.typeOf() == chess::Move::PROMOTION;
     }
-
-    // NOLINTBEGIN
-    /**
-     *
-     * @param alpha
-     * @param board The current game state
-     * @return If current node is terminal, i.e. the game has ended
-     */
-
-    // NOLINTEND
 
     /**
      *
