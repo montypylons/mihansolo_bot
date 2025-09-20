@@ -89,7 +89,7 @@ namespace Logging
 
         void log(const std::string& msg, LogLevel level = LogLevel::INFO)
         {
-            log_file << LogStrings[static_cast<size_t>(level)] << msg;
+            log_file << LogStrings[static_cast<size_t>(level)] << msg << std::endl;
         }
     };
 }

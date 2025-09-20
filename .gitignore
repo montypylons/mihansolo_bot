@@ -2,6 +2,7 @@
 *.yml
 *.env
 *.AppImage
+*.log
 # *.png
 
 # Python
