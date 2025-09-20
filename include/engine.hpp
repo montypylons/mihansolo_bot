@@ -61,7 +61,7 @@ namespace engine
 #endif
 
         std::ostringstream oss;
-        oss << std::put_time(&ltm, "%Y_%m_%d__%H_%M_%S");
+        oss << std::put_time(&ltm, "DATE=%Y_%m_%d_TIME=_%H_%M_%S");
         return oss.str();
     }
 
