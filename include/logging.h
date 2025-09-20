@@ -21,12 +21,12 @@ namespace Logging
         {
 #if defined(_WIN32)
 #include <windows.h>
-                  {
+
                 return GetCurrentProcessId();
-            }
+
 #else
 #include <unistd.h>
-            inline unsigned int get_pid() { return getpid(); }
+          return getpid();
 #endif
         }
 
