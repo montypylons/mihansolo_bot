@@ -549,6 +549,12 @@ bool issue_6_MRE()
     return getLastLine(out_string) != "bestmove h8g8";
 }
 
+void test_logging()
+{
+    std::istringstream input("position startpos");
+    engine::start_uci(input);
+}
+
 int main()
 {
     std::cout << "started main\n\n";
@@ -572,9 +578,5 @@ int main()
         }
     }
 
-    std::cout << "Success rate (didnt make an illegal move): " << SUCCESS << "/"
-        << SUCCESS + FAILURE << std::endl;
-
-    // issue_3_MRE();
-    return 0;
+    std::cout << "Success rate (didnt make an illegal move" << SUCCESS << "/" << SUCCESS + FAILURE << std::endl;
 }

@@ -9,7 +9,7 @@
 
 #ifdef _WIN32
 #include <process.h>
-#define NOMINMAX
+#define NOMINMAX // NOLINT
 #include <windows.h>
 #else
 #include <time.h>
@@ -30,10 +30,30 @@ namespace Logging
 
     class Logger
     {
-        std::ofstream log_file;
-        std::string log_path = generate_log_path();
+    public:
+        Logger()
+        {
+            const std::string log_path = generate_log_path();
+            log_file.open(log_path);
+            if (!log_file.is_open())
+            {
+                throw std::runtime_error("Failed to open log file: " + log_path);
+            }
+        }
 
-        static std::string get_date_time() // Lets hide all the macro-using functions
+        ~Logger()
+        {
+            if (log_file.is_open())
+            {
+                log_file.close();
+            }
+        }
+
+    private:
+        std::ofstream log_file;
+
+        static std::string get_date_time(const std::string& format_string = "DATE=%Y_%m_%d_TIME=_%H_%M_%S")
+        // Let's hide all the macro-using functions
         {
             const auto now = std::chrono::system_clock::now();
             const std::time_t now_c = std::chrono::system_clock::to_time_t(now);
@@ -46,7 +66,7 @@ namespace Logging
 #endif
 
             std::ostringstream oss;
-            oss << std::put_time(&ltm, "DATE=%Y_%m_%d_TIME=_%H_%M_%S");
+            oss << std::put_time(&ltm, format_string.c_str());
             return oss.str();
         }
 
@@ -57,26 +77,19 @@ namespace Logging
             return std::to_string(GetCurrentProcessId());
 
 #else
-          return std::to_string(getpid());
+            return std::to_string(getpid());
 #endif
         }
 
     public:
-
         static std::string generate_log_path()
         {
-            return "../logs/internal/" + get_date_time() + "_PID="+get_PID() + ".log";
+            return "../logs/internal/" + get_date_time() + "_PID=" + get_PID() + ".log";
         }
 
         void log(const std::string& msg, LogLevel level = LogLevel::INFO)
         {
-            log_file.open(log_path);
-            if (!log_file.is_open())
-            {
-                throw std::runtime_error("Failed to open log file.");
-            }
             log_file << LogStrings[static_cast<size_t>(level)] << msg;
-            log_file.close();
         }
     };
 }
