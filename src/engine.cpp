@@ -427,6 +427,7 @@ namespace engine
 
         while (std::getline(in, line))
         {
+            logger.log(line, Logging::LogLevel::DEBUG);
             std::istringstream iss(line);
             std::string token;
             iss >> token;

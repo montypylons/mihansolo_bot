@@ -1,5 +1,14 @@
 #pragma once
 
+#ifdef _WIN32
+#include <process.h>
+#define NOMINMAX
+#include <windows.h>
+#else
+#include <time.h>
+#include <unistd.h>
+#endif
+
 namespace Logging
 {
     constexpr std::array<std::string_view, 4> LogStrings = {"INFO: ", "WARNING: ", "DEBUG: ", "FATAL: "};
@@ -24,10 +33,8 @@ namespace Logging
 
             std::tm ltm{};
 #ifdef _WIN32
-#include <process.h>
             localtime_s(&ltm, &now_c); // thread-safe on Windows
 #else
-#include <time.h>
             localtime_r(&now_c, &ltm); // thread-safe on POSIX
 #endif
 
@@ -39,13 +46,11 @@ namespace Logging
         static std::string get_PID()
         {
 #if defined(_WIN32)
-#include <windows.h>
 
-                return GetCurrentProcessId();
+            return std::to_string(GetCurrentProcessId());
 
 #else
-#include <unistd.h>
-          return getpid();
+          return std::to_string(getpid());
 #endif
         }
 
