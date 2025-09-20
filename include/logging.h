@@ -16,16 +16,20 @@ namespace Logging
     {
         std::ofstream log_file;
         std::string log_path = generate_log_path();
+
         std::string get_PID()
         {
 #if defined(_WIN32)
 #include <windows.h>
-            inline unsigned int get_pid() {  return GetCurrentProcessId(); }
+                  {
+                return GetCurrentProcessId();
+            }
 #else
 #include <unistd.h>
             inline unsigned int get_pid() { return getpid(); }
 #endif
         }
+
     public:
         std::string get_date_time()
         {
