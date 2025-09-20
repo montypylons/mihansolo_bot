@@ -2,10 +2,10 @@
 
 #include <array>
 #include <iomanip>
-#include <string_view>
 #include <fstream>
 #include <chrono>
 #include <sstream>
+#include <string_view>
 
 #ifdef _WIN32
 #include <process.h>
