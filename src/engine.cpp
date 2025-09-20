@@ -157,7 +157,7 @@ namespace engine
      */
     void init_book()
     {
-        book.Load("../books/gm2600.bin");
+        book.Load("../../books/gm2600.bin");
     }
 
     /**
