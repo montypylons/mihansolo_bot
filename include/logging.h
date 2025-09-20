@@ -16,7 +16,8 @@ namespace Logging
     {
         std::ofstream log_file;
         std::string log_path = generate_log_path();
-        static std::string get_date_time()
+
+        static std::string get_date_time() // Lets hide all the macro-using functions
         {
             const auto now = std::chrono::system_clock::now();
             const std::time_t now_c = std::chrono::system_clock::to_time_t(now);
