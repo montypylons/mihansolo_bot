@@ -1,17 +1,19 @@
 project('mihansolo_bot', 'cpp',
-        default_options : ['cpp_std=c++20']
-)
+        default_options : ['cpp_std=c++20'])
 
+# Compiler flags for release build
 if get_option('buildtype') == 'release'
     add_project_arguments(
         '/Ox', '/Ot', '/Ob2', '/Oi', '/Oy', '/GL', '/fp:fast', '/Gy',
         language : 'cpp'
     )
+    add_project_link_arguments('/LTCG', language : 'cpp')
+
 endif
 
 # Directories
 src_dir = 'src'
-inc_dir = meson.current_source_dir()
+inc_dir = 'include'
 
 common_sources = files(
     'src/engine.cpp',
@@ -21,29 +23,40 @@ common_sources = files(
     'src/utils.cpp',
 )
 
-executable('mihansolo_bot',
+# Main executable
+executable('engine',
            common_sources + files('src/main.cpp'),
            include_directories : include_directories(inc_dir),
-           install : true
-)
+           install : true)
 
+# Experiments executable
 executable('experiments',
            common_sources + files('src/experiments.cpp'),
-           include_directories : include_directories(inc_dir)
-)
+           include_directories : include_directories(inc_dir))
 
 # --- Tests ---
-gtest = dependency('gtest', main : true, required : true)
+gtest_proj = subproject('gtest')
 
-test_sources = files(
-    'tests/engine_tests.cc',
-    'tests/evaluation_tests.cc'
-)
+gtest_dep = gtest_proj.get_variable('gtest_dep')
+gmock_dep = gtest_proj.get_variable('gmock_dep')
+gtest_main_dep = gtest_proj.get_variable('gtest_main_dep')
 
-test_exe = executable('tests',
-                      common_sources + test_sources,
-                      dependencies : [gtest],
-                      include_directories : include_directories(inc_dir)
-)
+engine_test = files('tests/engine_tests.cc')
+evaluation_test = files('tests/evaluation_tests.cc')
 
-test('unit tests', test_exe)
+engine_tests = executable('engine_tests',
+                          engine_test + common_sources,
+                          dependencies : [
+                              gtest_dep,
+                              gmock_dep,
+                              gtest_main_dep],
+                          include_directories : include_directories(inc_dir))
+evaluation_tests = executable('evaluation_tests',
+                              evaluation_test + common_sources,
+                              dependencies : [
+                                  gtest_dep,
+                                  gmock_dep,
+                                  gtest_main_dep],
+                              include_directories : include_directories(inc_dir))
+test('engine_tests', engine_tests)
+test('evaluation_tests', evaluation_tests)

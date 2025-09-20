@@ -25,6 +25,7 @@ cutechess/
 
 # Build artifacts
 build/
+subprojects/
 **/CMakeFiles/
 **/CMakeCache.txt
 *.o
