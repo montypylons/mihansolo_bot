@@ -12,8 +12,8 @@
 #include "utils.hpp"
 #include "tt.hpp"
 #include "timemanagement.hpp"
-#include <fstream>
 #include <process.h>
+// #include <fstream>
 
 
 namespace engine
@@ -21,20 +21,23 @@ namespace engine
 #ifndef NDEBUG
     constexpr auto TARGET_FEN = "r1bq1rk1/ppp2ppp/5n2/2b1p3/Q2p4/1PP1PN2/P1nPKPPP/R1BN1B1R b - - 2 10";
     bool log_TT = false;
+
 #endif
+    /*
 #ifdef _WIN32
     auto pid = _getpid(); // Windows
 #else
     auto pid = getpid(); // POSIX
 #endif
-
+*/
     constexpr int MAX_EXTENSIONS = 0; // BUG: extensions cause node explosion
     constexpr int QUIESCENCE_DEPTH = 0;
     constexpr int DELTA = 200;
+    /*
     const auto log_path = std::string("../logs/internal/") + get_date_time() + std::string("_PID=") +
         std::to_string(pid) +
         std::string(".log");
-
+*/
     int history[2][64][64];
     int nodes = 0;
 
@@ -519,11 +522,11 @@ namespace engine
     {
         chess::Board board;
         std::string line;
-        std::ofstream log_file(log_path);
+        // std::ofstream log_file(log_path);
 
         while (std::getline(in, line))
         {
-            log_file << "[UCI] INFO: " << line << "\n";
+            // log_file << "[UCI] INFO: " << line << "\n";
             std::istringstream iss(line);
             std::string token;
             iss >> token;
@@ -637,7 +640,7 @@ namespace engine
             }
             else if (token == "quit")
             {
-                log_file.close();
+                // log_file.close();
                 break;
             }
             else if (token == "setoption")

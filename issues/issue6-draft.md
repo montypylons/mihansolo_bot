@@ -3,7 +3,7 @@
 ![alt text](image-5.png)
 ![alt text](image-6.png)
 
-## Cutechess tournament end (MihanSolo vs itself)
+## Cutechess tournament results (MihanSolo vs itself)
 
 ```terminaloutput
 Score of mihan1 vs mihan2: 9 - 7 - 15 [0.532]
