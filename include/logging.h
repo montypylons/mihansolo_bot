@@ -84,7 +84,7 @@ namespace Logging
     public:
         static std::string generate_log_path()
         {
-            return "../logs/internal/" + get_date_time() + "_PID=" + get_PID() + ".log";
+            return "../../logs/internal/" + get_date_time() + "_PID=" + get_PID() + ".log";
         }
 
         void log(const std::string& msg, LogLevel level = LogLevel::INFO)
