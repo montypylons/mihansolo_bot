@@ -14,7 +14,7 @@
 #include "timemanagement.hpp"
 #include <process.h>
 #include <fstream>
-
+#include "logging.h"
 
 namespace engine
 {

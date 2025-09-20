@@ -48,24 +48,6 @@ namespace engine
         return false;
     }
 
-    inline auto get_date_time()
-    {
-        const auto now = std::chrono::system_clock::now();
-        const std::time_t now_c = std::chrono::system_clock::to_time_t(now);
-
-        std::tm ltm{};
-#ifdef _WIN32
-        localtime_s(&ltm, &now_c); // thread-safe on Windows
-#else
-        localtime_r(&now_c, &ltm); // thread-safe on POSIX
-#endif
-
-        std::ostringstream oss;
-        oss << std::put_time(&ltm, "DATE=%Y_%m_%d_TIME=_%H_%M_%S");
-        return oss.str();
-    }
-
-
     // UCI protocol loop
     void start_uci(std::istream& in = std::cin, std::ostream& out = std::cout);
 

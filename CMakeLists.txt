@@ -62,6 +62,7 @@ add_executable(engine src/main.cpp
         src/tt.cpp
         src/timemanagement.cpp
         include/timemanagement.hpp
+        include/logging.h
 )
 target_link_libraries(engine PRIVATE engine_lib)
 install(TARGETS engine DESTINATION .)
