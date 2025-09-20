@@ -16,22 +16,7 @@ namespace Logging
     {
         std::ofstream log_file;
         std::string log_path = generate_log_path();
-
-        std::string get_PID()
-        {
-#if defined(_WIN32)
-#include <windows.h>
-
-                return GetCurrentProcessId();
-
-#else
-#include <unistd.h>
-          return getpid();
-#endif
-        }
-
-    public:
-        std::string get_date_time()
+        static std::string get_date_time()
         {
             const auto now = std::chrono::system_clock::now();
             const std::time_t now_c = std::chrono::system_clock::to_time_t(now);
@@ -50,9 +35,24 @@ namespace Logging
             return oss.str();
         }
 
-        std::string generate_log_path()
+        static std::string get_PID()
         {
-            return "../logs/internal/" + get_date_time() + ".log";
+#if defined(_WIN32)
+#include <windows.h>
+
+                return GetCurrentProcessId();
+
+#else
+#include <unistd.h>
+          return getpid();
+#endif
+        }
+
+    public:
+
+        static std::string generate_log_path()
+        {
+            return "../logs/internal/" + get_date_time() + "_PID="+get_PID() + ".log";
         }
 
         void log(const std::string& msg, LogLevel level = LogLevel::INFO)
