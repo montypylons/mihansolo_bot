@@ -1,5 +1,12 @@
 #pragma once
 
+#include <array>
+#include <iomanip>
+#include <string_view>
+#include <fstream>
+#include <chrono>
+#include <sstream>
+
 #ifdef _WIN32
 #include <process.h>
 #define NOMINMAX
