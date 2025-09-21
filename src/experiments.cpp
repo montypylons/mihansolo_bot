@@ -157,7 +157,7 @@ std::string getLastLine(const std::string& s)
     return s.substr(last_newline_pos + 1, end - last_newline_pos);
 }
 
-bool issue_6_MRE()
+void issue_6_MRE()
 {
     constexpr auto commands =
         // NOLINTBEGIN
@@ -214,12 +214,8 @@ bool issue_6_MRE()
     // "isready"; This messes up getLastLine since the last line is always readyok
     // FEN of the final position is: rnbqk2r/ppp1p1bp/3p1np1/5p2/2PP4/5NP1/PP2PPBP/RNBQ1RK1 b kq - 1 6
     // NOLINTEND
-    std::ostringstream output;
     std::istringstream input(commands);
-    engine::start_uci(input, output);
-    const auto output_str = output.str();
-    std::cout << "Engine output: \n" << output_str << std::endl;
-    return getLastLine(output_str) != "bestmove f5c2";
+    engine::start_uci(input);
 }
 
 void get_moves()
@@ -239,7 +235,7 @@ void get_moves()
     }
 }
 
-int main()
+void multiple_tests()
 {
     constexpr auto current_MRE_iterations = 1;
 
@@ -252,7 +248,7 @@ int main()
 
     for (int i = 0; i < current_MRE_iterations; i++)
     {
-        if (issue_6_MRE())
+        if (false)
         {
             SUCCESS++;
             std::cout << "SUCCESS\n";
@@ -265,4 +261,9 @@ int main()
     }
 
     std::cout << "Success rate (didn't make an illegal move): " << SUCCESS << "/" << SUCCESS + FAILURE << std::endl;
+}
+
+int main()
+{
+    issue_6_MRE();
 }

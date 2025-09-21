@@ -223,7 +223,7 @@ namespace engine
         // time management
         bool nega_manager_found = false;
         if (nega_manager.has_value()) nega_manager_found = true;
- if (nega_manager_found && !nega_manager->time_remaining())
+        if (nega_manager_found && !nega_manager->time_remaining())
         {
             abort_due_to_time = true;
             return std::make_tuple(0, chess::Move::NO_MOVE);
@@ -245,8 +245,10 @@ namespace engine
         {
             int leaf_eval{QuiescenceSearch(alpha, beta, board, ply, nega_manager)};
             // TEMP
-            if (board.getFen() == target_fen && last_move == target_move) std::cout << "detected the evil one [l248]" <<
-                std::endl;
+            if (board.getFen() == target_fen && last_move == target_move)
+            {
+                std::cout << "detected the evil one [l248]" << std::endl;
+            }
             return std::make_tuple(leaf_eval, last_move);
         }
         // NOLINTBEGIN
@@ -543,6 +545,10 @@ namespace engine
                 else
                 {
                     bestmove = search(board, manager, -1, out);
+                }
+                if (bestmove == chess::uci::moveToUci(target_move))
+                {
+                    std::cout << "the evil one [l551]" << std::endl;
                 }
                 out << "bestmove " << bestmove << "\n";
             }
