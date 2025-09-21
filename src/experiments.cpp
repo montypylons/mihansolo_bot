@@ -8,6 +8,7 @@
  * 100 middlegame puzzle FENs scraped from https://database.lichess.org
  */
 constexpr std::array<const char*, 100> boards = {
+    // NOLINTBEGIN
     "r6k/pp2r2p/4Rp1Q/3p4/8/1N1P2R1/PqP2bPP/7K b - - 0 24",
     "r2qr1k1/b1p2ppp/pp4n1/P1P1p3/4P1n1/B2P2Pb/3NBP1P/RN1QR1K1 b - - 1 16",
     "r4rk1/pp3ppp/2n1b3/q1pp2B1/8/P1Q2NP1/1PP1PP1P/2KR3R w - - 0 15",
@@ -108,6 +109,7 @@ constexpr std::array<const char*, 100> boards = {
     "2kr2r1/ppb2ppp/3qbn2/2Np2B1/P7/2P2Q1P/1PB2PP1/R4RK1 w - - 5 18",
     "2r3k1/7p/6q1/p1Np4/Qp2pr2/P4P2/1PR2P1K/5R2 w - - 0 36",
     "1R6/6pk/2p4p/3bP2r/5B1P/2P2qP1/P4P1Q/4R1K1 w - - 2 40",
+    // NOLINTEND
 };
 
 auto getPrimes() // Why is this here?
@@ -158,7 +160,9 @@ std::string getLastLine(const std::string& s)
 
 bool issue_6_MRE()
 {
-    constexpr auto commands = "uci\n"
+    constexpr auto commands =
+        // NOLINTBEGIN
+        "uci\n"
         "setoption name Hash value 16\n"
         "setoption name Move Overhead value 30\n"
         "setoption name Threads value 1\n"
@@ -206,14 +210,15 @@ bool issue_6_MRE()
         "go wtime 44104 btime 46428 movestogo 189\n"
         "position startpos moves d2d4 f7f5 g1f3 g7g6 g2g3 f8g7 f1g2 g8f6 c2c4 d7d6 e1g1 e8h8 b1c3 b8c6 d4d5 c6e5 f3e5 d6e5 d1c2 c8d7 e2e4 f5e4 c3e4 d7f5 e4f6\n"
         "isready\n"
-        "go wtime 41898 btime 44107 movestogo 188\n"
-        "isready";
+        "go wtime 41898 btime 44107 movestogo 188\n";
+    // "isready"; This messes up getLastLine since the last line is always readyok
+    // NOLINTEND
     std::ostringstream output;
     std::istringstream input(commands);
     engine::start_uci(input, output);
     const auto output_str = output.str();
     std::cout << "Engine output: \n" << output_str << std::endl;
-    return getLastLine(output_str) != "f5c2";
+    return getLastLine(output_str) != "bestmove f5c2";
 }
 
 
@@ -234,9 +239,12 @@ int main()
             SUCCESS++;
             std::cout << "SUCCESS\n";
         }
-        FAILURE++; // If the function isn't true then it must be false
-        std::cout << "FAILURE\n";
+        else
+        {
+            FAILURE++;
+            std::cout << "FAILURE\n";
+        }
     }
 
-    std::cout << "Success rate (didn't make an illegal move)" << SUCCESS << "/" << SUCCESS + FAILURE << std::endl;
+    std::cout << "Success rate (didn't make an illegal move): " << SUCCESS << "/" << SUCCESS + FAILURE << std::endl;
 }
