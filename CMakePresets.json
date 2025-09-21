@@ -1,0 +1,69 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 20,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "debug",
+      "displayName": "Debug",
+      "description": "Debug build",
+      "generator": "Visual Studio 17 2022",
+      "architecture": {
+        "value": "x64",
+        "strategy": "external"
+      },
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_CXX_STANDARD": "17"
+      },
+      "binaryDir": "${sourceDir}/build/Debug"
+    },
+    {
+      "name": "debug_optimized",
+      "displayName": "DebugOptimized",
+      "description": "Debug build with optimizations",
+      "generator": "Visual Studio 17 2022",
+      "architecture": {
+        "value": "x64",
+        "strategy": "external"
+      },
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+        "CMAKE_CXX_STANDARD": "17"
+      },
+      "binaryDir": "${sourceDir}/build/DebugOptimized"
+    },
+    {
+      "name": "release",
+      "displayName": "Release",
+      "description": "Release build",
+      "generator": "Visual Studio 17 2022",
+      "architecture": {
+        "value": "x64",
+        "strategy": "external"
+      },
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_CXX_STANDARD": "17"
+      },
+      "binaryDir": "${sourceDir}/build/Release"
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "build-debug",
+      "configurePreset": "debug"
+    },
+    {
+      "name": "build-debug_optimized",
+      "configurePreset": "debug_optimized"
+    },
+    {
+      "name": "build-release",
+      "configurePreset": "release"
+    }
+  ]
+}
