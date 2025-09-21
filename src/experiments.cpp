@@ -1,5 +1,6 @@
 #include "chess.hpp"
 #include "engine.hpp"
+#include "experiments.hpp"
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -7,8 +8,7 @@
 /**
  * 100 middlegame puzzle FENs scraped from https://database.lichess.org
  */
-constexpr std::array<const char*, 100> boards = {
-    // NOLINTBEGIN
+constexpr std::array<const char*, 100> middlegame_FENs = {
     "r6k/pp2r2p/4Rp1Q/3p4/8/1N1P2R1/PqP2bPP/7K b - - 0 24",
     "r2qr1k1/b1p2ppp/pp4n1/P1P1p3/4P1n1/B2P2Pb/3NBP1P/RN1QR1K1 b - - 1 16",
     "r4rk1/pp3ppp/2n1b3/q1pp2B1/8/P1Q2NP1/1PP1PP1P/2KR3R w - - 0 15",
@@ -109,7 +109,6 @@ constexpr std::array<const char*, 100> boards = {
     "2kr2r1/ppb2ppp/3qbn2/2Np2B1/P7/2P2Q1P/1PB2PP1/R4RK1 w - - 5 18",
     "2r3k1/7p/6q1/p1Np4/Qp2pr2/P4P2/1PR2P1K/5R2 w - - 0 36",
     "1R6/6pk/2p4p/3bP2r/5B1P/2P2qP1/P4P1Q/4R1K1 w - - 2 40",
-    // NOLINTEND
 };
 
 auto getPrimes() // Why is this here?
@@ -210,8 +209,10 @@ bool issue_6_MRE()
         "go wtime 44104 btime 46428 movestogo 189\n"
         "position startpos moves d2d4 f7f5 g1f3 g7g6 g2g3 f8g7 f1g2 g8f6 c2c4 d7d6 e1g1 e8h8 b1c3 b8c6 d4d5 c6e5 f3e5 d6e5 d1c2 c8d7 e2e4 f5e4 c3e4 d7f5 e4f6\n"
         "isready\n"
-        "go wtime 41898 btime 44107 movestogo 188\n";
+        // "go wtime 41898 btime 44107 movestogo 188"; <- Original
+        "go depth 1";
     // "isready"; This messes up getLastLine since the last line is always readyok
+    // FEN of the final position is: rnbqk2r/ppp1p1bp/3p1np1/5p2/2PP4/5NP1/PP2PPBP/RNBQ1RK1 b kq - 1 6
     // NOLINTEND
     std::ostringstream output;
     std::istringstream input(commands);
@@ -221,12 +222,29 @@ bool issue_6_MRE()
     return getLastLine(output_str) != "bestmove f5c2";
 }
 
+void get_moves()
+{
+    std::cout << "FEN: " << target_fen << std::endl;
+    chess::Movelist legal_moves;
+    chess::movegen::legalmoves(legal_moves,
+                               chess::Board(target_fen));
+    for (const auto move : legal_moves)
+    {
+        const auto move_str = chess::uci::moveToUci(move);
+        std::cout << "Legal move: " << move_str << std::endl;
+        if (move_str == "f5c2")
+        {
+            std::cout << "TARGET MOVE DETECTED!!!" << std::endl;
+        }
+    }
+}
 
 int main()
 {
-    constexpr auto current_MRE_iterations = 5;
+    constexpr auto current_MRE_iterations = 1;
 
     std::cout << "started main\n\n";
+    get_moves();
     std::cout << "Minimal reproducible example\n\n";
     std::cout << "ITERATIONS: " << current_MRE_iterations << std::endl;
 
