@@ -13,7 +13,6 @@
 #include "tt.hpp"
 #include "timemanagement.hpp"
 #include <process.h>
-#include <fstream>
 #include "logging.hpp"
 #include "experiments.hpp"
 
@@ -33,7 +32,6 @@ namespace engine
     Reader::Book book;
     TranspositionTable table; // TODO: add tests fr this
     std::optional<TimeManagement::TimeManager> manager; // TODO: add tests fr this
-    std::optional<std::ofstream> log_file;
 
     const int initial_alpha = std::numeric_limits<int>::min() + 1; // to avoid wraparound bugs
     const int initial_beta = std::numeric_limits<int>::max();
@@ -225,7 +223,7 @@ namespace engine
         // time management
         bool nega_manager_found = false;
         if (nega_manager.has_value()) nega_manager_found = true;
-        if (nega_manager_found && !nega_manager->time_remaining())
+ if (nega_manager_found && !nega_manager->time_remaining())
         {
             abort_due_to_time = true;
             return std::make_tuple(0, chess::Move::NO_MOVE);
@@ -246,6 +244,9 @@ namespace engine
         if (depth == 0 || game_over(board)) // NOLINT
         {
             int leaf_eval{QuiescenceSearch(alpha, beta, board, ply, nega_manager)};
+            // TEMP
+            if (board.getFen() == target_fen && last_move == target_move) std::cout << "detected the evil one [l248]" <<
+                std::endl;
             return std::make_tuple(leaf_eval, last_move);
         }
         // NOLINTBEGIN
@@ -284,6 +285,11 @@ namespace engine
         {
             int score;
             chess::Move dummy_move{};
+            // TEMP
+            if (board.getFen() == target_fen && move == target_move)
+            {
+                std::cout << "detected the evil one [l285]" << std::endl;
+            }
             board.makeMove(move);
             int passed_pawn_extension = (is_pawns_near_promotion(board) && numExtensions < MAX_EXTENSIONS) ? 1 : 0;
 
