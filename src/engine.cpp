@@ -15,6 +15,7 @@
 #include "timemanagement.hpp"
 #include "logging.hpp"
 #include "experiments.hpp"
+#include <format>
 
 namespace engine
 {
@@ -223,6 +224,9 @@ namespace engine
                                          const int& depth, const int& ply, const int numExtensions)
     {
         nodes++;
+        if (depth == 1 && board.getFen() == "r2q3k/ppp1p1bp/5Np1/3Ppb2/2P5/6P1/PPQ2PBP/R1B2RK1 b - - 0 13" && nodes ==
+            1)
+            std::cout << "EVIL BRO @ " << __LINE__ << std::endl;
         // time management
         bool nega_manager_found = false;
         if (nega_manager.has_value())
@@ -254,7 +258,7 @@ namespace engine
         {
             int leaf_eval{QuiescenceSearch(alpha, beta, board, ply, nega_manager)};
             // TEMP
-            if (board.getFen() == target_fen && last_move == target_move)
+            if (board.getFen() == target_fen && last_move.move() == target_move.move())
             {
                 std::cout << "detected the evil one [l248]" << std::endl;
             }
@@ -296,7 +300,7 @@ namespace engine
             int score;
             chess::Move dummy_move{};
             // TEMP
-            if (board.getFen() == target_fen && move == target_move)
+            if (board.getFen() == target_fen && move.move() == target_move.move())
             {
                 std::cout << "detected the evil one [l285]" << std::endl;
             }
@@ -407,6 +411,7 @@ namespace engine
                 auto result = negamax(manager1, PV_Move, table, board, initial_alpha, initial_beta,
                                       chess::Move::NO_MOVE, depth,
                                       0);
+
                 returned_move = std::get<1>(result);
                 eval = std::get<0>(result);
 
@@ -433,11 +438,23 @@ namespace engine
                 auto result = negamax(std::nullopt, PV_Move, table, board, initial_alpha, initial_beta,
                                       chess::Move::NO_MOVE, i,
                                       0);
+
                 previous_eval = std::get<0>(result);
                 PV_Move = std::get<1>(result);
                 if (PV_Move.move() == target_move.move())
+                {
                     std::cout <<
-                        "changed pv move to evil @ 436 " << "Depth: " << i << std::endl;
+                        std::format(
+                            "auto result = negamax(std::nullopt, {}, table, {}, {}, {},\n"
+                            "chess::Move::NO_MOVE, {},\n"
+                            "0);\n", chess::uci::moveToUci(PV_Move), board.getFen(), initial_alpha, initial_beta, i);
+                }
+
+                if (PV_Move.move() == target_move.move())
+                    std::cout <<
+                        "negamax returned evil and changed pv move to evil [no time manager] @ " << __LINE__ << " " <<
+                        __FILE__ << "Depth: " << i
+                        << std::endl;
             }
         }
 
@@ -449,7 +466,7 @@ namespace engine
         const std::string move_uci = chess::uci::moveToUci(PV_Move);
         depth = manager_exists ? depth : default_depth;
         output << "info depth " << depth << " nodes " << nodes << " score cp " << previous_eval << "\n";
-        if (move_uci == "f5c2") std::cout << "evil at line 442, engine::search\n";
+        if (move_uci == "f5c2") std::cout << "evil at line 453, engine::search\n";
         return move_uci;
     }
 
