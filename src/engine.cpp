@@ -332,7 +332,7 @@ namespace engine
                 {
                     table1.put(zobrist_key, best_move, depth, best_eval, NodeType::LOWERBOUND, ply);
                 }
-                if (best_move == target_move && board.getFen() == target_fen)
+                if (best_move.move() == target_move.move() && board.getFen() == target_fen)
                 {
                     std::cout << "Evil [327][engine.cpp]" <<
                         std::endl;
