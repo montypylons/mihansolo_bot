@@ -224,9 +224,8 @@ namespace engine
                                          const int& depth, const int& ply, const int numExtensions)
     {
         nodes++;
-        if (depth == 1 && board.getFen() == "r2q3k/ppp1p1bp/5Np1/3Ppb2/2P5/6P1/PPQ2PBP/R1B2RK1 b - - 0 13" && nodes ==
-            1)
-            std::cout << "EVIL BRO @ " << __LINE__ << std::endl;
+        if (nodes == 1)
+            std::cout << "FEN @ " << __LINE__ << " = " << board.getFen() << std::endl;
         // time management
         bool nega_manager_found = false;
         if (nega_manager.has_value())
@@ -463,6 +462,7 @@ namespace engine
         while (std::getline(in, line))
         {
             logger.log("UCI in << " + line, Logging::LogLevel::DEBUG);
+            std::cout << "UCI IN << " << line << std::endl;
             std::istringstream iss(line);
             std::string token;
             iss >> token;
@@ -527,6 +527,7 @@ namespace engine
                         chess::Move m = chess::uci::uciToMove(board, move_str);
                         board.makeMove(m);
                     }
+                    std::cout << "Achieved board " << board.getFen() << std::endl;
 
                     if (manager_exists)
                     {

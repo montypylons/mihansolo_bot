@@ -263,7 +263,17 @@ void multiple_tests()
     std::cout << "Success rate (didn't make an illegal move): " << SUCCESS << "/" << SUCCESS + FAILURE << std::endl;
 }
 
+void test_uci()
+{
+    // BUG
+    // TODO: FIX THIS IT RETURNS WRONG FEN IM COOKED
+    // THIS IS FUDGED
+    auto input = std::istringstream(
+        "position startpos moves d2d4 f7f5 g1f3 g7g6 g2g3 f8g7 f1g2 g8f6 c2c4 d7d6 e1g1 e8h8 b1c3 b8c6 d4d5 c6e5 f3e5 d6e5 d1c2 c8d7 e2e4 f5e4 c3e4 d7f5 e4f6");
+    engine::start_uci(input);
+}
+
 int main()
 {
-    issue_6_MRE();
+    test_uci();
 }
