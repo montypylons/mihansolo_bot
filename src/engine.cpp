@@ -306,6 +306,10 @@ namespace engine
             std::tie(score, dummy_move) = negamax(nega_manager, PV_Move, table1, board, -beta, -alpha, move,
                                                   (depth + passed_pawn_extension) - 1, ply + 1,
                                                   numExtensions + passed_pawn_extension);
+            if (dummy_move.move() == target_move.move() && board.getFen() == target_fen)
+            {
+                std::cout << "evil [line 311 engine::negamax]\n";
+            }
             score = -score;
 
             board.unmakeMove(move);

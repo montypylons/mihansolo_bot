@@ -1,6 +1,5 @@
 #include "chess.hpp"
 #include "utils.hpp"
-#include <vector>
 #include <array>
 
 /**
@@ -15,7 +14,7 @@ namespace utils
      * which contain 6 bitboards each, one for each piece type
      */
     std::tuple<std::array<chess::Bitboard, 6>, std::array<chess::Bitboard, 6>> generate_bitboards(
-        const chess::Board &board)
+        const chess::Board& board)
     {
         const chess::Color side_to_move = board.sideToMove();
 
@@ -36,7 +35,8 @@ namespace utils
         return std::make_tuple(
             std::array<chess::Bitboard, 6>{pawns, knights, bishops, rooks, queens, kings},
             std::array<chess::Bitboard, 6>{
-                enemy_pawns, enemy_knights, enemy_bishops, enemy_rooks, enemy_queens, enemy_kings});
+                enemy_pawns, enemy_knights, enemy_bishops, enemy_rooks, enemy_queens, enemy_kings
+            });
     }
 
     /**
@@ -48,7 +48,7 @@ namespace utils
      * it would reward PxQ over QxQ or QxP since you would lose less material to a
      * recapture then.
      */
-    int MVV_LAA_helper(const chess::Board &board, const chess::Move &move)
+    int MVV_LAA_helper(const chess::Board& board, const chess::Move& move)
     {
         // TODO: Add tests
         const int from_score = piece_values[board.at(move.from()).type()];
@@ -57,8 +57,8 @@ namespace utils
         return move_score;
     }
 
-    inline int history_heuristic_helper(const int (&history)[2][64][64], const chess::Board &board,
-                                        const chess::Move &move)
+    inline int history_heuristic_helper(const int (&history)[2][64][64], const chess::Board& board,
+                                        const chess::Move& move)
     {
         return history[board.sideToMove()][move.from().index()][move.to().index()];
     }
@@ -70,11 +70,11 @@ namespace utils
      * @param moves The list of moves to sort
      * @param board The board BEFORE any of the aforementioned moved are made on it
      */
-    void order_moves(const int (&history)[2][64][64], const chess::Move &PV_Move, chess::Movelist &moves,
-                     const chess::Board &board)
+    void order_moves(const int (&history)[2][64][64], const chess::Move& PV_Move, chess::Movelist& moves,
+                     const chess::Board& board)
     {
-        std::sort(moves.begin(), moves.end(), [board, &history](const chess::Move &m1, const chess::Move &m2) -> bool
-                  {
+        std::ranges::sort(moves, [board, &history](const chess::Move& m1, const chess::Move& m2) -> bool
+        {
             const bool m1_capture = board.isCapture(m1);
             const bool m2_capture = board.isCapture(m2);
 
@@ -90,11 +90,12 @@ namespace utils
             {
                 return MVV_LAA_helper(board, m1) > MVV_LAA_helper(board, m2);
             }
-            return history_heuristic_helper(history, board, m1) < history_heuristic_helper(history, board, m2); });
+            return history_heuristic_helper(history, board, m1) < history_heuristic_helper(history, board, m2);
+        });
 
-        if (const auto PV_pos = std::distance(moves.begin(), std::find(moves.begin(), moves.end(), PV_Move)); PV_pos > 0)
+        if (const auto it = std::ranges::find(moves, PV_Move); it != moves.end() && it != moves.begin())
         {
-            std::swap(moves[0], moves[PV_pos]);
+            std::swap(moves.front(), *it);
         }
     }
 
@@ -103,9 +104,11 @@ namespace utils
      * @param moves A list of capture moves to be sorted
      * @param board The board BEFORE any of the aforementioned moves are made
      */
-    void order_capture_moves(chess::Movelist &moves, const chess::Board &board)
+    void order_capture_moves(chess::Movelist& moves, const chess::Board& board)
     {
-        std::sort(moves.begin(), moves.end(), [board](const chess::Move &m1, const chess::Move &m2) -> bool
-                  { return MVV_LAA_helper(board, m1) > MVV_LAA_helper(board, m2); });
+        std::ranges::sort(moves, [board](const chess::Move& m1, const chess::Move& m2) -> bool
+        {
+            return MVV_LAA_helper(board, m1) > MVV_LAA_helper(board, m2);
+        });
     }
 }
