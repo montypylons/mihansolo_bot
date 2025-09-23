@@ -360,7 +360,7 @@ namespace engine
             table1.put(zobrist_key, best_move, depth, best_eval, node_type, ply);
         }
         // End transposition table stuff
-        if (best_move == target_move && board.getFen() == target_fen)
+        if (best_move.move() == target_move.move() && board.getFen() == target_fen)
         {
             std::cout << "The evil one [l352]" << std::endl;
         }
@@ -413,7 +413,7 @@ namespace engine
                 if (!abort_due_to_time) // prevents using corrupted moves or eval
                 {
                     PV_Move = returned_move;
-                    if (board.getFen() == target_fen && PV_Move == target_move)
+                    if (board.getFen() == target_fen && PV_Move.move() == target_move.move())
                         std::cout <<
                             "changed pv move to evil @ 412\n";
                     previous_eval = eval;
@@ -435,7 +435,7 @@ namespace engine
                                       0);
                 previous_eval = std::get<0>(result);
                 PV_Move = std::get<1>(result);
-                if (PV_Move == target_move)
+                if (PV_Move.move() == target_move.move())
                     std::cout <<
                         "changed pv move to evil @ 436 " << "Depth: " << i << std::endl;
             }
