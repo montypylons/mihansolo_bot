@@ -418,9 +418,6 @@ namespace engine
                 if (!abort_due_to_time) // prevents using corrupted moves or eval
                 {
                     PV_Move = returned_move;
-                    if (board.getFen() == target_fen && PV_Move.move() == target_move.move())
-                        std::cout <<
-                            "changed pv move to evil @ 412\n";
                     previous_eval = eval;
                     if (std::abs(eval) > 9995)
                     {
@@ -441,20 +438,6 @@ namespace engine
 
                 previous_eval = std::get<0>(result);
                 PV_Move = std::get<1>(result);
-                if (PV_Move.move() == target_move.move())
-                {
-                    std::cout <<
-                        std::format(
-                            "auto result = negamax(std::nullopt, {}, table, {}, {}, {},\n"
-                            "chess::Move::NO_MOVE, {},\n"
-                            "0);\n", chess::uci::moveToUci(PV_Move), board.getFen(), initial_alpha, initial_beta, i);
-                }
-
-                if (PV_Move.move() == target_move.move())
-                    std::cout <<
-                        "negamax returned evil and changed pv move to evil [no time manager] @ " << __LINE__ << " " <<
-                        __FILE__ << "Depth: " << i
-                        << std::endl;
             }
         }
 
@@ -466,7 +449,6 @@ namespace engine
         const std::string move_uci = chess::uci::moveToUci(PV_Move);
         depth = manager_exists ? depth : default_depth;
         output << "info depth " << depth << " nodes " << nodes << " score cp " << previous_eval << "\n";
-        if (move_uci == "f5c2") std::cout << "evil at line 453, engine::search\n";
         return move_uci;
     }
 
@@ -594,7 +576,7 @@ namespace engine
                 }
                 if (bestmove == chess::uci::moveToUci(target_move) && board.getFen() == target_fen)
                 {
-                    std::cout << "the evil one [l551]" << std::endl;
+                    std::cout << "the evil one [start_uci] @ " << __LINE__ << std::endl;
                 }
                 out << "bestmove " << bestmove << "\n";
             }
