@@ -3,6 +3,7 @@
 #include "evaluation.hpp"
 #include "reader.hpp"
 #include <filesystem>
+#include <stdexcept>
 #include <limits>
 #include <optional>
 #include <sstream>
@@ -29,7 +30,7 @@ namespace engine
 
     Logging::Logger logger;
     Reader::Book book;
-    TranspositionTable table;                           // TODO: add tests fr this
+    TranspositionTable table; // TODO: add tests fr this
     std::optional<TimeManagement::TimeManager> manager; // TODO: add tests fr this
 
     const int initial_alpha = std::numeric_limits<int>::min() + 1; // to avoid wraparound bugs
@@ -42,10 +43,10 @@ namespace engine
      * i.e. they are one move away from promoting.
      * The main use is for passed pawn search extensions.
      */
-    inline bool is_pawns_near_promotion(const chess::Board &board)
+    inline bool is_pawns_near_promotion(const chess::Board& board)
     {
         return 0x00FF000000000000ULL & board.pieces(chess::PieceType::PAWN, chess::Color::BLACK).getBits() ||
-               0x000000000000FF00ULL & board.pieces(chess::PieceType::PAWN, chess::Color::WHITE).getBits();
+            0x000000000000FF00ULL & board.pieces(chess::PieceType::PAWN, chess::Color::WHITE).getBits();
     }
 
     /**
@@ -53,7 +54,7 @@ namespace engine
      * @param move
      * @return Whether it is a promotion or not
      */
-    inline bool is_promotion(const chess::Move &move)
+    inline bool is_promotion(const chess::Move& move)
     {
         return move.typeOf() == chess::Move::PROMOTION;
     }
@@ -67,12 +68,14 @@ namespace engine
      * @param q_manager
      * @return The score of the position after evaluating to a quiescent position (no captures).
      */
-    int QuiescenceSearch(int alpha, const int beta, chess::Board &board, const int ply,
-                         const std::optional<TimeManagement::TimeManager> &q_manager)
+    int QuiescenceSearch(int alpha, const int beta, chess::Board& board, const int ply,
+                         const std::optional<TimeManagement::TimeManager>& q_manager)
     {
         bool q_manager_found = false;
         if (q_manager.has_value())
+        {
             q_manager_found = true;
+        }
         if (q_manager_found && !q_manager->time_remaining())
         {
             abort_due_to_time = true;
@@ -81,7 +84,8 @@ namespace engine
         nodes++;
 
         const uint64_t zobrist = board.hash();
-        if (const auto ttEntry = table.find_usable_entry(alpha, beta, QUIESCENCE_DEPTH, zobrist, ply); ttEntry.has_value())
+        if (const auto ttEntry = table.find_usable_entry(alpha, beta, QUIESCENCE_DEPTH, zobrist, ply); ttEntry.
+            has_value())
         {
             return std::get<0>(ttEntry.value());
         }
@@ -103,7 +107,7 @@ namespace engine
         chess::movegen::legalmoves<chess::movegen::MoveGenType::CAPTURE>(capture_moves, board);
         utils::order_capture_moves(capture_moves, board);
 
-        for (const auto &move : capture_moves)
+        for (const auto& move : capture_moves)
         {
             if (!board.inCheck() && !evaluation::is_endgame(board) && !is_promotion(move) &&
                 best_value + utils::piece_values[board.at(move.to()).type()] + DELTA < alpha)
@@ -163,7 +167,7 @@ namespace engine
      * @param board Board to find book move for
      * @return A random book move if multiple found, if only one found return that, if none found return std::nullopt
      */
-    std::optional<std::string> book_move(const chess::Board &board)
+    std::optional<std::string> book_move(const chess::Board& board)
     {
         if (const Reader::BookMoves book_moves = book.GetBookMoves(board.hash()); !book_moves.empty())
         {
@@ -189,11 +193,11 @@ namespace engine
      * @param depth Current search depth
      * @return Whether we can use null move pruning without adverse side effects
      */
-    inline bool can_NMP(const chess::Board &board, const int depth)
+    inline bool can_NMP(const chess::Board& board, const int depth)
     {
         const int R = reduction_for(depth);
         return depth >= R && depth > R + 1 // need at least one more ply than R
-               && board.hasNonPawnMaterial(board.sideToMove()) && !board.inCheck();
+            && board.hasNonPawnMaterial(board.sideToMove()) && !board.inCheck();
     }
 
     /**
@@ -210,19 +214,21 @@ namespace engine
      * @param nega_manager
      * @return A tuple of the believed evaluation and best move in the position
      */
-    std::tuple<int, chess::Move> negamax(const std::optional<TimeManagement::TimeManager> &nega_manager,
-                                         const chess::Move &PV_Move, TranspositionTable &table1,
-                                         chess::Board &board,
+    std::tuple<int, chess::Move> negamax(const std::optional<TimeManagement::TimeManager>& nega_manager,
+                                         const chess::Move& PV_Move, TranspositionTable& table1,
+                                         chess::Board& board,
                                          int alpha,
                                          const int beta,
-                                         const chess::Move &last_move,
-                                         const int &depth, const int &ply, const int numExtensions)
+                                         const chess::Move& last_move,
+                                         const int& depth, const int& ply, const int numExtensions)
     {
         nodes++;
         // time management
         bool nega_manager_found = false;
         if (nega_manager.has_value())
+        {
             nega_manager_found = true;
+        }
         if (nega_manager_found && !nega_manager->time_remaining())
         {
             abort_due_to_time = true;
@@ -233,8 +239,13 @@ namespace engine
         const int alpha_original = alpha;
         const auto zobrist_key = board.hash();
 
-        if (auto TTResult = table1.find_usable_entry(alpha_original, beta, depth, zobrist_key, ply); TTResult.has_value())
+        if (auto TTResult = table1.find_usable_entry(alpha_original, beta, depth, zobrist_key, ply); TTResult.
+            has_value())
         {
+            if (std::get<1>(TTResult.value()) == target_move && depth == 1 && board.getFen() == target_fen)
+            {
+                std::cout << "evil one [l247][returned from transposition table]" << std::endl;
+            }
             return TTResult.value();
         }
         // transposition stuff ends
@@ -255,7 +266,6 @@ namespace engine
 
         chess::Movelist legal_moves;
         chess::movegen::legalmoves(legal_moves, board);
-
         utils::order_moves(history, PV_Move, legal_moves, board);
         /*
         if (can_NMP(board, depth)) // NMP Conditions
@@ -281,7 +291,7 @@ namespace engine
         */
 
         // SPRT shows NMP is -37.6 elo, so commented out for now
-        for (const auto &move : legal_moves)
+        for (const auto& move : legal_moves)
         {
             int score;
             chess::Move dummy_move{};
@@ -318,6 +328,11 @@ namespace engine
                 {
                     table1.put(zobrist_key, best_move, depth, best_eval, NodeType::LOWERBOUND, ply);
                 }
+                if (best_move == target_move && board.getFen() == target_fen)
+                {
+                    std::cout << "Evil [327][engine.cpp]" <<
+                        std::endl;
+                }
                 return std::make_tuple(best_eval, best_move);
             }
         }
@@ -341,7 +356,10 @@ namespace engine
             table1.put(zobrist_key, best_move, depth, best_eval, node_type, ply);
         }
         // End transposition table stuff
-
+        if (best_move == target_move && board.getFen() == target_fen)
+        {
+            std::cout << "The evil one [l352]" << std::endl;
+        }
         return std::make_tuple(best_eval, best_move);
         // NOLINTEND
     }
@@ -354,9 +372,9 @@ namespace engine
      * @param output
      * @return The believed best move in the position as a UCI-formatted string
      */
-    std::string search(const std::optional<chess::Board> &fen,
-                       const std::optional<TimeManagement::TimeManager> &manager1, const int default_depth,
-                       std::ostream &output)
+    std::string search(const std::optional<chess::Board>& fen,
+                       const std::optional<TimeManagement::TimeManager>& manager1, const int default_depth,
+                       std::ostream& output)
     {
         manager_exists = manager1.has_value();
         int depth = 1;
@@ -391,6 +409,9 @@ namespace engine
                 if (!abort_due_to_time) // prevents using corrupted moves or eval
                 {
                     PV_Move = returned_move;
+                    if (board.getFen() == target_fen && PV_Move == target_move)
+                        std::cout <<
+                            "changed pv move to evil @ 412\n";
                     previous_eval = eval;
                     if (std::abs(eval) > 9995)
                     {
@@ -410,6 +431,9 @@ namespace engine
                                       0);
                 previous_eval = std::get<0>(result);
                 PV_Move = std::get<1>(result);
+                if (PV_Move == target_move)
+                    std::cout <<
+                        "changed pv move to evil @ 436 " << "Depth: " << i << std::endl;
             }
         }
 
@@ -421,13 +445,14 @@ namespace engine
         const std::string move_uci = chess::uci::moveToUci(PV_Move);
         depth = manager_exists ? depth : default_depth;
         output << "info depth " << depth << " nodes " << nodes << " score cp " << previous_eval << "\n";
+        if (move_uci == "f5c2") std::cout << "evil at line 442, engine::search\n";
         return move_uci;
     }
 
     /**
      * Start the UCI input/output loop, doesn't have all the options yet but working on it :D
      */
-    void start_uci(std::istream &in, std::ostream &out)
+    void start_uci(std::istream& in, std::ostream& out)
     {
         chess::Board board;
         std::string line;
@@ -453,10 +478,12 @@ namespace engine
                 out << "option name UCI_Elo type spin default 1350 min 1350 max 2850\n";
                 out << "uciok\n";
             }
-            else if (token == "d")
+            /*
+             *else if (token == "d")
             {
                 out << board.getFen() << std::endl;
             }
+            */
             else if (token == "isready")
             {
                 out << "readyok\n";
@@ -544,7 +571,7 @@ namespace engine
                 {
                     bestmove = search(board, manager, -1, out);
                 }
-                if (bestmove == chess::uci::moveToUci(target_move))
+                if (bestmove == chess::uci::moveToUci(target_move) && board.getFen() == target_fen)
                 {
                     std::cout << "the evil one [l551]" << std::endl;
                 }
