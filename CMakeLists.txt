@@ -18,6 +18,10 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
     endif ()
 endif ()
 
+add_subdirectory(${CMAKE_SOURCE_DIR}/spdlog)
+
+find_package(spdlog)
+
 # Include directories
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
@@ -35,6 +39,7 @@ add_executable(engine
         ${COMMON_SOURCES}
         src/main.cpp
 )
+target_link_libraries(engine PRIVATE spdlog::spdlog $<$<BOOL:${MINGW}>:ws2_32>)
 
 target_include_directories(engine PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
@@ -43,6 +48,8 @@ add_executable(experiments
         ${COMMON_SOURCES}
         src/experiments.cpp
 )
+target_link_libraries(experiments PRIVATE spdlog::spdlog $<$<BOOL:${MINGW}>:ws2_32>)
+
 target_include_directories(experiments PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
 # --- Tests ---
@@ -74,11 +81,14 @@ set(EVALUATION_TEST_SOURCES
 add_executable(engine_tests ${ENGINE_TEST_SOURCES})
 target_include_directories(engine_tests PRIVATE ${CMAKE_SOURCE_DIR}/include)
 target_link_libraries(engine_tests PRIVATE gtest gmock gtest_main)
+target_link_libraries(engine_tests PRIVATE spdlog::spdlog $<$<BOOL:${MINGW}>:ws2_32>)
+
 
 # Evaluation tests executable
 add_executable(evaluation_tests ${EVALUATION_TEST_SOURCES})
 target_include_directories(evaluation_tests PRIVATE ${CMAKE_SOURCE_DIR}/include)
 target_link_libraries(evaluation_tests PRIVATE gtest gmock gtest_main)
+target_link_libraries(evaluation_tests PRIVATE spdlog::spdlog $<$<BOOL:${MINGW}>:ws2_32>)
 
 # Add tests to CTest
 add_test(NAME engine_tests COMMAND engine_tests)
