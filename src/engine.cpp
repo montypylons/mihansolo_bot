@@ -3,7 +3,6 @@
 #include "evaluation.hpp"
 #include "reader.hpp"
 #include <filesystem>
-#include <stdexcept>
 #include <limits>
 #include <optional>
 #include <sstream>
@@ -15,7 +14,6 @@
 #include "timemanagement.hpp"
 #include "logging.hpp"
 #include "experiments.hpp"
-#include <format>
 
 namespace engine
 {
@@ -48,6 +46,27 @@ namespace engine
     {
         return 0x00FF000000000000ULL & board.pieces(chess::PieceType::PAWN, chess::Color::BLACK).getBits() ||
             0x000000000000FF00ULL & board.pieces(chess::PieceType::PAWN, chess::Color::WHITE).getBits();
+    }
+
+    /**
+     *
+     * @param move The move to convert
+     * @param board The board being used for context/castling rights
+     * Some GUI's (ahem CuteChess) give castling moves in a
+     * form chess-lib cannot understand, so this is the quick and dirty fix
+     */
+    inline void convert_castle_moves(std::string& move, const chess::Board& board)
+    {
+        if (move == "e8h8" && board.castlingRights().has(
+            chess::Color::BLACK, chess::Board::CastlingRights::Side::KING_SIDE))
+        {
+            move = "e8g8";
+        }
+        if (move == "e1h1" && board.castlingRights().has(
+            chess::Color::BLACK, chess::Board::CastlingRights::Side::KING_SIDE))
+        {
+            move = "e1g1";
+        }
     }
 
     /**
@@ -224,8 +243,7 @@ namespace engine
                                          const int& depth, const int& ply, const int numExtensions)
     {
         nodes++;
-        if (nodes == 1)
-            std::cout << "FEN @ " << __LINE__ << " = " << board.getFen() << std::endl;
+
         // time management
         bool nega_manager_found = false;
         if (nega_manager.has_value())
@@ -245,25 +263,18 @@ namespace engine
         if (auto TTResult = table1.find_usable_entry(alpha_original, beta, depth, zobrist_key, ply); TTResult.
             has_value())
         {
-            if (std::get<1>(TTResult.value()) == target_move && depth == 1 && board.getFen() == target_fen)
-            {
-                std::cout << "evil one [l247][returned from transposition table]" << std::endl;
-            }
             return TTResult.value();
         }
+
         // transposition stuff ends
 
         if (depth == 0 || game_over(board)) // NOLINT
         {
             int leaf_eval{QuiescenceSearch(alpha, beta, board, ply, nega_manager)};
-            // TEMP
-            if (board.getFen() == target_fen && last_move.move() == target_move.move())
-            {
-                std::cout << "detected the evil one [l248]" << std::endl;
-            }
             return std::make_tuple(leaf_eval, last_move);
         }
         // NOLINTBEGIN
+
         chess::Move best_move = chess::Move::NO_MOVE;
         int best_eval = std::numeric_limits<int>::min();
 
@@ -298,21 +309,13 @@ namespace engine
         {
             int score;
             chess::Move dummy_move{};
-            // TEMP
-            if (board.getFen() == target_fen && move.move() == target_move.move())
-            {
-                std::cout << "detected the evil one [l285]" << std::endl;
-            }
+
             board.makeMove(move);
             int passed_pawn_extension = (is_pawns_near_promotion(board) && numExtensions < MAX_EXTENSIONS) ? 1 : 0;
 
             std::tie(score, dummy_move) = negamax(nega_manager, PV_Move, table1, board, -beta, -alpha, move,
                                                   (depth + passed_pawn_extension) - 1, ply + 1,
                                                   numExtensions + passed_pawn_extension);
-            if (dummy_move.move() == target_move.move() && board.getFen() == target_fen)
-            {
-                std::cout << "evil [line 311 engine::negamax]\n";
-            }
             score = -score;
 
             board.unmakeMove(move);
@@ -335,11 +338,7 @@ namespace engine
                 {
                     table1.put(zobrist_key, best_move, depth, best_eval, NodeType::LOWERBOUND, ply);
                 }
-                if (best_move.move() == target_move.move() && board.getFen() == target_fen)
-                {
-                    std::cout << "Evil [327][engine.cpp]" <<
-                        std::endl;
-                }
+
                 return std::make_tuple(best_eval, best_move);
             }
         }
@@ -363,10 +362,7 @@ namespace engine
             table1.put(zobrist_key, best_move, depth, best_eval, node_type, ply);
         }
         // End transposition table stuff
-        if (best_move.move() == target_move.move() && board.getFen() == target_fen)
-        {
-            std::cout << "The evil one [l352]" << std::endl;
-        }
+
         return std::make_tuple(best_eval, best_move);
         // NOLINTEND
     }
@@ -462,7 +458,7 @@ namespace engine
         while (std::getline(in, line))
         {
             logger.log("UCI in << " + line, Logging::LogLevel::DEBUG);
-            std::cout << "UCI IN << " << line << std::endl;
+            // std::cout << "UCI IN << " << line << std::endl;
             std::istringstream iss(line);
             std::string token;
             iss >> token;
@@ -524,10 +520,10 @@ namespace engine
                     std::string move_str;
                     while (iss >> move_str)
                     {
+                        convert_castle_moves(move_str, board);
                         chess::Move m = chess::uci::uciToMove(board, move_str);
                         board.makeMove(m);
                     }
-                    std::cout << "Achieved board " << board.getFen() << std::endl;
 
                     if (manager_exists)
                     {
@@ -575,10 +571,7 @@ namespace engine
                 {
                     bestmove = search(board, manager, -1, out);
                 }
-                if (bestmove == chess::uci::moveToUci(target_move) && board.getFen() == target_fen)
-                {
-                    std::cout << "the evil one [start_uci] @ " << __LINE__ << std::endl;
-                }
+
                 out << "bestmove " << bestmove << "\n";
             }
             else if (token == "quit")

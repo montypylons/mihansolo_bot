@@ -52,11 +52,6 @@ void TranspositionTable::put(const uint64_t zobrist_key,
 {
     if (auto found_entry = table[address_calc(zobrist_key)]; found_entry.zobrist_key == zobrist_key)
     {
-        // TEMPORARY
-        if (zobrist_key == chess::Board(target_fen).zobrist() && found_entry.best_move == target_move)
-        {
-            std::cout << "GOT TT ENTRY WITH TARGET MOVE AND FEN" << std::endl;
-        }
         found_entry.score = scoreFromTT(found_entry.score, ply);
         return found_entry;
     }
