@@ -457,7 +457,7 @@ namespace engine
 
         while (std::getline(in, line))
         {
-            logger.log("UCI in << " + line, Logging::LogLevel::DEBUG);
+            // logger.log("UCI in << " + line, Logging::LogLevel::DEBUG);
             // std::cout << "UCI IN << " << line << std::endl;
             std::istringstream iss(line);
             std::string token;
