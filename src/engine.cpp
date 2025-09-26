@@ -27,7 +27,6 @@ namespace engine
     bool abort_due_to_time = false;
     bool manager_exists = false;
 
-    Logging::Logger logger;
     Reader::Book book;
     TranspositionTable table; // TODO: add tests fr this
     std::optional<TimeManagement::TimeManager> manager; // TODO: add tests fr this
@@ -457,8 +456,6 @@ namespace engine
 
         while (std::getline(in, line))
         {
-            // logger.log("UCI in << " + line, Logging::LogLevel::DEBUG);
-            // std::cout << "UCI IN << " << line << std::endl;
             std::istringstream iss(line);
             std::string token;
             iss >> token;
