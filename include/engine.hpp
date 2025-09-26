@@ -40,7 +40,7 @@ namespace engine
     {
         chess::Movelist moves;
         chess::movegen::legalmoves(moves, board);
-        if (moves.empty() || board.isHalfMoveDraw() || board.isInsufficientMaterial() || board.isRepetition())
+        if (moves.empty() || board.isHalfMoveDraw() || board.isInsufficientMaterial() || board.isRepetition(1))
         {
             return true;
         }

@@ -154,7 +154,7 @@ namespace evaluation
 
     std::optional<int> game_over_eval(const chess::Board& board, const int& ply)
     {
-        if (board.isInsufficientMaterial() || board.isHalfMoveDraw() || board.isRepetition())
+        if (board.isInsufficientMaterial() || board.isHalfMoveDraw() || board.isRepetition(1))
         {
             return 0;
         }
