@@ -1,64 +1,87 @@
 cmake_minimum_required(VERSION 3.15)
 project(mihansolo_bot VERSION 1.0 LANGUAGES CXX)
 
+# Set C++20 standard
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# --- Common include ---
-add_library(common_includes INTERFACE)
-target_include_directories(common_includes INTERFACE ${CMAKE_SOURCE_DIR}/include)
+# Compiler flags for Release build
+if (CMAKE_BUILD_TYPE STREQUAL "Release")
+    if (MSVC)
+        # MSVC specific optimization flags
+        add_compile_options(/Ox /Ot /Ob2 /Oi /Oy /GL /fp:fast /Gy)
+        add_link_options(/LTCG)
+    else ()
+        # GCC/Clang release flags (optional, you can adjust as needed)
+        add_compile_options(-O3 -march=native -flto)
+        add_link_options(-flto)
+    endif ()
+endif ()
 
-# --- Common source library ---
-add_library(engine_core STATIC
+# Include directories
+include_directories(${CMAKE_SOURCE_DIR}/include)
+
+# Common sources
+set(COMMON_SOURCES
         src/engine.cpp
         src/evaluation.cpp
         src/timemanagement.cpp
         src/tt.cpp
         src/utils.cpp
 )
-target_link_libraries(engine_core PUBLIC common_includes)
 
-# --- Main executables ---
-add_executable(engine src/main.cpp)
-target_link_libraries(engine PRIVATE engine_core)
+# Main executable: engine
+add_executable(engine
+        ${COMMON_SOURCES}
+        src/main.cpp
+)
 
-add_executable(experiments src/experiments.cpp)
-target_link_libraries(experiments PRIVATE engine_core)
+target_include_directories(engine PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
-# --- MSVC Release Optimizations ---
-if (MSVC)
-    # Compiler flags applied only in Release
-    target_compile_options(engine PRIVATE
-            $<$<CONFIG:Release>:/Ox /Ot /Ob2 /Oi /Oy /GL /fp:fast /Gy /GF /Gw /arch:AVX2 /favor:INTEL64 /GS- /permissive->
-    )
-    target_compile_options(experiments PRIVATE
-            $<$<CONFIG:Release>:/Ox /Ot /Ob2 /Oi /Oy /GL /fp:fast /Gy /GF /Gw /arch:AVX2 /favor:INTEL64 /GS- /permissive->
-    )
-    target_compile_options(engine_core PRIVATE
-            $<$<CONFIG:Release>:/Ox /Ot /Ob2 /Oi /Oy /GL /fp:fast /Gy /GF /Gw /arch:AVX2 /favor:INTEL64 /GS- /permissive->
-    )
+# Experiments executable
+add_executable(experiments
+        ${COMMON_SOURCES}
+        src/experiments.cpp
+)
 
-    # Linker flags applied only in Release
-    target_link_options(engine PRIVATE $<$<CONFIG:Release>:/LTCG /INCREMENTAL:NO /OPT:REF /OPT:ICF /DEBUG:NONE>)
-    target_link_options(experiments PRIVATE $<$<CONFIG:Release>:/LTCG /INCREMENTAL:NO /OPT:REF /OPT:ICF /DEBUG:NONE>)
-endif ()
+target_include_directories(experiments PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
 # --- Tests ---
+
+# Enable testing
 enable_testing()
 
+# GoogleTest setup via FetchContent
 include(FetchContent)
 FetchContent_Declare(
         googletest
         URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
 )
+# For Windows: Prevent overriding the parent project's compiler/linker settings
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
-add_executable(engine_tests tests/engine_tests.cc)
-target_link_libraries(engine_tests PRIVATE engine_core gtest gmock gtest_main)
+# Test sources
+set(ENGINE_TEST_SOURCES
+        tests/engine_tests.cc
+        ${COMMON_SOURCES}
+)
+set(EVALUATION_TEST_SOURCES
+        tests/evaluation_tests.cc
+        ${COMMON_SOURCES}
+)
 
-add_executable(evaluation_tests tests/evaluation_tests.cc)
-target_link_libraries(evaluation_tests PRIVATE engine_core gtest gmock gtest_main)
+# Engine tests executable
+add_executable(engine_tests ${ENGINE_TEST_SOURCES})
+target_include_directories(engine_tests PRIVATE ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(engine_tests PRIVATE gtest gmock gtest_main)
 
+
+# Evaluation tests executable
+add_executable(evaluation_tests ${EVALUATION_TEST_SOURCES})
+target_include_directories(evaluation_tests PRIVATE ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(evaluation_tests PRIVATE gtest gmock gtest_main)
+
+# Add tests to CTest
 add_test(NAME engine_tests COMMAND engine_tests)
 add_test(NAME evaluation_tests COMMAND evaluation_tests)
