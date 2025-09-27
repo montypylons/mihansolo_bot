@@ -1,6 +1,6 @@
 #pragma once
 
-constexpr int TT_SIZE = 1 << 25; // This equals 2^23
+constexpr int TT_SIZE = 1 << 23; // This equals 2 ^ whatever
 
 enum class NodeType: uint8_t
 {

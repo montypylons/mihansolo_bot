@@ -8,15 +8,17 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Compiler flags for Release build
 if (CMAKE_BUILD_TYPE STREQUAL "Release")
     if (MSVC)
-        # MSVC specific optimization flags
-        add_compile_options(/Ox /Ot /Ob2 /Oi /Oy /GL /fp:fast /Gy)
+        add_compile_options(/O2 /Ot /Ob2 /Oi /Oy /GL /fp:fast /Gy)
         add_link_options(/LTCG)
-    else ()
-        # GCC/Clang release flags (optional, you can adjust as needed)
-        add_compile_options(-O3 -march=native -flto)
-        add_link_options(-flto)
     endif ()
 endif ()
+
+if (CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+    if (MSVC)
+        add_link_options(/PROFILE)
+    endif ()
+endif ()
+
 
 # Include directories
 include_directories(${CMAKE_SOURCE_DIR}/include)
