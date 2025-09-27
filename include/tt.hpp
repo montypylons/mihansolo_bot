@@ -1,5 +1,7 @@
 #pragma once
 
+constexpr int TT_SIZE = 1 << 25; // This equals 2^23
+
 enum class NodeType: uint8_t
 {
     EXACT,
@@ -59,7 +61,7 @@ public:
     static int address_calc(uint64_t key);
 
 private:
-    std::vector<TTEntry> table = std::vector<TTEntry>(8'388'608);
+    std::vector<TTEntry> table = std::vector<TTEntry>(TT_SIZE);
 };
 
 class EvaluationHashTable

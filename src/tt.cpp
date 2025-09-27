@@ -1,8 +1,6 @@
 #include <cstdint>
 #include "chess.hpp"
 #include "tt.hpp"
-#include "experiments.hpp"
-
 #include "engine.hpp"
 
 
@@ -66,7 +64,7 @@ void TranspositionTable::put(const uint64_t zobrist_key,
 
 [[nodiscard]] int TranspositionTable::address_calc(const uint64_t key)
 {
-    return key & 8'388'607; // NOLINT
+    return key & (TT_SIZE - 1); // NOLINT
 }
 
 void EvaluationHashTable::put(const uint64_t zobrist_key,
