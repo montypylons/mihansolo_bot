@@ -18,6 +18,14 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
     endif ()
 endif ()
 
+if (CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+    if (MSVC)
+        # MSVC specific optimization flags
+        add_compile_options(/Oy- /Zi)
+        add_link_options(/DEBUG /PROFILE) # for profiling
+    endif ()
+endif ()
+
 add_subdirectory(${CMAKE_SOURCE_DIR}/spdlog)
 
 find_package(spdlog)
