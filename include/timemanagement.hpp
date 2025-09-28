@@ -5,7 +5,6 @@
 
 namespace TimeManagement
 {
-    constexpr int EMERGENCY_BUFFER = 25; // the min is 20, see include/engine_tests.cpp for explanation
     enum class TimeStatus
     {
         ManagerNotInitialized,
