@@ -1,21 +1,29 @@
 #pragma once
 #include <chrono>
 
+#include "chess.hpp"
+
 namespace TimeManagement
 {
     constexpr int EMERGENCY_BUFFER = 25; // the min is 20, see include/engine_tests.cpp for explanation
+    enum class TimeStatus
+    {
+        ManagerNotInitialized,
+        TimeRanOut,
+        TimeRemaining
+    };
 
     class TimeManager
     {
     public:
         explicit TimeManager()
-        {
-        }
+        = default;
 
-        void initialize(bool is_white);
-        [[nodiscard]] bool time_remaining() const; // have you outrun the time allowed for this move
-        void go(int wtime, int btime, int winc, int binc, int movetime = -1);
-        bool white{}; // true if bot is White, false if bot is Black
+        [[nodiscard]] TimeStatus time_status() const; // have you outrun the time allowed for this move
+        void go(int wtime, int btime, int winc, int binc, const chess::Board& board);
+        void movetime(int movetime);
+        void no_time_control();
+
         bool is_initialized = false;
 
     private:

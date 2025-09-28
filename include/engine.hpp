@@ -28,7 +28,7 @@ namespace engine
                            std::cout);
 
     // Negamax search (returns eval and best move)
-    std::tuple<int, chess::Move> negamax(const std::optional<TimeManagement::TimeManager>& nega_manager,
+    std::tuple<int, chess::Move> negamax(TimeManagement::TimeManager& nega_manager,
                                          const chess::Move& PV_Move, TranspositionTable& table1, chess::Board& board,
                                          int alpha, int beta,
                                          const chess::Move& last_move,
@@ -49,7 +49,7 @@ namespace engine
     }
 
     // UCI protocol loop
-    void start_uci(std::istream& in = std::cin, std::ostream& out = std::cout);
+    void start_uci(std::istream & in = std::cin, std::ostream & out = std::cout);
 
     inline bool is_promotion(const chess::Move& move);
     inline bool is_pawns_near_promotion(const chess::Board& board);

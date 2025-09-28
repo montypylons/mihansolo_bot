@@ -15,6 +15,8 @@
 #include "logging.hpp"
 #include "experiments.hpp"
 
+using TimeManagement::TimeStatus;
+
 namespace engine
 {
     constexpr int MAX_EXTENSIONS = 0; // BUG: extensions cause node explosion
@@ -87,14 +89,9 @@ namespace engine
      * @return The score of the position after evaluating to a quiescent position (no captures).
      */
     int QuiescenceSearch(int alpha, const int beta, chess::Board& board, const int ply,
-                         const std::optional<TimeManagement::TimeManager>& q_manager)
+                         TimeManagement::TimeManager& q_manager)
     {
-        bool q_manager_found = false;
-        if (q_manager.has_value())
-        {
-            q_manager_found = true;
-        }
-        if (q_manager_found && !q_manager->time_remaining())
+        if (q_manager.time_status() == TimeManagement::TimeStatus::TimeRanOut)
         {
             abort_due_to_time = true;
             return 0;
@@ -137,7 +134,7 @@ namespace engine
 
             if (score >= beta)
             {
-                if ((!abort_due_to_time && q_manager->time_remaining()) || !q_manager_found)
+                if (!abort_due_to_time && q_manager.time_status() == TimeManagement::TimeStatus::TimeRemaining)
                 {
                     table.put(zobrist, chess::Move::NO_MOVE, QUIESCENCE_DEPTH, score, NodeType::LOWERBOUND, ply);
                 }
@@ -165,7 +162,7 @@ namespace engine
         {
             node_type = NodeType::EXACT;
         }
-        if ((q_manager->time_remaining() && !abort_due_to_time) || !q_manager_found)
+        if (q_manager.time_status() == TimeManagement::TimeStatus::TimeRemaining && !abort_due_to_time)
         {
             table.put(zobrist, chess::Move::NO_MOVE, QUIESCENCE_DEPTH, best_value, node_type, ply);
         }
@@ -232,7 +229,7 @@ namespace engine
      * @param nega_manager
      * @return A tuple of the believed evaluation and best move in the position
      */
-    std::tuple<int, chess::Move> negamax(const std::optional<TimeManagement::TimeManager>& nega_manager,
+    std::tuple<int, chess::Move> negamax(TimeManagement::TimeManager& nega_manager,
                                          const chess::Move& PV_Move, TranspositionTable& table1,
                                          chess::Board& board,
                                          int alpha,
@@ -243,12 +240,8 @@ namespace engine
         nodes++;
 
         // time management
-        bool nega_manager_found = false;
-        if (nega_manager.has_value())
-        {
-            nega_manager_found = true;
-        }
-        if (nega_manager_found && !nega_manager->time_remaining())
+
+        if (nega_manager.time_status() == TimeManagement::TimeStatus::TimeRanOut)
         {
             abort_due_to_time = true;
             return std::make_tuple(0, chess::Move::NO_MOVE);
@@ -332,7 +325,7 @@ namespace engine
                     history[board.sideToMove()][move.from().index()][move.to().index()] += depth * depth;
                 }
 
-                if ((!abort_due_to_time && nega_manager->time_remaining()) || !nega_manager_found)
+                if ((!abort_due_to_time && nega_manager.time_status() == TimeManagement::TimeStatus::TimeRemaining))
                 {
                     table1.put(zobrist_key, best_move, depth, best_eval, NodeType::LOWERBOUND, ply);
                 }
@@ -355,7 +348,7 @@ namespace engine
             node_type = NodeType::EXACT;
         }
 
-        if ((!abort_due_to_time && nega_manager->time_remaining()) || !nega_manager_found)
+        if ((!abort_due_to_time && nega_manager.time_status() == TimeManagement::TimeStatus::TimeRemaining))
         {
             table1.put(zobrist_key, best_move, depth, best_eval, node_type, ply);
         }
@@ -374,7 +367,7 @@ namespace engine
      * @return The believed best move in the position as a UCI-formatted string
      */
     std::string search(const std::optional<chess::Board>& fen,
-                       const TimeManagement::TimeManager& manager1, const int default_depth,
+                       TimeManagement::TimeManager& manager1, const int default_depth,
                        std::ostream& output)
     {
         int depth = 1;
@@ -398,7 +391,7 @@ namespace engine
         if (manager1.is_initialized)
         {
             int eval = 0;
-            while (manager1.time_remaining()) // Iterative deepening
+            while (manager1.time_status() == TimeStatus::TimeRemaining) // Iterative deepening
             {
                 auto result = negamax(manager1, PV_Move, table, board, initial_alpha, initial_beta,
                                       chess::Move::NO_MOVE, depth,
@@ -424,7 +417,8 @@ namespace engine
         {
             for (int i = 1; i <= default_depth; i++)
             {
-                auto result = negamax(std::nullopt, PV_Move, table, board, initial_alpha, initial_beta,
+                manager1.no_time_control();
+                auto result = negamax(manager1, PV_Move, table, board, initial_alpha, initial_beta,
                                       chess::Move::NO_MOVE, i,
                                       0);
 
@@ -540,7 +534,7 @@ namespace engine
                 }
 
                 manager.initialize(!board.sideToMove());
-                manager.go(wtime, btime, winc, binc, movetime);
+                manager.go(wtime, btime, winc, binc, TODO);
 
                 if (depth > 0)
                 {
