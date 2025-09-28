@@ -49,6 +49,7 @@ public:
             if (ttEntry->node_type == NodeType::EXACT || (ttEntry->node_type == NodeType::LOWERBOUND && ttEntry->score
                 >= beta) || (ttEntry->node_type == NodeType::UPPERBOUND && ttEntry->score <= original_alpha))
             {
+                // if (ttEntry->zobrist_key == chess::Board)
                 return std::make_tuple(ttEntry->score, ttEntry->best_move);
             }
         }
