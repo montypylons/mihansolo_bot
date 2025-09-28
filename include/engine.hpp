@@ -23,7 +23,7 @@ namespace engine
 
     // Search for best move (returns UCI string)
     std::string search(const std::optional<chess::Board>& fen,
-                       const std::optional<TimeManagement::TimeManager>& manager1, int default_depth = 5,
+                       TimeManagement::TimeManager& manager1, int default_depth = 5,
                        std::ostream& output =
                            std::cout);
 
