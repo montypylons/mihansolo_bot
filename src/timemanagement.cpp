@@ -25,7 +25,7 @@ namespace TimeManagement
      * @param btime Default 0, UCI wtime
      * @param winc Default 0, UCI winc
      * @param binc Default 0, UCI binc
-     * @param side_to_move
+     * @param side_to_move The side to move we want to register time for
      */
     void TimeManager::go(const int wtime, const int btime, const int winc, const int binc,
                          const chess::Color side_to_move)
