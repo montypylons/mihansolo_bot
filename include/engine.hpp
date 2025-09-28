@@ -57,6 +57,6 @@ namespace engine
     const extern int initial_alpha;
     const extern int initial_beta;
 
-    extern std::optional<TimeManagement::TimeManager> manager;
+    extern TimeManagement::TimeManager manager;
     extern bool abort_due_to_time;
 }

@@ -25,11 +25,10 @@ namespace engine
     int nodes = 0;
 
     bool abort_due_to_time = false;
-    bool manager_exists = false;
 
     Reader::Book book;
     TranspositionTable table; // TODO: add tests fr this
-    std::optional<TimeManagement::TimeManager> manager; // TODO: add tests fr this
+    TimeManagement::TimeManager manager; // TODO: add tests fr this
 
     const int initial_alpha = std::numeric_limits<int>::min() + 1; // to avoid wraparound bugs
     const int initial_beta = std::numeric_limits<int>::max();
@@ -375,10 +374,9 @@ namespace engine
      * @return The believed best move in the position as a UCI-formatted string
      */
     std::string search(const std::optional<chess::Board>& fen,
-                       const std::optional<TimeManagement::TimeManager>& manager1, const int default_depth,
+                       const TimeManagement::TimeManager& manager1, const int default_depth,
                        std::ostream& output)
     {
-        manager_exists = manager1.has_value();
         int depth = 1;
         int previous_eval = 0;
         nodes = 0; // reset nodes every move
@@ -397,10 +395,10 @@ namespace engine
         {
             return bookmove.value();
         }
-        if (manager_exists)
+        if (manager1.is_initialized)
         {
             int eval = 0;
-            while (manager1->time_remaining()) // Iterative deepening
+            while (manager1.time_remaining()) // Iterative deepening
             {
                 auto result = negamax(manager1, PV_Move, table, board, initial_alpha, initial_beta,
                                       chess::Move::NO_MOVE, depth,
@@ -441,7 +439,7 @@ namespace engine
         }
 
         const std::string move_uci = chess::uci::moveToUci(PV_Move);
-        depth = manager_exists ? depth : default_depth;
+        depth = manager1.is_initialized ? depth : default_depth;
         output << "info depth " << depth << " nodes " << nodes << " score cp " << previous_eval << "\n";
         return move_uci;
     }
@@ -453,7 +451,6 @@ namespace engine
     {
         chess::Board board;
         std::string line;
-
         while (std::getline(in, line))
         {
             std::istringstream iss(line);
@@ -474,16 +471,12 @@ namespace engine
                 out << "option name UCI_Elo type spin default 1350 min 1350 max 2850\n";
                 out << "uciok\n";
             }
-            /*
-             *else if (token == "d")
-            {
-                out << board.getFen() << std::endl;
-            }
-            */
+
             else if (token == "isready")
             {
                 out << "readyok\n";
             }
+
             else if (token == "position")
             {
                 std::string pos_type;
@@ -492,8 +485,6 @@ namespace engine
                 if (pos_type == "startpos")
                 {
                     board.setFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-                    manager = TimeManagement::TimeManager(true);
-                    manager_exists = true;
                 }
                 else if (pos_type == "fen")
                 {
@@ -504,10 +495,6 @@ namespace engine
                     }
                     fen.pop_back(); // remove trailing space
                     board.setFen(fen);
-                    manager = TimeManagement::TimeManager(!board.sideToMove());
-                    // chess::Color is defined as an enum with WHITE = 0 and BLACK = 1,
-                    // which is contradictory to how TimeManager is implemented, so we have to invert it using ~.
-                    manager_exists = true;
                 }
 
                 std::string next;
@@ -520,11 +507,6 @@ namespace engine
                         convert_castle_moves(move_str, board);
                         chess::Move m = chess::uci::uciToMove(board, move_str);
                         board.makeMove(m);
-                    }
-
-                    if (manager_exists)
-                    {
-                        manager->white = !board.sideToMove();
                     }
                 }
             }
@@ -556,10 +538,10 @@ namespace engine
                     else if (param == "binc")
                         iss >> binc;
                 }
-                if (manager_exists)
-                {
-                    manager->go(wtime, btime, winc, binc, movetime);
-                }
+
+                manager.initialize(!board.sideToMove());
+                manager.go(wtime, btime, winc, binc, movetime);
+
                 if (depth > 0)
                 {
                     bestmove = search(board, std::nullopt, depth, out);

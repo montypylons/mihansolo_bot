@@ -3,8 +3,16 @@
 
 namespace TimeManagement
 {
+    void TimeManager::initialize(const bool is_white)
+    {
+        is_initialized = true;
+        white = is_white;
+    }
+
     bool TimeManager::time_remaining() const
     {
+        if (!is_initialized) return true;
+
         return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - last_move_time).
             count() < time_remaining_for_move;
     }
