@@ -1,7 +1,3 @@
-#include "chess.hpp"
-#include "engine.hpp"
-#include "evaluation.hpp"
-#include "reader.hpp"
 #include <filesystem>
 #include <limits>
 #include <optional>
@@ -9,11 +5,14 @@
 #include <string>
 #include <tuple>
 #include <vector>
+#include "chess.hpp"
+#include "engine.hpp"
+#include "evaluation.hpp"
+#include "reader.hpp"
 #include "utils.hpp"
 #include "tt.hpp"
 #include "timemanagement.hpp"
 #include "logging.hpp"
-#include "experiments.hpp"
 
 using TimeManagement::TimeStatus;
 
@@ -521,6 +520,7 @@ namespace engine
                     if (param == "movetime")
                     {
                         iss >> movetime;
+                        manager.movetime(movetime);
                         break;
                     }
                     if (param == "wtime")
@@ -532,18 +532,22 @@ namespace engine
                     else if (param == "binc")
                         iss >> binc;
                 }
+                // Below statements set the time manager
 
-                manager.initialize(!board.sideToMove());
-                manager.go(wtime, btime, winc, binc, TODO);
+                if (depth > 0) // stopping based on depth
+                {
+                    manager.no_time_control();
+                }
+                else if (movetime > 0) // stopping based on movetime
+                {
+                    manager.movetime(movetime);
+                }
+                else if (wtime > 0 || btime > 0) // stopping based
+                {
+                    manager.go(wtime, btime, winc, binc, board.sideToMove());
+                }
 
-                if (depth > 0)
-                {
-                    bestmove = search(board, std::nullopt, depth, out);
-                }
-                else
-                {
-                    bestmove = search(board, manager, -1, out);
-                }
+                bestmove = search(board, manager, depth, out);
 
                 out << "bestmove " << bestmove << "\n";
             }

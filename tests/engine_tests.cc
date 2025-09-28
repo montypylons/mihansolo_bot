@@ -11,7 +11,7 @@
 #include "timemanagement.hpp"
 #include <thread>
 
-// many thanks to https://lichess.org/training for providing puzzle FENs
+using TimeManagement::TimeStatus;
 
 // TODO: add tests for quiescence search, MVV-LAA, transposition table, iterative
 
@@ -84,13 +84,15 @@ TEST(MoveOrderingTest, BasicAssertions)
 
 TEST(NegamaxTest, BasicAssertions)
 {
+    auto manager = TimeManagement::TimeManager();
+    manager.no_time_control();
     auto board2 = chess::Board("r1bqkb1r/pppp1ppp/2n2n2/4P3/8/5N2/PPP1PPPP/RNBQKB1R w KQkq - 3 4");
     auto table = TranspositionTable();
     const auto negamax_result2 = chess::uci::moveToUci(
-        std::get < 1 > (engine::negamax(std::nullopt, chess::Move::NO_MOVE, table, board2, engine::initial_alpha,
-                                        engine::initial_beta,
-                                        chess::Move::NO_MOVE, 5,
-                                        0)));
+        std::get<1>(engine::negamax(manager, chess::Move::NO_MOVE, table, board2, engine::initial_alpha,
+                                    engine::initial_beta,
+                                    chess::Move::NO_MOVE, 5,
+                                    0)));
     const std::string expected_move2 = chess::uci::moveToUci(
         chess::Move::make<chess::Move::NORMAL>(chess::Square::SQ_E5, chess::Square::SQ_F6));
 
@@ -109,8 +111,8 @@ TEST(NoIllegalMovesTest, BasicAssertions) // we are returning 0000 at extremely 
 {
     auto board1 = chess::Board("r4rk1/pppbq1bp/2n1p3/3pP1p1/6P1/2N1QN1P/PPP2PB1/R2R2K1 b - - 3 17");
     TimeManagement::TimeManager man;
-    man.initialize(board1.sideToMove());
-    man.go(100, 40, 0, 0, TODO); // if btime is <40 ms the test will fail (see line 113)
+
+    man.go(100, 40, 0, 0, board1.sideToMove()); // if btime is <40 ms the test will fail (see line 113)
     // TODO: fix that it used to be <20 ms then a failure
     const auto result1 = engine::search(board1, man);
     std::cout << "Result: " << result1 << std::endl;
@@ -122,13 +124,12 @@ TEST(TimeManagementTest, BasicAssertions)
 
 {
     TimeManagement::TimeManager manager;
-    manager.initialize(true);
-    manager.go(3'000, 2'800, 2'000, 2'000, TODO);
-    std::this_thread::sleep_for(std::chrono::milliseconds(1151)); // manager should last for 1150 ms
-    ASSERT_FALSE(manager.time_status());
 
-    manager.initialize(false);
-    manager.go(30'000, 30'000, 0, 0, TODO);
+    manager.go(3'000, 2'800, 2'000, 2'000, chess::Color::WHITE);
+    std::this_thread::sleep_for(std::chrono::milliseconds(1151)); // manager should last for 1150 ms
+    ASSERT_TRUE(manager.time_status() == TimeManagement::TimeStatus::TimeRanOut);
+
+    manager.go(30'000, 30'000, 0, 0, chess::Color::BLACK);
     std::this_thread::sleep_for(std::chrono::milliseconds(1480)); // time_remaining should last until 1500 ms
-    ASSERT_TRUE(manager.time_status());
+    ASSERT_TRUE(manager.time_status() == TimeManagement::TimeStatus::TimeRemaining);
 }

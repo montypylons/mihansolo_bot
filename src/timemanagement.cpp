@@ -8,8 +8,10 @@ namespace TimeManagement
     {
         if (!is_initialized) return TimeStatus::ManagerNotInitialized;
 
-        if (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - last_move_time).
-            count() <= time_remaining_for_move)
+        if (const auto now = std::chrono::steady_clock::now();
+            std::chrono::duration_cast<std::chrono::milliseconds>(now - last_move_time)
+            <=
+            std::chrono::duration_cast<std::chrono::milliseconds>(time_remaining_for_move))
         {
             return TimeStatus::TimeRanOut;
         }
@@ -23,22 +25,21 @@ namespace TimeManagement
      * @param btime Default 0, UCI wtime
      * @param winc Default 0, UCI winc
      * @param binc Default 0, UCI binc
-     * @param board
+     * @param side_to_move
      */
-    void TimeManager::go(const int wtime, const int btime, const int winc, const int binc, const chess::Board& board)
+    void TimeManager::go(const int wtime, const int btime, const int winc, const int binc,
+                         const chess::Color side_to_move)
     {
         is_initialized = true;
-
-        if (board.sideToMove() == chess::Color::WHITE)
+        if (side_to_move == chess::Color::WHITE)
         {
-            last_move_time = std::chrono::steady_clock::now();
-            time_remaining_for_move = wtime / 20 + winc / 2;
+            time_remaining_for_move = std::chrono::milliseconds(wtime / 20 + winc / 2);
         }
         else
         {
-            last_move_time = std::chrono::steady_clock::now();
-            time_remaining_for_move = btime / 20 + binc / 2;
+            time_remaining_for_move = std::chrono::milliseconds(btime / 20 + binc / 2);
         }
+        last_move_time = std::chrono::steady_clock::now();
     }
 
     /**
@@ -49,7 +50,7 @@ namespace TimeManagement
         is_initialized = true;
 
         last_move_time = std::chrono::steady_clock::now();
-        time_remaining_for_move = movetime;
+        time_remaining_for_move = std::chrono::milliseconds(movetime);
     }
 
     void TimeManager::no_time_control()

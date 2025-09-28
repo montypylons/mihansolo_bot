@@ -1,12 +1,9 @@
 #pragma once
 
-#include <iomanip>
-
-#include "chess.hpp"
 #include <string>
 #include <tuple>
 #include <optional>
-
+#include "chess.hpp"
 #include "timemanagement.hpp"
 #include "tt.hpp"
 
@@ -49,7 +46,7 @@ namespace engine
     }
 
     // UCI protocol loop
-    void start_uci(std::istream & in = std::cin, std::ostream & out = std::cout);
+    void start_uci(std::istream& in = std::cin, std::ostream& out = std::cout);
 
     inline bool is_promotion(const chess::Move& move);
     inline bool is_pawns_near_promotion(const chess::Board& board);

@@ -248,12 +248,12 @@ void multiple_tests()
 
     for (int i = 0; i < current_MRE_iterations; i++)
     {
-        if (false)
+        if (false) // NOLINT
         {
             SUCCESS++;
             std::cout << "SUCCESS\n";
         }
-        else
+        else // NOLINT
         {
             FAILURE++;
             std::cout << "FAILURE\n";
