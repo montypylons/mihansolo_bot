@@ -263,55 +263,6 @@ void multiple_tests()
     std::cout << "Success rate (didn't make an illegal move): " << SUCCESS << "/" << SUCCESS + FAILURE << std::endl;
 }
 
-std::optional<TimeManagement::TimeManager> manager;
-bool manager_exists = false;
-
-void start_uci(std::istream& in, std::ostream& out)
-{
-    chess::Board board;
-    std::string line;
-
-    while (std::getline(in, line))
-    {
-        out << "UCI IN << " << line << std::endl;
-        std::istringstream iss(line);
-        std::string token;
-        iss >> token;
-
-        if (token == "position")
-        {
-            std::string pos_type;
-            iss >> pos_type;
-
-            if (pos_type == "startpos")
-            {
-                board.setFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-                manager = TimeManagement::TimeManager(true);
-                manager_exists = true;
-            }
-
-            std::string next;
-            iss >> next;
-
-            if (next == "moves")
-            {
-                std::string move_str;
-                while (iss >> move_str)
-                {
-                    chess::Move m = chess::uci::uciToMove(board, move_str);
-                    board.makeMove(m);
-                }
-                out << "Achieved board: " << board.getFen() << std::endl;
-
-                if (manager_exists)
-                {
-                    manager->white = !board.sideToMove();
-                }
-            }
-        }
-    }
-}
-
 
 bool test_uci()
 {
@@ -347,7 +298,7 @@ Checkers:
     std::ostringstream output;
     auto input = std::istringstream(
         "position startpos moves d2d4 f7f5 g1f3 g7g6 g2g3 f8g7 f1g2 g8f6 c2c4 d7d6 e1g1 e8h8 b1c3 b8c6 d4d5 c6e5 f3e5 d6e5 d1c2 c8d7 e2e4 f5e4 c3e4 d7f5 e4f6");
-    start_uci(input, output);
+    engine::start_uci(input, output);
     const auto output_str = output.str();
     std::cout << output_str << std::endl;
     return getLastLine(output_str) ==
