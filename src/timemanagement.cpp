@@ -10,7 +10,7 @@ namespace TimeManagement
 
         if (const auto now = std::chrono::steady_clock::now();
             std::chrono::duration_cast<std::chrono::milliseconds>(now - last_move_time)
-            <=
+            >=
             std::chrono::duration_cast<std::chrono::milliseconds>(time_remaining_for_move))
         {
             return TimeStatus::TimeRanOut;

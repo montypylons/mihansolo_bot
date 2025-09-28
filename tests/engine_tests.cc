@@ -107,15 +107,15 @@ TEST(SearchTestCrushingMove, BasicAssertions)
     ASSERT_EQ(search_result, "e5f6");
 }
 
-TEST(NoIllegalMovesTest, BasicAssertions) // we are returning 0000 at extremely low btimes (<20 ms)
+TEST(NoIllegalMovesTest, BasicAssertions)
 {
     auto board1 = chess::Board("r4rk1/pppbq1bp/2n1p3/3pP1p1/6P1/2N1QN1P/PPP2PB1/R2R2K1 b - - 3 17");
-    TimeManagement::TimeManager man;
+    TimeManagement::TimeManager manager;
 
-    man.go(100, 40, 0, 0, board1.sideToMove()); // if btime is <40 ms the test will fail (see line 113)
-    // TODO: fix that it used to be <20 ms then a failure
-    const auto result1 = engine::search(board1, man);
+    manager.go(100, 40, 0, 0, board1.sideToMove());
+    const auto result1 = engine::search(board1, manager);
     std::cout << "Result: " << result1 << std::endl;
+
     ASSERT_FALSE(result1 == "a1a1");
     ASSERT_FALSE(result1 == "0000"); // due to this
 }
