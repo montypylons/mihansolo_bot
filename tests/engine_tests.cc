@@ -46,28 +46,30 @@ TEST(BookMoveTest, BasicAssertions)
 
 TEST(SearchTestMateInOne, BasicAssertions)
 {
+    TimeManagement::TimeManager manager;
     const std::string result1 = engine::search(chess::Board("1k6/1b6/3p1Q2/1p1P3p/1P2PR2/8/r2r4/5K2 b - - 0 41"),
-                                               std::nullopt);
+                                               manager);
     ASSERT_EQ(result1, "d2d1");
 
     const std::string result2 = engine::search(chess::Board("2r5/5Qnk/3p1Rp1/3Pp3/2P3PK/4q2P/8/2R5 b - - 6 43"),
-                                               std::nullopt);
+                                               manager);
     ASSERT_EQ(result2, "g6g5");
 
     const std::string result3 = engine::search(chess::Board("3rn2R/ppp1qkp1/8/2Np1r2/3Pp3/2P5/PP4Q1/1K4R1 w - - 6 32"),
-                                               std::nullopt);
+                                               manager);
     ASSERT_EQ(result3, "g2g6");
 
     const std::string result4 = engine::search(chess::Board("4Q3/p7/6p1/P1b2k2/3pq1p1/5N1P/2P5/7K w - - 0 41"),
-                                               std::nullopt);
+                                               manager);
     ASSERT_EQ(result4, "e8f7");
 }
 
 TEST(SearchAvoidMate, BasicAssertions)
 {
+    TimeManagement::TimeManager manager;
     const auto board1 = chess::Board("r3r2k/1bpn1Qp1/1p2N2p/4p3/qPPP4/2P5/5PPP/4RRK1 b - - 3 23");
     const std::string only_moves[2] = {"e8g8", "e8e6"}; // only moves to (a) not lose material and (b) not blunder mate
-    const std::string result1 = engine::search(board1, std::nullopt);
+    const std::string result1 = engine::search(board1, manager);
     std::cout << "Search result: " << result1 << std::endl;
     ASSERT_TRUE(result1 == only_moves[0] || result1 == only_moves[1]);
 }
@@ -97,8 +99,9 @@ TEST(NegamaxTest, BasicAssertions)
 
 TEST(SearchTestCrushingMove, BasicAssertions)
 {
+    TimeManagement::TimeManager manager;
     const std::string search_result = engine::search(
-        chess::Board("r1bqkb1r/pppp1ppp/2n2n2/4P3/8/5N2/PPP1PPPP/RNBQKB1R w KQkq - 3 4"), std::nullopt);
+        chess::Board("r1bqkb1r/pppp1ppp/2n2n2/4P3/8/5N2/PPP1PPPP/RNBQKB1R w KQkq - 3 4"), manager);
     ASSERT_EQ(search_result, "e5f6");
 }
 
