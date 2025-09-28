@@ -12,6 +12,8 @@
 #include "utils.hpp"
 #include "tt.hpp"
 #include "timemanagement.hpp"
+#include "logging.hpp"
+#include "experiments.hpp"
 
 namespace engine
 {
@@ -29,8 +31,7 @@ namespace engine
     TranspositionTable table; // TODO: add tests fr this
     std::optional<TimeManagement::TimeManager> manager; // TODO: add tests fr this
 
-    constexpr int int_min = std::numeric_limits<int>::min();
-    const int initial_alpha = int_min + 1; // to avoid wraparound bugs
+    const int initial_alpha = std::numeric_limits<int>::min() + 1; // to avoid wraparound bugs
     const int initial_beta = std::numeric_limits<int>::max();
 
     /**
@@ -225,22 +226,25 @@ namespace engine
      * @param board Board to search for
      * @param alpha Alpha (for a/b pruning) - initially set to a very low value
      * @param beta Beta (for a/b pruning) - intially set to a very high value
+     * @param last_move The last move made on the board
      * @param depth Current depth - start at 0
      * @param ply Current ply - start at 0
      * @param numExtensions Number of search extensions applied so far
      * @param nega_manager
      * @return A tuple of the believed evaluation and best move in the position
      */
-    int _negamax(const std::optional<TimeManagement::TimeManager>& nega_manager,
-                 const chess::Move& PV_Move, TranspositionTable& table1,
-                 chess::Board& board, int alpha, const int beta,
-                 const int& depth, const int& ply, const int numExtensions)
+    std::tuple<int, chess::Move> negamax(const std::optional<TimeManagement::TimeManager>& nega_manager,
+                                         const chess::Move& PV_Move, TranspositionTable& table1,
+                                         chess::Board& board,
+                                         int alpha,
+                                         const int beta,
+                                         const chess::Move& last_move,
+                                         const int& depth, const int& ply, const int numExtensions)
     {
         nodes++;
 
         // time management
         bool nega_manager_found = false;
-
         if (nega_manager.has_value())
         {
             nega_manager_found = true;
@@ -248,35 +252,34 @@ namespace engine
         if (nega_manager_found && !nega_manager->time_remaining())
         {
             abort_due_to_time = true;
-            return 0;
+            return std::make_tuple(0, chess::Move::NO_MOVE);
         }
 
         // transposition table stuff starts
         const int alpha_original = alpha;
         const auto zobrist_key = board.hash();
 
-        if (const auto TTResult = table1.find_usable_entry(alpha_original, beta, depth, zobrist_key, ply); TTResult.
+        if (auto TTResult = table1.find_usable_entry(alpha_original, beta, depth, zobrist_key, ply); TTResult.
             has_value())
         {
-            return std::get<0>(TTResult.value());
+            return TTResult.value();
         }
 
         // transposition stuff ends
 
         if (depth == 0 || game_over(board)) // NOLINT
         {
-            const int leaf_eval{QuiescenceSearch(alpha, beta, board, ply, nega_manager)};
-            return leaf_eval;
+            int leaf_eval{QuiescenceSearch(alpha, beta, board, ply, nega_manager)};
+            return std::make_tuple(leaf_eval, last_move);
         }
         // NOLINTBEGIN
 
-        int best_eval = int_min;
+        chess::Move best_move = chess::Move::NO_MOVE;
+        int best_eval = std::numeric_limits<int>::min();
 
         chess::Movelist legal_moves;
         chess::movegen::legalmoves(legal_moves, board);
-
         utils::order_moves(history, PV_Move, legal_moves, board);
-
         /*
         if (can_NMP(board, depth)) // NMP Conditions
         {
@@ -300,22 +303,25 @@ namespace engine
         }
         */
 
+        // SPRT shows NMP is -37.6 elo, so commented out for now
         for (const auto& move : legal_moves)
         {
             int score;
-            board.makeMove(move);
-            int passed_pawn_extension = 0;
-            // int passed_pawn_extension = (is_pawns_near_promotion(board) && numExtensions < MAX_EXTENSIONS) ? 1 : 0;
+            chess::Move dummy_move{};
 
-            score = -_negamax(nega_manager, PV_Move, table1, board, -beta, -alpha,
-                              (depth + passed_pawn_extension) - 1, ply + 1,
-                              numExtensions + passed_pawn_extension);
+            board.makeMove(move);
+            int passed_pawn_extension = (is_pawns_near_promotion(board) && numExtensions < MAX_EXTENSIONS) ? 1 : 0;
+
+            std::tie(score, dummy_move) = negamax(nega_manager, PV_Move, table1, board, -beta, -alpha, move,
+                                                  (depth + passed_pawn_extension) - 1, ply + 1,
+                                                  numExtensions + passed_pawn_extension);
+            score = -score;
 
             board.unmakeMove(move);
-
             if (score > best_eval)
             {
                 best_eval = score;
+                best_move = move;
 
                 if (score > alpha)
                     alpha = score;
@@ -329,10 +335,10 @@ namespace engine
 
                 if ((!abort_due_to_time && nega_manager->time_remaining()) || !nega_manager_found)
                 {
-                    table1.put(zobrist_key, chess::Move::NO_MOVE, depth, best_eval, NodeType::LOWERBOUND, ply);
+                    table1.put(zobrist_key, best_move, depth, best_eval, NodeType::LOWERBOUND, ply);
                 }
 
-                return best_eval;
+                return std::make_tuple(best_eval, best_move);
             }
         }
         // Start transposition table stuff
@@ -352,60 +358,12 @@ namespace engine
 
         if ((!abort_due_to_time && nega_manager->time_remaining()) || !nega_manager_found)
         {
-            table1.put(zobrist_key, chess::Move::NO_MOVE, depth, best_eval, node_type, ply);
+            table1.put(zobrist_key, best_move, depth, best_eval, node_type, ply);
         }
         // End transposition table stuff
 
-        return best_eval;
+        return std::make_tuple(best_eval, best_move);
         // NOLINTEND
-    }
-
-
-    /**
-     *
-     * @param PV_Move Current principal variation move; for move ordering
-     * @param table1 Transposition table
-     * @param board Board to search for
-     * @param alpha Alpha (for a/b pruning) - initially set to a very low value
-     * @param beta Beta (for a/b pruning) - intially set to a very high value
-     * @param last_move The last move made on the board
-     * @param depth Current depth - start at 0
-     * @param ply Current ply - start at 0
-     * @param numExtensions Number of search extensions applied so far
-     * @param nega_manager
-     * @return A tuple of the believed evaluation and best move in the position
-     */
-    std::tuple<int, chess::Move> negamax(const std::optional<TimeManagement::TimeManager>& nega_manager,
-                                         const chess::Move& PV_Move, TranspositionTable& table1,
-                                         chess::Board& board,
-                                         const int alpha,
-                                         const int beta,
-                                         const chess::Move& last_move,
-                                         const int& depth, const int& ply, const int numExtensions)
-    {
-        if (const auto TTResult = table1.find_usable_entry(alpha, beta, depth, board.hash(), ply); TTResult.
-            has_value())
-        {
-            return TTResult.value();
-        }
-        chess::Movelist legal_moves;
-        chess::movegen::legalmoves(legal_moves, board);
-
-        int best_score = 0;
-        chess::Move best_move{};
-
-        for (const auto& move : legal_moves)
-        {
-            const int score = -_negamax(nega_manager, PV_Move, table1, board, -beta, -alpha,
-                                        depth - 1, ply + 1,
-                                        numExtensions);
-            if (score > best_score)
-            {
-                best_score = score;
-                best_move = move;
-            }
-        }
-        return std::make_tuple(best_score, best_move);
     }
 
     /**
