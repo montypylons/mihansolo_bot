@@ -105,7 +105,8 @@ TEST(SearchTestCrushingMove, BasicAssertions)
 TEST(NoIllegalMovesTest, BasicAssertions) // we are returning 0000 at extremely low btimes (<20 ms)
 {
     auto board1 = chess::Board("r4rk1/pppbq1bp/2n1p3/3pP1p1/6P1/2N1QN1P/PPP2PB1/R2R2K1 b - - 3 17");
-    auto man = TimeManagement::TimeManager(false);
+    TimeManagement::TimeManager man;
+    man.initialize(board1.sideToMove());
     man.go(100, 40, 0, 0); // if btime is <40 ms the test will fail (see line 113)
     // TODO: fix that it used to be <20 ms then a failure
     const auto result1 = engine::search(board1, man);
@@ -117,11 +118,13 @@ TEST(NoIllegalMovesTest, BasicAssertions) // we are returning 0000 at extremely 
 TEST(TimeManagementTest, BasicAssertions)
 
 {
-    auto manager = TimeManagement::TimeManager(true);
+    TimeManagement::TimeManager manager;
+    manager.initialize(true);
     manager.go(3'000, 2'800, 2'000, 2'000);
     std::this_thread::sleep_for(std::chrono::milliseconds(1151)); // manager should last for 1150 ms
     ASSERT_FALSE(manager.time_remaining());
-    manager = TimeManagement::TimeManager(false);
+
+    manager.initialize(false);
     manager.go(30'000, 30'000, 0, 0);
     std::this_thread::sleep_for(std::chrono::milliseconds(1480)); // time_remaining should last until 1500 ms
     ASSERT_TRUE(manager.time_remaining());
