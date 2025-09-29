@@ -697,7 +697,7 @@ namespace chess
 
         explicit operator std::string() const
         {
-            std::bitset<64> b(bits);
+            std::bitset < 64 > b(bits);
             std::string str_bitset = b.to_string();
 
             std::string str;
@@ -4338,11 +4338,6 @@ namespace chess
     template <movegen::MoveGenType mt>
     inline void movegen::legalmoves(Movelist& movelist, const Board& board, int pieces)
     {
-        // TEMPORARY
-        if (board.getFen() == "r1b1k2r/pp1nbNp1/2p1p2p/q7/2BP4/1PN3P1/P3QP1P/3R1RK1 w kq - 1 20") // one move in from the orignal FEN
-        {
-            std::cout << "Movegen for r1b1k2r/pp1nbNp1/2p1p2p/q7/2BP4/1PN3P1/P3QP1P/3R1RK1 w kq - 1 20" << std::endl;
-        }
         movelist.clear();
 
         if (board.sideToMove() == Color::WHITE)
@@ -4676,7 +4671,7 @@ namespace chess::pgn
 #elif defined(__unix__) || defined(__unix) || defined(unix)
             1024
 #else
-            256
+        256
 #endif
     >
     class StreamParser
