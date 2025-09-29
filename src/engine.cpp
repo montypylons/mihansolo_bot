@@ -174,7 +174,14 @@ namespace engine
      */
     void init_book()
     {
+        try
+            {
         book.Load("../../books/gm2600.bin");
+            }
+        catch (std::runtime_error&(e))
+            {
+            book.Load("../books/gm2600.bin")
+            }
     }
 
     /**
