@@ -112,7 +112,7 @@ namespace Reader {
             FILE *file = std::fopen(path, "rb");
 
             if (file==NULL) {
-                std::cerr << "<Error> Please use valid book" << std::endl;
+                throw std::runtime_error("Book not found at given path");
                 return;
             } else {
                 std::fseek(file, 0, SEEK_END);
