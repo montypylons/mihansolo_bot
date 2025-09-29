@@ -174,12 +174,7 @@ namespace engine
      */
     void init_book()
     {
-        try {
         book.Load("../../books/gm2600.bin");
-    }
-        catch (...) {
-            book.Load("../books/gm2600.bin");
-        }
     }
 
     /**
