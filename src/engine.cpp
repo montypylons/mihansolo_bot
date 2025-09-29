@@ -179,12 +179,19 @@ namespace engine
         {
             book.Load("../../books/gm2600.bin");
         }
-        catch ([[maybe_unused]] std::runtime_error& (e))
+        catch ([[maybe_unused]] std::runtime_error&)
         {
-            book.Load("../books/gm2600.bin");
+            try
+            {
+                book.Load("../books/gm2600.bin");
+            }
+            catch ([[maybe_unused]] std::runtime_error&)
+            {
+                // Last fallback
+                book.LoadArray(___books_gm2600_bin, ___books_gm2600_bin_len);
+            }
         }
 
-        // book.LoadArray(___books_gm2600_bin, ___books_gm2600_bin_len);
         // if you want can use book from file
         // embedded book, to make it easier to use the engine
     }
