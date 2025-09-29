@@ -14,6 +14,7 @@
 #include "tt.hpp"
 #include "timemanagement.hpp"
 #include "logging.hpp"
+#include "gm2600.hpp"
 
 using TimeManagement::TimeStatus;
 
@@ -174,6 +175,7 @@ namespace engine
      */
     void init_book()
     {
+        /*
         try
             {
         book.Load("../../books/gm2600.bin");
@@ -182,6 +184,8 @@ namespace engine
             {
             book.Load("../books/gm2600.bin");
             }
+            */
+            book.LoadArray(___books_gm2600_bin, ___books_gm2600_bin_len);
     }
 
     /**
