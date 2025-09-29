@@ -33,11 +33,9 @@ namespace engine
     // Game over detection
     extern TranspositionTable table;
 
-    inline bool game_over(const chess::Board& board)
+    inline bool game_over(const chess::Board& board, const chess::Movelist& moves)
     {
-        chess::Movelist moves;
-        chess::movegen::legalmoves(moves, board);
-        if (moves.empty() || board.isHalfMoveDraw() || board.isInsufficientMaterial() || board.isRepetition())
+        if (board.isHalfMoveDraw() | board.isRepetition() | moves.empty())
         {
             return true;
         }

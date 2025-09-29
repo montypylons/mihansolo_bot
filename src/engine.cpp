@@ -240,7 +240,7 @@ namespace engine
 
         // time management
 
-        if (nega_manager.time_status() == TimeManagement::TimeStatus::TimeRanOut)
+        if (nega_manager.time_status() == TimeStatus::TimeRanOut)
         {
             abort_due_to_time = true;
             return std::make_tuple(0, chess::Move::NO_MOVE);
@@ -257,8 +257,10 @@ namespace engine
         }
 
         // transposition stuff ends
+        chess::Movelist legal_moves;
+        chess::movegen::legalmoves(legal_moves, board);
 
-        if (depth == 0 || game_over(board)) // NOLINT
+        if (depth == 0 || game_over(board, legal_moves))
         {
             int leaf_eval{QuiescenceSearch(alpha, beta, board, ply, nega_manager)};
             return std::make_tuple(leaf_eval, last_move);
@@ -268,8 +270,6 @@ namespace engine
         chess::Move best_move = chess::Move::NO_MOVE;
         int best_eval = std::numeric_limits<int>::min();
 
-        chess::Movelist legal_moves;
-        chess::movegen::legalmoves(legal_moves, board);
         utils::order_moves(history, PV_Move, legal_moves, board);
         /*
         if (can_NMP(board, depth)) // NMP Conditions

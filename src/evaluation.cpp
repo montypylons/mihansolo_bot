@@ -159,7 +159,7 @@ namespace evaluation
             return 0;
         }
 
-        chess::Movelist moves;
+        chess::Movelist moves; // TODO: eliminate this
         chess::movegen::legalmoves(moves, board);
 
         if (moves.empty())
