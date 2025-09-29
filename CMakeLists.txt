@@ -11,6 +11,8 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
         add_compile_options(/O2 /Ot /Ob2 /Oi /Oy /GL /fp:fast /Gy)
         add_link_options(/LTCG)
     endif ()
+    else ()
+        add_compile_options(-O3 -Ofast -flto)
 endif ()
 
 if (CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")

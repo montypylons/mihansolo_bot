@@ -1,5 +1,6 @@
 #ifndef READER_HPP
 // Created by Shreyas Deo, find license here https://github.com/deoshreyas/Chess-Polyglot-Reader
+// LoadArray added by Mihin Benaragama
 #define READER_HPP
 
 #include <iostream>
@@ -10,6 +11,7 @@
 #include <vector>
 #include <random>
 #include <algorithm>
+#include <cstring> // For memcpy
 
 namespace Reader {
     class underlying {
@@ -112,7 +114,7 @@ namespace Reader {
             FILE *file = std::fopen(path, "rb");
 
             if (file==NULL) {
-                std::cerr << "<Error> Please use valid book" << std::endl;
+                throw std::runtime_error("Book not found at given path");
                 return;
             } else {
                 std::fseek(file, 0, SEEK_END);
@@ -120,18 +122,47 @@ namespace Reader {
 
                 if (position < sizeof(EntryStruct)) {
                     std::cerr << "<Error> No entries found" << std::endl;
+                    std::fclose(file);
                     return;
                 }
 
                 num_entries = position / sizeof(EntryStruct);
 
                 entries = (EntryStruct*)std::malloc(num_entries * sizeof(EntryStruct));
-                std::rewind(file);
+                if (!entries) {
+                    std::fclose(file);
+                    throw std::runtime_error("Memory allocation failed");
+                }
 
+                std::rewind(file);
                 size_t returnValue = std::fread(entries, sizeof(EntryStruct), num_entries, file);
 
                 std::fclose(file);
             }
+        }
+
+        // @brief Load book from a byte array in memory
+        // @param data Pointer to byte array containing book data
+        // @param size Size of the byte array in bytes
+        void LoadArray(const uint8_t* data, size_t size) {
+            if (size < sizeof(EntryStruct)) {
+                throw std::runtime_error("No entries found in data");
+                return;
+            }
+
+            if (size % sizeof(EntryStruct) != 0) {
+                throw std::runtime_error("Invalid data size, not multiple of EntryStruct size");
+                return;
+            }
+
+            num_entries = size / sizeof(EntryStruct);
+
+            entries = (EntryStruct*) std::malloc(num_entries * sizeof(EntryStruct));
+            if (!entries) {
+                throw std::runtime_error("Memory allocation failed");
+            }
+
+            std::memcpy(entries, data, size);
         }
 
         // @brief Get move from book
@@ -189,7 +220,11 @@ namespace Reader {
         
         // @brief Clear book from memory
         void Clear() {
-            std::free(entries);
+            if (entries) {
+                std::free(entries);
+                entries = nullptr;
+                num_entries = 0;
+            }
         } 
     };
 }

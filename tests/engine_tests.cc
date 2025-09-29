@@ -17,16 +17,40 @@ using TimeManagement::TimeStatus;
 
 TEST(GameOverTest, BasicAssertions)
 {
-    ASSERT_FALSE(engine::game_over(chess::Board("2r3k1/p4p2/6pp/1pr2b2/2p5/1PR1PB2/P4PPP/2R3K1 w - - 2 26")));
-    ASSERT_FALSE(engine::game_over(chess::Board("4rbkr/ppp3pp/5N2/n7/3pP2q/5Q1P/PPP1K2P/R1B2R2 b - - 0 15")));
-    ASSERT_FALSE(
-        engine::game_over(chess::Board("6k1/3n3b/1pq1r1p1/p1bpPrPp/Pp1p3P/1N1P1N2/R1P3Q1/2B1R1K1 w - - 1 28")));
-    ASSERT_FALSE(engine::game_over(chess::Board("5rk1/5pp1/8/4p3/Qp2b1Pq/4b2P/4B2K/3R1R2 w - - 2 35")));
+    auto board1 = chess::Board("2r3k1/p4p2/6pp/1pr2b2/2p5/1PR1PB2/P4PPP/2R3K1 w - - 2 26");
+    auto board2 = chess::Board("4rbkr/ppp3pp/5N2/n7/3pP2q/5Q1P/PPP1K2P/R1B2R2 b - - 0 15");
+    auto board3 = chess::Board("6k1/3n3b/1pq1r1p1/p1bpPrPp/Pp1p3P/1N1P1N2/R1P3Q1/2B1R1K1 w - - 1 28");
+    auto board4 = chess::Board("5rk1/5pp1/8/4p3/Qp2b1Pq/4b2P/4B2K/3R1R2 w - - 2 35");
+    auto board5 = chess::Board("3Q1k2/p4p2/qp2p2p/7N/8/4PP2/5KPP/8 b - - 0 31");
+    auto board6 =chess::Board("rnb2rk1/3pp2Q/pq4p1/1p1P1p2/1p6/P1b2N2/2P1PPP1/R2K1B1R b - - 3 15");
+    auto board7 = chess::Board("8/8/8/8/8/5K2/N5Q1/7k b - - 30 85");
+    auto board8 = chess::Board("r4rk1/pbp2p1p/1p2pBp1/4N3/3P4/1BP1b3/PP3QqP/R4RK1 w - - 0 23");
+    chess::Movelist move1;
+    chess::Movelist move2;
+    chess::Movelist move3;
+    chess::Movelist move4;
+    chess::Movelist move5;
+    chess::Movelist move6;
+    chess::Movelist move7;
+    chess::Movelist move8;
+    chess::movegen::legalmoves(move1, board1);
+    chess::movegen::legalmoves(move2, board2);
+    chess::movegen::legalmoves(move3, board3);
+    chess::movegen::legalmoves(move4, board4);
+    chess::movegen::legalmoves(move5, board5);
+    chess::movegen::legalmoves(move6, board6);
+    chess::movegen::legalmoves(move7, board7);
+    chess::movegen::legalmoves(move8, board8);
+    
+    ASSERT_FALSE(engine::game_over(board1, move1));
+    ASSERT_FALSE(engine::game_over(board2, move2));
+    ASSERT_FALSE(engine::game_over(board3, move3));
+    ASSERT_FALSE(engine::game_over(board4, move4));
 
-    ASSERT_TRUE(engine::game_over(chess::Board("3Q1k2/p4p2/qp2p2p/7N/8/4PP2/5KPP/8 b - - 0 31")));
-    ASSERT_TRUE(engine::game_over(chess::Board("rnb2rk1/3pp2Q/pq4p1/1p1P1p2/1p6/P1b2N2/2P1PPP1/R2K1B1R b - - 3 15")));
-    ASSERT_TRUE(engine::game_over(chess::Board("8/8/8/8/8/5K2/N5Q1/7k b - - 30 85")));
-    ASSERT_TRUE(engine::game_over(chess::Board("r4rk1/pbp2p1p/1p2pBp1/4N3/3P4/1BP1b3/PP3QqP/R4RK1 w - - 0 23")));
+    ASSERT_TRUE(engine::game_over(board5, move5));
+    ASSERT_TRUE(engine::game_over(board6, move6));
+    ASSERT_TRUE(engine::game_over(board7, move7));
+    ASSERT_TRUE(engine::game_over(board8, move8));
 }
 
 TEST(BookMoveTest, BasicAssertions)
