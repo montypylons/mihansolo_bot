@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Compiler flags for Release build
 if (CMAKE_BUILD_TYPE STREQUAL "Release")
     if (MSVC)
-        add_compile_options(/O2 /Ot /Ob2 /Oi /0y /GL /fp:fast /Gy)
+        add_compile_options(/O2 /Ot /Ob2 /Oi /Oy /GL /fp:fast /Gy)
         add_link_options(/LTCG)
     endif ()
 endif ()
