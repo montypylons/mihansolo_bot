@@ -366,14 +366,14 @@ namespace chess
         using enum underlying;
 #else
 
-        CHESS_DECLARE_RANK(1)
-        CHESS_DECLARE_RANK(2)
-        CHESS_DECLARE_RANK(3)
-        CHESS_DECLARE_RANK(4)
-        CHESS_DECLARE_RANK(5)
-        CHESS_DECLARE_RANK(6)
-        CHESS_DECLARE_RANK(7)
-        CHESS_DECLARE_RANK(8)
+        CHESS_DECLARE_RANK (1)
+        CHESS_DECLARE_RANK (2)
+        CHESS_DECLARE_RANK (3)
+        CHESS_DECLARE_RANK (4)
+        CHESS_DECLARE_RANK (5)
+        CHESS_DECLARE_RANK (6)
+        CHESS_DECLARE_RANK (7)
+        CHESS_DECLARE_RANK (8)
 
         static constexpr auto NO_SQ = underlying::NO_SQ;
 
@@ -4338,6 +4338,11 @@ namespace chess
     template <movegen::MoveGenType mt>
     inline void movegen::legalmoves(Movelist& movelist, const Board& board, int pieces)
     {
+        // TEMPORARY
+        if (board.getFen() == "r1b1k2r/pp1nbNp1/2p1p2p/q7/2BP4/1PN3P1/P3QP1P/3R1RK1 w kq - 1 20") // one move in from the orignal FEN
+        {
+            std::cout << "Movegen for r1b1k2r/pp1nbNp1/2p1p2p/q7/2BP4/1PN3P1/P3QP1P/3R1RK1 w kq - 1 20" << std::endl;
+        }
         movelist.clear();
 
         if (board.sideToMove() == Color::WHITE)

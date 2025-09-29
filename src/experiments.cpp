@@ -4,7 +4,6 @@
 #include <iostream>
 #include <sstream>
 #include <string>
-
 #include "logging.hpp"
 
 /**
@@ -305,7 +304,15 @@ Checkers:
         "Achieved board: rnbqk2r/ppp1p1bp/3p1np1/5p2/2PP4/5NP1/PP2PPBP/RNBQ1RK1 b kq - 1 6";
 }
 
+void eliminate_redundant_movegen(const std::string& fen)
+{
+    auto board = chess::Board(fen);
+    TimeManagement::TimeManager manager;
+    manager.go(100'000, 100'000, 1'000, 1'000, board.sideToMove());
+    engine::search(board, manager);
+}
+
 int main()
 {
-    issue_6_MRE();
+    eliminate_redundant_movegen("r1bqk2r/pp1nbNp1/2p1p2p/8/2BP4/1PN3P1/P3QP1P/3R1RK1 b kq - 0 19");
 }

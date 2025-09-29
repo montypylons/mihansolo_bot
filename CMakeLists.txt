@@ -2,17 +2,15 @@ cmake_minimum_required(VERSION 3.15)
 project(mihansolo_bot VERSION 1.0 LANGUAGES CXX)
 
 # Set C++20 standard
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Compiler flags for Release build
 if (CMAKE_BUILD_TYPE STREQUAL "Release")
     if (MSVC)
-        add_compile_options(/O2 /Ot /Ob2 /Oi /Oy /GL /fp:fast /Gy)
+        add_compile_options(/O2 /Ot /Ob2 /Oi /0y /GL /fp:fast /Gy)
         add_link_options(/LTCG)
     endif ()
-    else ()
-        add_compile_options(-O3 -Ofast -flto)
 endif ()
 
 if (CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
