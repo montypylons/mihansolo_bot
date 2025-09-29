@@ -35,12 +35,10 @@ namespace engine
 
     inline bool game_over(const chess::Board& board, const chess::Movelist& moves)
     {
-        if (board.isHalfMoveDraw() | board.isRepetition() | moves.empty())
-        {
-            return true;
-        }
-
-        return false;
+        return board.isHalfMoveDraw() || // if any are true then the game is over
+            board.isRepetition() ||
+            board.isInsufficientMaterial() ||
+            moves.empty();
     }
 
     // UCI protocol loop

@@ -175,19 +175,18 @@ namespace engine
      */
     void init_book()
     {
-        /*
         try
-            {
-        book.Load("../../books/gm2600.bin");
-            }
-        catch (std::runtime_error&(e))
-            {
+        {
+            book.Load("../../books/gm2600.bin");
+        }
+        catch (std::runtime_error& (e))
+        {
             book.Load("../books/gm2600.bin");
-            }
-            */
-            book.LoadArray(___books_gm2600_bin, ___books_gm2600_bin_len);
-            // if you want can use book from file
-            // embedded book, to make it easier to use the engine
+        }
+
+        // book.LoadArray(___books_gm2600_bin, ___books_gm2600_bin_len);
+        // if you want can use book from file
+        // embedded book, to make it easier to use the engine
     }
 
     /**
@@ -413,7 +412,8 @@ namespace engine
                 returned_move = std::get<1>(result);
                 eval = std::get<0>(result);
 
-                if (!abort_due_to_time) // prevents using corrupted moves or eval
+                if (!abort_due_to_time || (abort_due_to_time && PV_Move == chess::Move::NO_MOVE))
+                // prevents using corrupted moves or eval
                 {
                     PV_Move = returned_move;
                     previous_eval = eval;

@@ -5,11 +5,22 @@ project(mihansolo_bot VERSION 1.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Compiler flags for Release build
 if (CMAKE_BUILD_TYPE STREQUAL "Release")
     if (MSVC)
+        # MSVC optimizations
         add_compile_options(/O2 /Ot /Ob2 /Oi /Oy /GL /fp:fast /Gy)
         add_link_options(/LTCG)
+    elseif (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+        # GCC/Clang optimizations
+        add_compile_options(
+                -O3             # highest general optimization
+                -march=native   # optimize for host CPU
+                -funroll-loops  # aggressive loop unrolling
+                -ffast-math     # unsafe but faster math
+        )
+        add_link_options(
+                -flto           # enable link-time optimization
+        )
     endif ()
 endif ()
 
