@@ -179,7 +179,7 @@ namespace engine
         {
             book.Load("../../books/gm2600.bin");
         }
-        catch (std::runtime_error& (e))
+        catch ([[maybe_unused]] std::runtime_error& (e))
         {
             book.Load("../books/gm2600.bin");
         }
