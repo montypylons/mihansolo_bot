@@ -33,24 +33,24 @@ TEST(GameOverTest, BasicAssertions)
     chess::Movelist move6;
     chess::Movelist move7;
     chess::Movelist move8;
-    chess::movegen::legalmoves(moves1, board1);
-    chess::movegen::legalmoves(moves2, board2);
-    chess::movegen::legalmoves(moves3, board3);
-    chess::movegen::legalmoves(moves4, board4);
-    chess::movegen::legalmoves(moves5, board5);
-    chess::movegen::legalmoves(moves6, board6);
-    chess::movegen::legalmoves(moves7, board7);
-    chess::movegen::legalmoves(moves8, board8);
+    chess::movegen::legalmoves(move1, board1);
+    chess::movegen::legalmoves(move2, board2);
+    chess::movegen::legalmoves(move3, board3);
+    chess::movegen::legalmoves(move4, board4);
+    chess::movegen::legalmoves(move5, board5);
+    chess::movegen::legalmoves(move6, board6);
+    chess::movegen::legalmoves(move7, board7);
+    chess::movegen::legalmoves(move8, board8);
     
-    ASSERT_FALSE(engine::game_over(board1, moves1));
-    ASSERT_FALSE(engine::game_over(board2, moves2));
-    ASSERT_FALSE(engine::game_over(board3, moves3));
-    ASSERT_FALSE(engine::game_over(board4, moves4));
+    ASSERT_FALSE(engine::game_over(board1, move1));
+    ASSERT_FALSE(engine::game_over(board2, move2));
+    ASSERT_FALSE(engine::game_over(board3, move3));
+    ASSERT_FALSE(engine::game_over(board4, move4));
 
-    ASSERT_TRUE(engine::game_over(board5, moves5));
-    ASSERT_TRUE(engine::game_over(board6, moves6));
-    ASSERT_TRUE(engine::game_over(board7, moves7));
-    ASSERT_TRUE(engine::game_over(board8, moves8));
+    ASSERT_TRUE(engine::game_over(board5, move5));
+    ASSERT_TRUE(engine::game_over(board6, move6));
+    ASSERT_TRUE(engine::game_over(board7, move7));
+    ASSERT_TRUE(engine::game_over(board8, move8));
 }
 
 TEST(BookMoveTest, BasicAssertions)
