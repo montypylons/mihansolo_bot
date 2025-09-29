@@ -180,7 +180,7 @@ namespace engine
             }
         catch (std::runtime_error&(e))
             {
-            book.Load("../books/gm2600.bin")
+            book.Load("../books/gm2600.bin");
             }
     }
 
