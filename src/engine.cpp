@@ -23,6 +23,7 @@ namespace engine
     constexpr int MAX_EXTENSIONS = 0; // BUG: extensions cause node explosion
     constexpr int QUIESCENCE_DEPTH = 0;
     constexpr int DELTA = 200;
+    bool OWN_BOOK = false;
 
     int history[2][64][64];
     int nodes = 0;
@@ -171,29 +172,29 @@ namespace engine
         return best_value;
     }
 
-    /**
-     */
     void init_book()
     {
-        try
-        {
-            // first try this
-            book.Load("../../books/gm2600.bin");
-        }
-        catch ([[maybe_unused]] std::runtime_error&)
+        if (OWN_BOOK)
         {
             try
             {
-                // then this
-                book.Load("../books/gm2600.bin");
+                // first try this
+                book.Load("../../books/gm2600.bin");
             }
             catch ([[maybe_unused]] std::runtime_error&)
             {
-                // If it isn't found as a file, use the embedded book
-                book.LoadArray(___books_gm2600_bin, ___books_gm2600_bin_len);
+                try
+                {
+                    // then this
+                    book.Load("../books/gm2600.bin");
+                }
+                catch ([[maybe_unused]] std::runtime_error&)
+                {
+                    // If it isn't found as a file, use the embedded book
+                    book.LoadArray(___books_gm2600_bin, ___books_gm2600_bin_len);
+                }
             }
         }
-
         // if you want can use book from file
         // embedded book, to make it easier to use the engine
     }
@@ -482,6 +483,7 @@ namespace engine
                 out << "option name Move Overhead type spin default 30 min 0 max 5000\n";
                 out << "option name UCI_ShowWDL type check default false\n";
                 out << "option name Ponder type check default false\n";
+                out << "option name OwnBook type check default false\n";
                 out << "option name UCI_AnalyseMode type check default false\n";
                 out << "option name UCI_LimitStrength type check default false\n";
                 out << "option name UCI_Elo type spin default 1350 min 1350 max 2850\n";
@@ -580,8 +582,27 @@ namespace engine
             }
             else if (token == "setoption")
             {
-                // good luck debugging suckers :)
+                std::string subtoken;
+                iss >> subtoken;
+
+                if (subtoken == "name")
+                {
+                    std::string option;
+                    iss >> option;
+
+                    if (option == "OwnBook")
+                    {
+                        std::string value_token, value;
+                        iss >> value_token >> value;
+
+                        if (value_token == "value")
+                        {
+                            OWN_BOOK = value == "true";
+                        }
+                    }
+                }
             }
+
             else
             {
                 out << "info string unknown command: " << line << "\n";

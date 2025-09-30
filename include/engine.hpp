@@ -13,7 +13,7 @@ namespace engine
 
     // Book initialization
     void init_book();
-    extern bool log_TT;
+    extern bool OWN_BOOK;
 
     // Book move lookup
     std::optional<std::string> book_move(const chess::Board& board);
