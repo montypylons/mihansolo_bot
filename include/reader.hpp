@@ -65,7 +65,7 @@ namespace Reader {
     static std::string Files[8] = {"a", "b", "c", "d", "e", "f", "g", "h"};
     static std::string Rows[8] = {"1", "2", "3", "4", "5", "6", "7", "8"};
 
-void ExportEntriesToHeader(const std::string& filename) {
+inline void ExportEntriesToHeader(const std::string& filename) {
     if (entries == nullptr || num_entries == 0) {
         std::cerr << "No entries loaded.\n";
         return;
