@@ -314,5 +314,6 @@ void eliminate_redundant_movegen(const std::string& fen)
 
 int main()
 {
-    eliminate_redundant_movegen("r1bqk2r/pp1nbNp1/2p1p2p/8/2BP4/1PN3P1/P3QP1P/3R1RK1 b kq - 0 19");
+    std::cout <<"started"<<std::endl;
+    engine::init_book();
 }

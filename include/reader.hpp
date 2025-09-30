@@ -76,6 +76,7 @@ inline void ExportEntriesToHeader(const std::string& filename) {
         std::cerr << "Failed to open " << filename << " for writing.\n";
         return;
     }
+    std::cout << "writing to file " << filename << std::endl;
 
     out << "#ifndef GENERATED_ENTRIES_HPP\n";
     out << "#define GENERATED_ENTRIES_HPP\n\n";
@@ -203,6 +204,10 @@ namespace Reader {
             }
 
             std::memcpy(entries, data, size);
+            /*
+            std::cout << "Exporting"<<std::endl;
+            ExportEntriesToHeader("gm2600_test.hpp");
+            */
         }
 
         // @brief Get move from book
