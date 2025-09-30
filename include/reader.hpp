@@ -1,7 +1,7 @@
-#ifndef READER_HPP
+#pragma once
 // Created by Shreyas Deo, find license here https://github.com/deoshreyas/Chess-Polyglot-Reader
 // LoadArray added by Mihin Benaragama
-#define READER_HPP
+
 
 #include <iostream>
 #include <cstdio>
