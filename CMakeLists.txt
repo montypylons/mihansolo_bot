@@ -41,6 +41,7 @@ set(COMMON_SOURCES
         src/timemanagement.cpp
         src/tt.cpp
         src/utils.cpp
+        src/polyglot.cpp
 )
 
 # Main executable: engine
