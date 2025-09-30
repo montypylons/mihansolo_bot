@@ -174,25 +174,22 @@ namespace engine
 
     void init_book()
     {
-        if (OWN_BOOK)
+        try
+        {
+            // first try this
+            book.Load("../../books/gm2600.bin");
+        }
+        catch ([[maybe_unused]] std::runtime_error&)
         {
             try
             {
-                // first try this
-                book.Load("../../books/gm2600.bin");
+                // then this
+                book.Load("../books/gm2600.bin");
             }
             catch ([[maybe_unused]] std::runtime_error&)
             {
-                try
-                {
-                    // then this
-                    book.Load("../books/gm2600.bin");
-                }
-                catch ([[maybe_unused]] std::runtime_error&)
-                {
-                    // If it isn't found as a file, use the embedded book
-                    book.LoadArray(___books_gm2600_bin, ___books_gm2600_bin_len);
-                }
+                // If it isn't found as a file, use the embedded book
+                book.LoadArray(___books_gm2600_bin, ___books_gm2600_bin_len);
             }
         }
         // if you want can use book from file
@@ -206,6 +203,7 @@ namespace engine
      */
     std::optional<std::string> book_move(const chess::Board& board)
     {
+        if (!OWN_BOOK) return std::nullopt;
         if (const Reader::BookMoves book_moves = book.GetBookMoves(board.hash()); !book_moves.empty())
         {
             std::string found_move = Reader::ConvertBookMoveToUci(Reader::RandomBookMove(book_moves));
@@ -567,7 +565,7 @@ namespace engine
                 {
                     manager.movetime(movetime);
                 }
-                else if (wtime > 0 || btime > 0) // stopping based
+                else if (wtime > 0 || btime > 0) // stopping based on wtime/btime/winc/binc
                 {
                     manager.go(wtime, btime, winc, binc, board.sideToMove());
                 }
