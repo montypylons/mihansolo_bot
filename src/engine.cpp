@@ -282,7 +282,7 @@ namespace engine
         chess::Movelist legal_moves;
         chess::movegen::legalmoves(legal_moves, board);
 
-        if (depth == 0 || game_over(board, legal_moves))
+        if (depth == 0 || game_over(board, legal_moves)) [[unlikely]]
         {
             int leaf_eval{QuiescenceSearch(alpha, beta, board, ply, nega_manager)};
             return std::make_tuple(leaf_eval, last_move);

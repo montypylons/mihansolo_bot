@@ -11,11 +11,10 @@ namespace TimeManagement
         if (const auto now = std::chrono::steady_clock::now();
             std::chrono::duration_cast<std::chrono::milliseconds>(now - last_move_time)
             >=
-            std::chrono::duration_cast<std::chrono::milliseconds>(time_remaining_for_move))
+            std::chrono::duration_cast<std::chrono::milliseconds>(time_remaining_for_move)) [[unlikely]]
         {
-            return TimeStatus::TimeRanOut;
+            return TimeStatus::TimeRanOut; // most of the time the other two will happen
         }
-
         return TimeStatus::TimeRemaining;
     }
 
