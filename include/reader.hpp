@@ -65,6 +65,46 @@ namespace Reader {
     static std::string Files[8] = {"a", "b", "c", "d", "e", "f", "g", "h"};
     static std::string Rows[8] = {"1", "2", "3", "4", "5", "6", "7", "8"};
 
+void ExportEntriesToHeader(const std::string& filename) {
+    if (entries == nullptr || num_entries == 0) {
+        std::cerr << "No entries loaded.\n";
+        return;
+    }
+
+    std::ofstream out(filename);
+    if (!out) {
+        std::cerr << "Failed to open " << filename << " for writing.\n";
+        return;
+    }
+
+    out << "#ifndef GENERATED_ENTRIES_HPP\n";
+    out << "#define GENERATED_ENTRIES_HPP\n\n";
+
+    out << "#include <cstdint>\n\n";
+
+    out << "struct EntryStruct {\n";
+    out << "    uint64_t key;\n";
+    out << "    uint16_t move;\n";
+    out << "    uint16_t weight;\n";
+    out << "    uint32_t learn;\n";
+    out << "};\n\n";
+
+    out << "static const EntryStruct saved_entries[] = {\n";
+    for (long int i = 0; i < num_entries; ++i) {
+        const auto& e = entries[i];
+        out << "    {0x" << std::hex << e.key << ", 0x" << std::hex << e.move
+            << ", 0x" << e.weight << ", 0x" << e.learn << "},\n";
+    }
+    out << "};\n\n";
+
+    out << "static const size_t saved_num_entries = " << std::dec << num_entries << ";\n\n";
+
+    out << "#endif // GENERATED_ENTRIES_HPP\n";
+    out.close();
+
+    std::cout << "Entries written to " << filename << "\n";
+}
+
     // @brief Convert book move to UCI Format
     // @param move Book move
     // @return UCI move string
