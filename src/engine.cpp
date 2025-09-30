@@ -473,7 +473,7 @@ namespace engine
             std::string token;
             iss >> token;
 
-            if (token == "uci") [[unlikely]]
+            if (token == "uci")
             {
                 out << "id name MihanSolo\n";
                 out << "id author Mihin Benaragama\n";
@@ -493,7 +493,7 @@ namespace engine
                 out << "readyok\n";
             }
 
-            else if (token == "position") [[likely]]
+            else if (token == "position")
             {
                 std::string pos_type;
                 iss >> pos_type;
@@ -526,7 +526,7 @@ namespace engine
                     }
                 }
             }
-            else if (token == "go")[[likely]]
+            else if (token == "go")
             {
                 std::string bestmove;
                 int wtime = 0, btime = 0, winc = 0, binc = 0, depth = 0, movetime = -1;
