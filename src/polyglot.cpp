@@ -6,6 +6,9 @@
 #include <stdexcept>
 #include <bit>
 #include <string>
+#include <algorithm>
+#include <chrono>
+#include <random>
 
 // By Mihin Benaragama (@montypylons on Github)
 // Thanks to http://hgm.nubati.net/book_format.html for explaining the PolyGlot book format
@@ -89,15 +92,62 @@ namespace polyglot
             }
         }
 
-        void GetBookMove(const SelectionMethod method, uint64_t zobrist_key)
+        uint16_t GetBookMove(const SelectionMethod method, const uint64_t zobrist_key)
         {
             std::vector<Entry> matching_entries;
+
+            const auto lower_range = std::lower_bound(book.begin(), book.end(), zobrist_key,
+                                                      [](const Entry& entry, const int key)
+                                                      {
+                                                          return entry.key < key;
+                                                      });
+
+            const auto upper_range = std::upper_bound(book.begin(), book.end(), zobrist_key,
+                                                      [](const int key, const Entry& entry)
+                                                      {
+                                                          return key < entry.key;
+                                                      });
+
+            for (auto it = lower_range; it != upper_range; ++it)
+            {
+                if (it->key == zobrist_key)
+                {
+                    matching_entries.push_back(*it);
+                }
+            }
+            if (matching_entries.empty()) throw std::runtime_error("No entries found!");
+
             switch (method)
             {
             case SelectionMethod::Random:
-                break;
+                {
+                    const unsigned seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+
+                    std::mt19937 generator(seed);
+
+                    constexpr int min_val = 0;
+                    const int max_val = matching_entries.size() - 1;
+
+                    std::uniform_int_distribution distribution(min_val, max_val);
+
+                    const int random_number = distribution(generator);
+
+                    return matching_entries[random_number].move;
+                }
             case SelectionMethod::Weight:
-                break;
+                {
+                    uint16_t best_move{};
+                    uint16_t best_weight{};
+
+                    for (const auto& entry : matching_entries)
+                    {
+                        if (entry.weight > best_weight) best_move = entry.move;
+                        best_weight = entry.weight;
+                    }
+                    return best_move;
+                }
+            default:
+                throw std::runtime_error("Unknown SelectionMethod.");
             }
         }
 
@@ -133,8 +183,6 @@ namespace polyglot
                 return "e8c8";
             }
 
-            {
-            }
 
             const uint16_t to_file = move & last_3_bits; // we want 0, 1, and 2
             const uint16_t to_rank = move >> 3 & last_3_bits; // 3, 4, and 5
