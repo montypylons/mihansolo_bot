@@ -92,7 +92,7 @@ namespace engine
     int QuiescenceSearch(int alpha, const int beta, chess::Board& board, const int ply,
                          TimeManagement::TimeManager& q_manager)
     {
-        if (q_manager.time_status() == TimeManagement::TimeStatus::TimeRanOut)
+        if (q_manager.time_status() == TimeStatus::TimeRanOut)
         {
             abort_due_to_time = true;
             return 0;
@@ -135,7 +135,7 @@ namespace engine
 
             if (score >= beta)
             {
-                if (!abort_due_to_time && q_manager.time_status() == TimeManagement::TimeStatus::TimeRemaining)
+                if (!abort_due_to_time && q_manager.time_status() == TimeStatus::TimeRemaining)
                 {
                     table.put(zobrist, chess::Move::NO_MOVE, QUIESCENCE_DEPTH, score, NodeType::LOWERBOUND, ply);
                 }
@@ -163,7 +163,7 @@ namespace engine
         {
             node_type = NodeType::EXACT;
         }
-        if (q_manager.time_status() == TimeManagement::TimeStatus::TimeRemaining && !abort_due_to_time)
+        if (q_manager.time_status() == TimeStatus::TimeRemaining && !abort_due_to_time)
         {
             table.put(zobrist, chess::Move::NO_MOVE, QUIESCENCE_DEPTH, best_value, node_type, ply);
         }
@@ -330,7 +330,7 @@ namespace engine
                     history[board.sideToMove()][move.from().index()][move.to().index()] += depth * depth;
                 }
 
-                if ((!abort_due_to_time && nega_manager.time_status() == TimeManagement::TimeStatus::TimeRemaining))
+                if ((!abort_due_to_time && nega_manager.time_status() == TimeStatus::TimeRemaining))
                 {
                     table1.put(zobrist_key, best_move, depth, best_eval, NodeType::LOWERBOUND, ply);
                 }
@@ -353,7 +353,7 @@ namespace engine
             node_type = NodeType::EXACT;
         }
 
-        if ((!abort_due_to_time && nega_manager.time_status() == TimeManagement::TimeStatus::TimeRemaining))
+        if ((!abort_due_to_time && nega_manager.time_status() == TimeStatus::TimeRemaining))
         {
             table1.put(zobrist_key, best_move, depth, best_eval, node_type, ply);
         }
