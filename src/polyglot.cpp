@@ -110,8 +110,11 @@ namespace polyglot
 
                 for (const auto& entry : matching_entries)
                 {
-                    if (entry.weight > best_weight) best_move = entry.move;
-                    best_weight = entry.weight;
+                    if (entry.weight > best_weight)
+                    {
+                        best_move = entry.move;
+                        best_weight = entry.weight;
+                    }
                 }
                 return best_move;
             }
