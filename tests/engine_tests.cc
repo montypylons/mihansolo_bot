@@ -1,7 +1,7 @@
 #include "chess.hpp"
 #include <tuple>
 #include <string>
-#include "reader.hpp"
+#include "polyglot.hpp"
 #include <optional>
 #include <map>
 #include "engine.hpp"

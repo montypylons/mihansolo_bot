@@ -5,11 +5,10 @@
 #include <string>
 #include <tuple>
 #include <stdexcept>
-#include <vector>
 #include "chess.hpp"
 #include "engine.hpp"
 #include "evaluation.hpp"
-#include "reader.hpp"
+#include "polyglot.hpp"
 #include "utils.hpp"
 #include "tt.hpp"
 #include "timemanagement.hpp"
@@ -30,7 +29,7 @@ namespace engine
 
     bool abort_due_to_time = false;
 
-    Reader::Book book;
+    polyglot::Reader reader;
     TranspositionTable table; // TODO: add tests fr this
     TimeManagement::TimeManager manager; // TODO: add tests fr this
 
@@ -177,22 +176,22 @@ namespace engine
         try
         {
             // first try this
-            book.Load("../../books/gm2600.bin");
+            reader.LoadFromFile("../../books/gm2600.bin");
         }
         catch ([[maybe_unused]] std::runtime_error&)
         {
             try
             {
                 // then this
-                book.Load("../books/gm2600.bin");
+                reader.LoadFromFile("../books/gm2600.bin");
             }
             catch ([[maybe_unused]] std::runtime_error&)
             {
                 // If it isn't found as a file, use the embedded book
-                book.LoadArray(___books_gm2600_bin, ___books_gm2600_bin_len);
+                reader.LoadFromArray(___books_gm2600_bin, ___books_gm2600_bin_len);
             }
         }
-        // if you want can use book from file
+        // if you want you can use book from file
         // embedded book, to make it easier to use the engine
     }
 
@@ -204,12 +203,16 @@ namespace engine
     std::optional<std::string> book_move(const chess::Board& board)
     {
         if (!OWN_BOOK) return std::nullopt;
-        if (const Reader::BookMoves book_moves = book.GetBookMoves(board.hash()); !book_moves.empty())
+        try
         {
-            std::string found_move = Reader::ConvertBookMoveToUci(Reader::RandomBookMove(book_moves));
-            return found_move;
+            auto book_move = reader.RawMoveToUci(reader.GetBookMove(polyglot::SelectionMethod::Weight, board.hash()),
+                                                 board);
+            return book_move;
         }
-        return std::nullopt;
+        catch (std::runtime_error&)
+        {
+            return std::nullopt;
+        }
     }
 
     /**
@@ -420,7 +423,7 @@ namespace engine
                 returned_move = std::get<1>(result);
                 eval = std::get<0>(result);
 
-                if (!abort_due_to_time || (abort_due_to_time && PV_Move == chess::Move::NO_MOVE))
+                if (!abort_due_to_time || PV_Move == chess::Move::NO_MOVE)
                 // prevents using corrupted moves or eval
                 {
                     PV_Move = returned_move;
