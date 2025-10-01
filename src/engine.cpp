@@ -173,25 +173,7 @@ namespace engine
 
     void init_book()
     {
-        try
-        {
-            // first try this
-            reader.LoadFromFile("../../books/gm2600.bin");
-        }
-        catch ([[maybe_unused]] std::runtime_error&)
-        {
-            try
-            {
-                // then this
-                reader.LoadFromFile("../books/gm2600.bin");
-            }
-            catch ([[maybe_unused]] std::runtime_error&)
-            {
-                // If it isn't found as a file, use the embedded book
-                reader.LoadFromArray(___books_gm2600_bin, ___books_gm2600_bin_len);
-            }
-        }
-        // if you want you can use book from file
+        reader.LoadFromArray(___books_gm2600_bin, ___books_gm2600_bin_len);
         // embedded book, to make it easier to use the engine
     }
 
