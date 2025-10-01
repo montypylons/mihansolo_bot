@@ -92,9 +92,7 @@ namespace polyglot
         {
         case SelectionMethod::Random:
             {
-                const unsigned seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
-
-                std::mt19937 generator(seed);
+                std::mt19937 generator(std::random_device{}());
 
                 constexpr int min_val = 0;
                 const int max_val = matching_entries.size() - 1;
@@ -155,7 +153,7 @@ namespace polyglot
         }
 
 
-        const uint16_t to_file = move & last_3_bits; // we want 0, 1, and 2
+        const uint16_t to_file = move & last_3_bits; // we want bits 0, 1, and 2
         const uint16_t to_rank = move >> 3 & last_3_bits; // 3, 4, and 5
         const uint16_t from_file = move >> 6 & last_3_bits; // 6, 7, 8
         const uint16_t from_rank = move >> 9 & last_3_bits; // 9, 10, 11
