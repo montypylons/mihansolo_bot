@@ -1,6 +1,7 @@
 #include "polyglot.hpp"
 #include "chess.hpp"
 #include <cstdint>
+#include <cstring>
 #include <vector>
 #include <fstream>
 #include <stdexcept>
