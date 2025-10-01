@@ -11,10 +11,8 @@
 #include <chrono>
 #include <random>
 
-// By Mihin Benaragama (@montypylons on GitHub)
-// Thanks to http://hgm.nubati.net/book_format.html for explaining the PolyGlot book format
-
-// TODO: lazy endian swapping
+// By Mihin Benaragama (https://github.com/montypylons)
+// Thanks to http://hgm.nubati.net/book_format.html for explaining the PolyGlot opening book format
 
 namespace polyglot
 {
