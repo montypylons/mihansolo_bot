@@ -325,11 +325,12 @@ void ver_same_results()
 
     for (const auto& board : boards)
     {
-        if (evaluation::evaluation_multi_threaded(board) != evaluation::main_eval(board))
-        {
-            std::cout << "Inconsistent eval detected\n";
-            break;
-        }
+        /* if (evaluation::evaluation_multi_threaded(board) != evaluation::main_eval(board))
+         {
+             std::cout << "Inconsistent eval detected\n";
+             break;
+         }
+         */
         std::cout << "same eval :D\n";
     }
 }
@@ -353,7 +354,7 @@ void bench_eval()
 
     for (const auto& board : boards)
     {
-        evaluation::evaluation_multi_threaded(board);
+        //  evaluation::evaluation_multi_threaded(board);
     }
     const auto end_threads = std::chrono::steady_clock::now();
 

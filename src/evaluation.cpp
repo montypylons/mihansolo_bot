@@ -8,6 +8,7 @@
 namespace evaluation
 {
     EvaluationHashTable hash_table;
+    // BS::thread_pool pool;
 
     std::tuple<std::array<chess::Bitboard, 6>, std::array<chess::Bitboard, 6>> initialize_bitboards(
         const chess::Board& board)
@@ -366,39 +367,39 @@ namespace evaluation
         return mobility_eval;
     }
 
-    int main_eval(const chess::Board& board, const int& ply)
-    {
-        const auto zobrist = board.hash();
-        if (const auto hash_entry = hash_table.get(zobrist); hash_entry.has_value())
-        {
-            return hash_entry.value().score;
-        }
+      int main_eval(const chess::Board& board, const int& ply)
+      {
+          const auto zobrist = board.hash();
+          if (const auto hash_entry = hash_table.get(zobrist); hash_entry.has_value())
+          {
+              return hash_entry.value().score;
+          }
 
-        if (const std::optional<int> result = game_over_eval(board, ply); result != std::nullopt)
-        {
-            return result.value();
-        }
+          if (const std::optional<int> result = game_over_eval(board, ply); result != std::nullopt)
+          {
+              return result.value();
+          }
 
-        int score = 0;
+          int score = 0;
 
-        const auto& generated_bitboards = initialize_bitboards(board);
+          const auto& generated_bitboards = initialize_bitboards(board);
 
-        const auto& our_pieces = std::get<0>(generated_bitboards);
-        const auto& enemy_pieces = std::get<1>(generated_bitboards);
+          const auto& our_pieces = std::get<0>(generated_bitboards);
+          const auto& enemy_pieces = std::get<1>(generated_bitboards);
 
-        score += material_eval(our_pieces[0], our_pieces[1], our_pieces[2], our_pieces[3], our_pieces[4],
-                               enemy_pieces[0], enemy_pieces[1], enemy_pieces[2],
-                               enemy_pieces[3], enemy_pieces[4]);
-        // pawns, knights, bishops, rooks, queens
-        score += piece_square_eval(board, our_pieces, enemy_pieces);
+          score += material_eval(our_pieces[0], our_pieces[1], our_pieces[2], our_pieces[3], our_pieces[4],
+                                 enemy_pieces[0], enemy_pieces[1], enemy_pieces[2],
+                                 enemy_pieces[3], enemy_pieces[4]);
+          // pawns, knights, bishops, rooks, queens
+          score += piece_square_eval(board, our_pieces, enemy_pieces);
 
-        score += mobility_eval(board);
+          score += mobility_eval(board);
 
-        hash_table.put(zobrist, score); // this put here to clear cache
-        return score;
-    }
-
-    int evaluation_multi_threaded(const chess::Board& board, const int& ply)
+          hash_table.put(zobrist, score); // this put here to clear cache
+          return score;
+      }
+  
+   /* int main_eval(const chess::Board& board, const int& ply)
     {
         const auto zobrist = board.hash();
         if (const auto hash_entry = hash_table.get(zobrist); hash_entry.has_value())
@@ -421,19 +422,46 @@ namespace evaluation
         const auto& enemy_pieces = std::get<1>(generated_bitboards);
 
         // START MULTITHREAD HERE
-        std::future<int> material_score = std::async(material_eval, our_pieces[0], our_pieces[1], our_pieces[2],
-                                                     our_pieces[3], our_pieces[4],
-                                                     enemy_pieces[0], enemy_pieces[1], enemy_pieces[2],
-                                                     enemy_pieces[3], enemy_pieces[4]);
-        std::future<int> psqt_score = std::async(piece_square_eval, board, our_pieces, enemy_pieces);
 
-        std::future<int> mobility_opp_knight_bishop = std::async(mobility_eval_opposite_side_B_N, board, color);
-        std::future<int> mobility_opp_rook_queen = std::async(mobility_eval_opposide_side_R_K, board, color);
-        std::future<int> mobility_us_knight_bishop = std::async(mobility_eval_side_to_move_B_N, board);
-        std::future<int> mobility_us_rook_queen = std::async(mobility_eval_side_to_move_R_Q, board);
-
+        std::future<int> material_score = pool.submit_task([enemy_pieces, our_pieces]
+        {
+            return material_eval(our_pieces[0], our_pieces[1],
+                                 our_pieces[2],
+                                 our_pieces[3], our_pieces[4],
+                                 enemy_pieces[0], enemy_pieces[1], enemy_pieces[2],
+                                 enemy_pieces[3], enemy_pieces[4]);
+        });
+        std::future<int> psqt_score = pool.submit_task([board, our_pieces, enemy_pieces]
+        {
+            return piece_square_eval(board, our_pieces,
+                                     enemy_pieces);
+        });
+        
+                std::future<int> mobility_opp_knight_bishop = pool.submit_task([board, color]
+                {
+                    return mobility_eval_opposite_side_B_N(
+                        board, color);
+                });
+                std::future<int> mobility_opp_rook_queen = pool.submit_task([board, color]
+                {
+                    return mobility_eval_opposide_side_R_K(
+                        board, color);
+                });
+                std::future<int> mobility_us_knight_bishop = pool.submit_task([board]
+                {
+                    return mobility_eval_side_to_move_B_N(
+                        board);
+                });
+                std::future<int> mobility_us_rook_queen = pool.submit_task([board]
+                {
+                    return mobility_eval_side_to_move_R_Q(board);
+                });
+        
+        std::future<int> mobility_score = pool.submit_task([board] { return mobility_eval(board); });
+        score += mobility_score.get();
         score += material_score.get();
         score += psqt_score.get();
+        
         score += mobility_opp_knight_bishop.get();
         score += mobility_opp_rook_queen.get();
         score += mobility_us_knight_bishop.get();
@@ -444,4 +472,5 @@ namespace evaluation
 
         return score;
     }
+    */
 } // namespace evaluation
