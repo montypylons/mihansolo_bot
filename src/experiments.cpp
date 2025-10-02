@@ -4,6 +4,8 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+
+#include "evaluation.hpp"
 #include "logging.hpp"
 
 /**
@@ -312,8 +314,55 @@ void eliminate_redundant_movegen(const std::string& fen)
     engine::search(board, manager);
 }
 
+void ver_same_results()
+{
+    std::vector<chess::Board> boards;
+
+    for (const auto& fen : middlegame_FENs)
+    {
+        boards.emplace_back(fen);
+    }
+
+    for (const auto& board : boards)
+    {
+        if (evaluation::evaluation_multi_threaded(board) != evaluation::main_eval(board))
+        {
+            std::cout << "Inconsistent eval detected\n";
+        }
+    }
+}
+
+void bench_eval()
+{
+    std::vector<chess::Board> boards;
+    for (const auto& fen : middlegame_FENs)
+    {
+        boards.emplace_back(fen);
+    }
+    const auto start_normal = std::chrono::steady_clock::now();
+
+    for (const auto& board : boards)
+    {
+        evaluation::main_eval(board);
+    }
+    const auto end_normal = std::chrono::steady_clock::now();
+
+    const auto start_threads = std::chrono::steady_clock::now();
+
+    for (const auto& board : boards)
+    {
+        evaluation::evaluation_multi_threaded(board);
+    }
+    const auto end_threads = std::chrono::steady_clock::now();
+
+    std::cout << "Normal eval: " << std::chrono::duration_cast<std::chrono::nanoseconds>(end_normal - start_normal).
+        count() << " ns" << std::endl;
+    std::cout << "Threaded eval: " << std::chrono::duration_cast<std::chrono::nanoseconds>(end_threads - start_threads)
+        .count() << " ns" << std::endl;
+}
+
 int main()
 {
-    std::cout <<"started"<<std::endl;
-    engine::init_book();
+    std::cout << "started" << std::endl;
+    ver_same_results();
 }

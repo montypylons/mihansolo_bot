@@ -25,7 +25,7 @@ namespace evaluation
 
     std::optional<int> game_over_eval(const chess::Board& board, const int& ply = 0);
 
-    int mobility_eval_threaded(const chess::Board& board);
+    int evaluation_multi_threaded(const chess::Board& board, const int& ply = 0);
 
     int mobility_eval(const chess::Board& board);
 

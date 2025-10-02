@@ -3,7 +3,7 @@
 #include "evaluation.hpp"
 #include "engine.hpp"
 #include <array>
-
+#include <future>
 
 namespace evaluation
 {
@@ -175,6 +175,101 @@ namespace evaluation
         return std::nullopt;
     }
 
+    int mobility_eval_side_to_move_B_N(const chess::Board& board)
+    {
+        int mobility_eval = 0;
+        chess::Movelist moves_for_piece;
+
+        chess::movegen::legalmoves(
+            moves_for_piece, board, chess::PieceGenType::BISHOP);
+        mobility_eval += moves_for_piece.size() * utils::BISHOP_MOBILITY_FACTOR;
+        moves_for_piece.clear();
+
+        chess::movegen::legalmoves(
+            moves_for_piece, board, chess::PieceGenType::KNIGHT);
+        mobility_eval += moves_for_piece.size() * utils::KNIGHT_MOBILITY_FACTOR;
+
+        return mobility_eval;
+    }
+
+    int mobility_eval_side_to_move_R_Q(const chess::Board& board)
+    {
+        int mobility_eval = 0;
+        chess::Movelist moves_for_piece;
+
+        chess::movegen::legalmoves(
+            moves_for_piece, board, chess::PieceGenType::ROOK);
+        mobility_eval += moves_for_piece.size() * utils::ROOK_MOBILITY_FACTOR;
+        moves_for_piece.clear();
+
+        chess::movegen::legalmoves(
+            moves_for_piece, board, chess::PieceGenType::QUEEN);
+        mobility_eval += moves_for_piece.size() * utils::QUEEN_MOBILITY_FACTOR;
+
+        return mobility_eval;
+    }
+
+    int mobility_eval_opposite_side_B_N(const chess::Board& board, const chess::Color& color)
+    {
+        // this will return the mobility score for the OPPOSITE side than color, so color should be the side
+        // you are POV'ing from
+        // Then add the returned score
+        int mobility_eval = 0;
+        chess::Movelist moves_for_piece;
+
+        if (color == chess::Color::WHITE) // generate for the opposite side
+        {
+            chess::movegen::legalmoves<chess::Color::BLACK, chess::movegen::MoveGenType::ALL>(
+                moves_for_piece, board, chess::PieceGenType::BISHOP);
+            mobility_eval += moves_for_piece.size() * utils::BISHOP_MOBILITY_FACTOR;
+            moves_for_piece.clear();
+
+            chess::movegen::legalmoves<chess::Color::BLACK, chess::movegen::MoveGenType::ALL>(
+                moves_for_piece, board, chess::PieceGenType::KNIGHT);
+            mobility_eval += moves_for_piece.size() * utils::KNIGHT_MOBILITY_FACTOR;
+            return -mobility_eval;
+        }
+        chess::movegen::legalmoves<chess::Color::WHITE, chess::movegen::MoveGenType::ALL>(
+            moves_for_piece, board, chess::PieceGenType::BISHOP);
+        mobility_eval += moves_for_piece.size() * utils::BISHOP_MOBILITY_FACTOR;
+        moves_for_piece.clear();
+
+        chess::movegen::legalmoves<chess::Color::WHITE, chess::movegen::MoveGenType::ALL>(
+            moves_for_piece, board, chess::PieceGenType::KNIGHT);
+        mobility_eval += moves_for_piece.size() * utils::KNIGHT_MOBILITY_FACTOR;
+        return -mobility_eval;
+    }
+
+    int mobility_eval_opposide_side_R_K(const chess::Board& board, const chess::Color& color)
+    {
+        // this will return the mobility score for the OPPOSITE side than color, so color should be the side
+        // you are POV'ing from
+        // Then add the returned score
+        int mobility_eval = 0;
+        chess::Movelist moves_for_piece;
+
+        if (color == chess::Color::WHITE) // generate for the opposite side
+        {
+            chess::movegen::legalmoves<chess::Color::BLACK, chess::movegen::MoveGenType::ALL>(
+                moves_for_piece, board, chess::PieceGenType::ROOK);
+            mobility_eval += moves_for_piece.size() * utils::ROOK_MOBILITY_FACTOR;
+            moves_for_piece.clear();
+
+            chess::movegen::legalmoves<chess::Color::BLACK, chess::movegen::MoveGenType::ALL>(
+                moves_for_piece, board, chess::PieceGenType::QUEEN);
+            mobility_eval += moves_for_piece.size() * utils::QUEEN_MOBILITY_FACTOR;
+            return -mobility_eval;
+        }
+        chess::movegen::legalmoves<chess::Color::WHITE, chess::movegen::MoveGenType::ALL>(
+            moves_for_piece, board, chess::PieceGenType::ROOK);
+        mobility_eval += moves_for_piece.size() * utils::ROOK_MOBILITY_FACTOR;
+        moves_for_piece.clear();
+
+        chess::movegen::legalmoves<chess::Color::WHITE, chess::movegen::MoveGenType::ALL>(
+            moves_for_piece, board, chess::PieceGenType::QUEEN);
+        mobility_eval += moves_for_piece.size() * utils::QUEEN_MOBILITY_FACTOR;
+        return -mobility_eval;
+    }
 
     int mobility_eval(const chess::Board& board)
     {
@@ -183,7 +278,7 @@ namespace evaluation
         const chess::Color side_to_move = board.sideToMove();
         chess::Movelist moves_for_piece;
 
-        if (side_to_move)
+        if (side_to_move == chess::Color::WHITE)
         {
             chess::movegen::legalmoves(
                 moves_for_piece, board, chess::PieceGenType::BISHOP);
@@ -300,6 +395,53 @@ namespace evaluation
         score += mobility_eval(board);
 
         hash_table.put(zobrist, score); // this put here to clear cache
+        return score;
+    }
+
+    int evaluation_multi_threaded(const chess::Board& board, const int& ply)
+    {
+        const auto zobrist = board.hash();
+        if (const auto hash_entry = hash_table.get(zobrist); hash_entry.has_value())
+        {
+            return hash_entry.value().score;
+        }
+
+        if (const std::optional<int> result = game_over_eval(board, ply); result != std::nullopt)
+        {
+            return result.value();
+        }
+
+        int score = 0;
+        const auto color = board.sideToMove();
+
+
+        const auto& generated_bitboards = initialize_bitboards(board);
+
+        const auto& our_pieces = std::get<0>(generated_bitboards);
+        const auto& enemy_pieces = std::get<1>(generated_bitboards);
+
+        // START MULTITHREAD HERE
+        std::future<int> material_score = std::async(material_eval, our_pieces[0], our_pieces[1], our_pieces[2],
+                                                     our_pieces[3], our_pieces[4],
+                                                     enemy_pieces[0], enemy_pieces[1], enemy_pieces[2],
+                                                     enemy_pieces[3], enemy_pieces[4]);
+        std::future<int> psqt_score = std::async(piece_square_eval, board, our_pieces, enemy_pieces);
+
+        std::future<int> mobility_opp_knight_bishop = std::async(mobility_eval_opposite_side_B_N, board, color);
+        std::future<int> mobility_opp_rook_queen = std::async(mobility_eval_opposide_side_R_K, board, color);
+        std::future<int> mobility_us_knight_bishop = std::async(mobility_eval_side_to_move_B_N, board);
+        std::future<int> mobility_us_rook_queen = std::async(mobility_eval_side_to_move_R_Q, board);
+
+        score += material_score.get();
+        score += psqt_score.get();
+        score += mobility_opp_knight_bishop.get();
+        score += mobility_opp_rook_queen.get();
+        score += mobility_us_knight_bishop.get();
+        score += mobility_us_rook_queen.get();
+
+        // END MULTITHREAD HERE
+        hash_table.put(zobrist, score); // this put here to clear cache
+
         return score;
     }
 } // namespace evaluation
