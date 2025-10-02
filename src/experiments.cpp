@@ -328,7 +328,9 @@ void ver_same_results()
         if (evaluation::evaluation_multi_threaded(board) != evaluation::main_eval(board))
         {
             std::cout << "Inconsistent eval detected\n";
+            break;
         }
+        std::cout << "same eval :D\n";
     }
 }
 
